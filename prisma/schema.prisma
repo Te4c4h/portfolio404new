@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  firstName    String
+  lastName     String
+  email        String   @unique
+  password     String
+  isBlocked    Boolean  @default(false)
+  registeredAt DateTime @default(now())
+
+  sections     Section[]
+  contentItems ContentItem[]
+  siteContent  SiteContent?
+  navLinks     NavLink[]
+  contactLinks ContactLink[]
+  theme        Theme?
+}
+
+model Section {
+  id              String   @id @default(cuid())
+  userId          String
+  name            String
+  slug            String
+  label           String
+  subtitle        String   @default("")
+  backgroundColor String   @default("#181818")
+  order           Int      @default(0)
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentItems ContentItem[]
+
+  @@unique([userId, slug])
+}
+
+model ContentItem {
+  id          String  @id @default(cuid())
+  userId      String
+  sectionId   String
+  title       String
+  description String  @default("")
+  tags        String  @default("")
+  coverImage  String  @default("")
+  image1      String  @default("")
+  image2      String  @default("")
+  image3      String  @default("")
+  liveUrl     String  @default("")
+  repoUrl     String  @default("")
+  order       Int     @default(0)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+}
+
+model SiteContent {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  siteTitle       String   @default("")
+  logoText        String   @default("")
+  headline        String   @default("")
+  subtext         String   @default("")
+  ctaLabel1       String   @default("")
+  ctaTarget1      String   @default("")
+  ctaLabel2       String   @default("")
+  ctaTarget2      String   @default("")
+  aboutText       String   @default("")
+  skills          String   @default("")
+  contactTitle    String   @default("")
+  contactSubtitle String   @default("")
+  footerText      String   @default("")
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model NavLink {
+  id     String @id @default(cuid())
+  userId String
+  label  String
+  href   String
+  order  Int    @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ContactLink {
+  id       String @id @default(cuid())
+  userId   String
+  platform String
+  url      String
+  order    Int    @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Theme {
+  id             String @id @default(cuid())
+  userId         String @unique
+  accentColor    String @default("#70E844")
+  backgroundColor String @default("#131313")
+  surfaceColor   String @default("#181818")
+  textColor      String @default("#fafafa")
+  dangerColor    String @default("#FE454E")
+  cursorColor    String @default("#70E844")
+  bodyFont       String @default("Inter")
+  headingFont    String @default("Syne")
+  logoUrl        String @default("")
+  faviconUrl     String @default("")
+  webclipUrl     String @default("")
+  websiteTitle   String @default("")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

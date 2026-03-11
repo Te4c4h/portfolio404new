@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+html, body {
+  background-color: #131313;
+  color: #fafafa;
+}
+
+@layer components {
+  .auth-input {
+    @apply w-full px-4 py-3 bg-[#131313] border border-[#2a2a2a] rounded-lg text-[#fafafa] placeholder-[#555] text-sm outline-none transition-all duration-200;
+  }
+  .auth-input:focus {
+    @apply border-[#70E844] shadow-[0_0_0_2px_rgba(112,232,68,0.15)];
+  }
+  .dash-input {
+    @apply w-full px-3 py-2 bg-[#131313] border border-[#2a2a2a] rounded-lg text-[#fafafa] placeholder-[#555] text-sm outline-none transition-all duration-200;
+  }
+  .dash-input:focus {
+    @apply border-[#70E844] shadow-[0_0_0_2px_rgba(112,232,68,0.15)];
+  }
+  .dash-btn {
+    @apply px-4 py-2 rounded-lg text-sm font-medium transition-colors;
+  }
+  .dash-btn-primary {
+    @apply dash-btn bg-[#70E844] text-[#131313] hover:bg-[#5ed636];
+  }
+  .dash-btn-secondary {
+    @apply dash-btn bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333];
+  }
+  .dash-btn-danger {
+    @apply dash-btn bg-[#FE454E] text-white hover:bg-[#e03d45];
+  }
+}
