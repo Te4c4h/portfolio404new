@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import { FiX, FiPlus } from "react-icons/fi";
 import Toast from "@/components/Toast";
 
@@ -43,6 +44,8 @@ const emptySite: SiteData = {
 };
 
 export default function SiteContentPage() {
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.isAdmin;
   const [site, setSite] = useState<SiteData>(emptySite);
   const [navLinks, setNavLinks] = useState<NavLink[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
@@ -135,8 +138,10 @@ export default function SiteContentPage() {
     { value: "#about", label: "About" },
     ...sections.map((s) => ({ value: `#${s.slug}`, label: s.name })),
     { value: "#contact", label: "Contact" },
-    { value: "/login", label: "Login / Sign Up page" },
-    { value: "/login#signup", label: "Sign Up page" },
+    ...(isAdmin ? [
+      { value: "/login", label: "Login / Sign Up page" },
+      { value: "/login#signup", label: "Sign Up page" },
+    ] : []),
   ];
 
   if (loading) return <div className="text-[#888] text-sm">Loading...</div>;

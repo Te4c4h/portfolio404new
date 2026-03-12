@@ -62,17 +62,19 @@ export default function ProjectModal({ item, onClose, accent }: ProjectModalProp
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border"
+            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border"
             style={{ backgroundColor: "var(--surface)", borderColor: "var(--surface)" }}
           >
             {/* Close button */}
-            <button
-              onClick={onClose}
-              className="sticky top-3 ml-auto mr-3 mt-3 mb-[-44px] z-10 p-2 rounded-full transition-colors shrink-0"
-              style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}
-            >
-              <FiX size={18} />
-            </button>
+            <div className="sticky top-0 z-10 flex justify-end pointer-events-none mb-[-52px]">
+              <button
+                onClick={onClose}
+                className="pointer-events-auto m-3 p-2 rounded-full transition-colors shrink-0"
+                style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}
+              >
+                <FiX size={18} />
+              </button>
+            </div>
 
             {/* Image Gallery */}
             {images.length > 0 && (

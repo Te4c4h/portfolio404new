@@ -116,7 +116,7 @@ export default function AdminSidebar({ username, isAdmin }: AdminSidebarProps) {
 
       <div className="px-3 pb-6">
         <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
+          onClick={() => signOut({ callbackUrl: isAdmin ? "/" : `/u/${username}` })}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#888] hover:text-[#FE454E] hover:bg-[#FE454E]/10 transition-colors w-full"
         >
           <FiLogOut size={18} />
