@@ -32,11 +32,11 @@ async function getHomeData() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const data = await getHomeData();
-  if (!data) return { title: "Portfolio 404" };
+  if (!data) return { title: "Portfolio 404 — Build Your Personal Portfolio" };
 
-  const title = data.siteContent?.siteTitle || "Portfolio 404";
-  const description = data.siteContent?.subtext || "Creative Portfolios, Instantly";
-  const ogImage = data.theme?.webclipUrl || undefined;
+  const title = data.siteContent?.siteTitle || "Portfolio 404 — Build Your Personal Portfolio";
+  const description = data.siteContent?.subtext || "Create a stunning personal portfolio in minutes. Free to start. No coding required.";
+  const ogImage = data.theme?.webclipUrl || "https://www.portfolio404.site/og-image.png";
 
   return {
     title,
@@ -44,7 +44,14 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      ...(ogImage && { images: [{ url: ogImage }] }),
+      url: "https://www.portfolio404.site",
+      images: [{ url: ogImage }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
     },
   };
 }

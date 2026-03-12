@@ -44,20 +44,30 @@ export async function generateMetadata({
   const data = await getPortfolioData(params.username);
   if (!data) return { title: "Not Found" };
 
-  const title =
-    data.siteContent?.siteTitle ||
-    `${data.firstName} ${data.lastName}`;
+  const fullName = `${data.firstName} ${data.lastName}`;
+  const title = data.siteContent?.siteTitle || `${fullName} — Portfolio`;
+  const aboutText = data.siteContent?.aboutText || "";
   const description =
-    data.siteContent?.subtext || `Portfolio of ${data.firstName} ${data.lastName}`;
-  const ogImage = data.theme?.webclipUrl || undefined;
+    data.siteContent?.subtext ||
+    (aboutText ? aboutText.split("\n")[0].slice(0, 160) : `Portfolio of ${fullName}`);
+  const ogTitle = `${fullName} — Portfolio | Portfolio 404`;
+  const ogImage = data.theme?.webclipUrl || "https://www.portfolio404.site/og-image.png";
+  const ogUrl = `https://www.portfolio404.site/u/${params.username}`;
 
   return {
     title,
     description,
     openGraph: {
-      title,
+      title: ogTitle,
       description,
-      ...(ogImage && { images: [{ url: ogImage }] }),
+      url: ogUrl,
+      images: [{ url: ogImage }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: ogTitle,
+      description,
+      images: [ogImage],
     },
   };
 }

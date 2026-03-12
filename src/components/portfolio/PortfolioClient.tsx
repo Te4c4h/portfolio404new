@@ -140,7 +140,7 @@ export default function PortfolioClient({
       >
         {/* Grid overlay */}
         <div
-          className="fixed inset-0 pointer-events-none z-[1]"
+          className="fixed inset-0 pointer-events-none z-0"
           style={{
             backgroundImage: `linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px)`,
             backgroundSize: "60px 60px",
@@ -155,62 +155,64 @@ export default function PortfolioClient({
           ::selection { background: ${theme.accentColor}; color: ${theme.backgroundColor}; }
         `}</style>
 
-        <LoadingScreen
-          heading={siteContent?.loadingHeading || `${user.firstName} ${user.lastName}`}
-          subtitle={siteContent?.loadingSubtitle || "Portfolio"}
-          accent={theme.accentColor}
-          headingFont={theme.headingFont}
-        />
-        <CustomCursor cursorColor={theme.cursorColor} />
-        <Navbar
-          logoUrl={theme.logoUrl}
-          logoText={siteContent?.logoText || `${user.firstName} ${user.lastName}`}
-          navLinks={navLinks}
-          accent={theme.accentColor}
-        />
-        <Hero
-          headline={siteContent?.headline || ""}
-          subtext={siteContent?.subtext || ""}
-          ctaLabel1={siteContent?.ctaLabel1 || "View Work"}
-          ctaTarget1={ctaTarget1}
-          ctaLabel2={siteContent?.ctaLabel2 || "Contact"}
-          ctaTarget2={ctaTarget2}
-          accent={theme.accentColor}
-          bg={theme.backgroundColor}
-        />
-        {(siteContent?.aboutText || siteContent?.skills) && (
-          <About
-            aboutText={siteContent?.aboutText || ""}
-            skills={siteContent?.skills || ""}
+        <div className="relative z-[1]">
+          <LoadingScreen
+            heading={siteContent?.loadingHeading || `${user.firstName} ${user.lastName}`}
+            subtitle={siteContent?.loadingSubtitle || "Portfolio"}
             accent={theme.accentColor}
-            surface={theme.surfaceColor}
+            headingFont={theme.headingFont}
           />
-        )}
-        {sections.map((section) => (
-          <SectionBlock
-            key={section.id}
-            section={section}
+          <CustomCursor cursorColor={theme.cursorColor} />
+          <Navbar
+            logoUrl={theme.logoUrl}
+            logoText={siteContent?.logoText || `${user.firstName} ${user.lastName}`}
+            navLinks={navLinks}
             accent={theme.accentColor}
-            surface={theme.surfaceColor}
-            defaultBg={theme.backgroundColor}
-            onCardClick={setModalItem}
           />
-        ))}
-        <Contact
-          title={siteContent?.contactTitle || "Get in Touch"}
-          subtitle={siteContent?.contactSubtitle || ""}
-          links={contactLinks}
-          accent={theme.accentColor}
-        />
-        <Footer
-          name={`${user.firstName} ${user.lastName}`}
-          footerText={siteContent?.footerText || ""}
-        />
-        <ProjectModal
-          item={modalItem}
-          onClose={() => setModalItem(null)}
-          accent={theme.accentColor}
-        />
+          <Hero
+            headline={siteContent?.headline || ""}
+            subtext={siteContent?.subtext || ""}
+            ctaLabel1={siteContent?.ctaLabel1 || "View Work"}
+            ctaTarget1={ctaTarget1}
+            ctaLabel2={siteContent?.ctaLabel2 || "Contact"}
+            ctaTarget2={ctaTarget2}
+            accent={theme.accentColor}
+            bg={theme.backgroundColor}
+          />
+          {(siteContent?.aboutText || siteContent?.skills) && (
+            <About
+              aboutText={siteContent?.aboutText || ""}
+              skills={siteContent?.skills || ""}
+              accent={theme.accentColor}
+              surface={theme.surfaceColor}
+            />
+          )}
+          {sections.map((section) => (
+            <SectionBlock
+              key={section.id}
+              section={section}
+              accent={theme.accentColor}
+              surface={theme.surfaceColor}
+              defaultBg={theme.backgroundColor}
+              onCardClick={setModalItem}
+            />
+          ))}
+          <Contact
+            title={siteContent?.contactTitle || "Get in Touch"}
+            subtitle={siteContent?.contactSubtitle || ""}
+            links={contactLinks}
+            accent={theme.accentColor}
+          />
+          <Footer
+            name={`${user.firstName} ${user.lastName}`}
+            footerText={siteContent?.footerText || ""}
+          />
+          <ProjectModal
+            item={modalItem}
+            onClose={() => setModalItem(null)}
+            accent={theme.accentColor}
+          />
+        </div>
       </div>
     </>
   );
