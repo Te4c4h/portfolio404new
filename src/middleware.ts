@@ -14,6 +14,9 @@ export async function middleware(req: NextRequest) {
   // Authenticated user visits /login → redirect to their dashboard
   if (pathname === "/login") {
     if (token) {
+      if (token.isAdmin) {
+        return NextResponse.redirect(new URL("/admin", req.url));
+      }
       return NextResponse.redirect(
         new URL(`/u/${token.username}/admin`, req.url)
       );
@@ -21,7 +24,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Protected: /admin route → redirect to inline users page in admin's dashboard
+  // Protected: /admin route — admin-only dashboard
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
     if (!token) {
       return NextResponse.redirect(new URL("/login", req.url));
@@ -31,10 +34,7 @@ export async function middleware(req: NextRequest) {
         new URL(`/u/${token.username}/admin`, req.url)
       );
     }
-    // Redirect /admin to the users page inside the admin's own dashboard
-    return NextResponse.redirect(
-      new URL(`/u/${token.username}/admin/users`, req.url)
-    );
+    return NextResponse.next();
   }
 
   // Protected: /u/[username]/admin routes

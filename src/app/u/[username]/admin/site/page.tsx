@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { FiX, FiPlus } from "react-icons/fi";
 import Toast from "@/components/Toast";
 
@@ -53,6 +53,8 @@ export default function SiteContentPage() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(false);
   const [newLink, setNewLink] = useState({ label: "", href: "" });
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const load = useCallback(async () => {
     const [siteRes, navRes, secRes] = await Promise.all([
@@ -299,7 +301,50 @@ export default function SiteContentPage() {
             <p className="text-[#555] text-[10px] mt-0.5">Leave empty to use default: © [year] [your name]</p>
           </div>
         </div>
+
+        {/* Danger Zone — only for non-admin users */}
+        {!isAdmin && (
+          <div className="bg-[#181818] border border-[#FE454E]/30 rounded-xl p-5">
+            <h2 className="text-xs font-semibold text-[#FE454E] uppercase tracking-wider mb-2">Danger Zone</h2>
+            <p className="text-[#888] text-sm mb-4">Permanently delete your account and all portfolio data. This action cannot be undone.</p>
+            <button
+              onClick={() => setDeleteModalOpen(true)}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-[#FE454E]/10 text-[#FE454E] border border-[#FE454E]/30 hover:bg-[#FE454E]/20 transition-colors"
+            >
+              Delete Account
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Delete Account Confirmation Modal */}
+      {deleteModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setDeleteModalOpen(false)}>
+          <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-semibold text-[#fafafa] mb-2">Delete Account</h2>
+            <p className="text-[#888] text-sm mb-6">Are you sure? This will permanently delete your account and all your portfolio data.</p>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setDeleteModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333]">Cancel</button>
+              <button
+                onClick={async () => {
+                  setDeleting(true);
+                  const r = await fetch("/api/user/account", { method: "DELETE" });
+                  if (r.ok) {
+                    await signOut({ callbackUrl: "/" });
+                  } else {
+                    setDeleting(false);
+                    setDeleteModalOpen(false);
+                  }
+                }}
+                disabled={deleting}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-[#FE454E] text-white hover:bg-[#e03d45] disabled:opacity-50"
+              >
+                {deleting ? "Deleting..." : "Delete Forever"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Toast message="Changes saved successfully!" show={toast} onClose={() => setToast(false)} />
     </div>
