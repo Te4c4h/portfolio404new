@@ -159,7 +159,7 @@ export default function ProjectModal({ item, onClose, accent }: ProjectModalProp
                     className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105"
                     style={{ backgroundColor: accent, color: "var(--bg)" }}
                   >
-                    <FiExternalLink size={14} /> Live Demo
+                    <FiExternalLink size={14} /> View
                   </a>
                 )}
                 {item.repoUrl && (
@@ -170,7 +170,7 @@ export default function ProjectModal({ item, onClose, accent }: ProjectModalProp
                     className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-semibold border transition-all hover:scale-105"
                     style={{ borderColor: `${accent}40`, color: "var(--text)" }}
                   >
-                    <FiGithub size={14} /> Source Code
+                    <FiGithub size={14} /> Source
                   </a>
                 )}
               </div>

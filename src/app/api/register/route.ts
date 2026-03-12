@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
+import { sendVerificationEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -56,6 +58,7 @@ export async function POST(req: NextRequest) {
     }
 
     const hashedPassword = await hash(password, 12);
+    const verificationToken = crypto.randomBytes(32).toString("hex");
 
     const user = await prisma.$transaction(async (tx) => {
       const newUser = await tx.user.create({
@@ -65,6 +68,7 @@ export async function POST(req: NextRequest) {
           email,
           username,
           password: hashedPassword,
+          verificationToken,
         },
       });
 
@@ -79,8 +83,6 @@ export async function POST(req: NextRequest) {
           ctaLabel2: "Contact Me",
           contactTitle: "Get In Touch",
           contactSubtitle: "Feel free to reach out",
-          loadingHeading: `${firstName} ${lastName}`,
-          loadingSubtitle: "Portfolio",
           footerText: `© 2026 ${firstName} ${lastName}`,
         },
       });
@@ -94,6 +96,13 @@ export async function POST(req: NextRequest) {
       return newUser;
     });
 
+    // Send verification email
+    try {
+      await sendVerificationEmail(email, verificationToken);
+    } catch (emailError) {
+      console.error("Failed to send verification email:", emailError);
+    }
+
     return NextResponse.json(
       {
         user: {
@@ -101,6 +110,7 @@ export async function POST(req: NextRequest) {
           username: user.username,
           email: user.email,
         },
+        message: "Account created. Please check your email to verify your account.",
       },
       { status: 201 }
     );

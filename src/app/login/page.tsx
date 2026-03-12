@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
 
   // Sign In state
@@ -14,6 +15,14 @@ export default function LoginPage() {
   const [signInPassword, setSignInPassword] = useState("");
   const [signInError, setSignInError] = useState("");
   const [signInLoading, setSignInLoading] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
+  const [resendingVerification, setResendingVerification] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotMessage, setForgotMessage] = useState("");
+  const [forgotError, setForgotError] = useState("");
 
   // Sign Up state
   const [firstName, setFirstName] = useState("");
@@ -90,6 +99,8 @@ export default function LoginPage() {
     return Object.keys(errors).length === 0;
   };
 
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setSignUpError("");
@@ -118,21 +129,8 @@ export default function LoginPage() {
         return;
       }
 
-      // Auto sign in after registration
-      const signInResult = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (signInResult?.error) {
-        setSignUpError("Account created but sign-in failed. Please sign in.");
-        setMode("signin");
-        setSignUpLoading(false);
-        return;
-      }
-
-      router.push(`/u/${username}/admin`);
+      setSignUpSuccess(true);
+      setSignUpLoading(false);
     } catch {
       setSignUpError("Something went wrong");
       setSignUpLoading(false);
@@ -142,6 +140,7 @@ export default function LoginPage() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setSignInError("");
+    setUnverifiedEmail("");
 
     if (!signInEmail.trim() || !signInPassword) {
       setSignInError("Email and password are required");
@@ -157,7 +156,12 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setSignInError(result.error);
+        if (result.error === "UNVERIFIED") {
+          setUnverifiedEmail(signInEmail);
+          setSignInError("");
+        } else {
+          setSignInError(result.error);
+        }
         setSignInLoading(false);
         return;
       }
@@ -175,6 +179,52 @@ export default function LoginPage() {
       setSignInError("Something went wrong");
       setSignInLoading(false);
     }
+  };
+
+  const handleResendVerification = async () => {
+    setResendingVerification(true);
+    setResendSuccess(false);
+    try {
+      await fetch("/api/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: unverifiedEmail }),
+      });
+      setResendSuccess(true);
+    } catch {
+      // silent fail
+    }
+    setResendingVerification(false);
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotError("");
+    setForgotMessage("");
+    if (!forgotEmail.trim()) {
+      setForgotError("Email is required");
+      return;
+    }
+    setForgotLoading(true);
+    try {
+      const r = await fetch("/api/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      if (r.ok) {
+        setForgotMessage("If that email exists, a reset link has been sent. Check your inbox.");
+      } else {
+        setForgotError("Something went wrong");
+      }
+    } catch {
+      setForgotError("Something went wrong");
+    }
+    setForgotLoading(false);
+  };
+
+  const handleGoogleSignIn = () => {
+    signIn("google", { callbackUrl: "/login" });
   };
 
   return (
@@ -211,237 +261,337 @@ export default function LoginPage() {
           </button>
         </div>
 
+        {/* Google Sign In */}
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full py-3 mb-4 bg-white text-[#131313] font-semibold rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
+        >
+          <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Continue with Google
+        </button>
+
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex-1 h-px bg-[#2a2a2a]" />
+          <span className="text-[#555] text-xs">or</span>
+          <div className="flex-1 h-px bg-[#2a2a2a]" />
+        </div>
+
         <AnimatePresence mode="wait">
-          {mode === "signin" ? (
-            <motion.form
+          {showForgotPassword ? (
+            <motion.div
+              key="forgot"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <h3 className="text-[#fafafa] font-medium text-center mb-4">Reset your password</h3>
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <input
+                  type="email"
+                  placeholder="Your email address"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  className="auth-input"
+                />
+                {forgotError && <p className="text-[#FE454E] text-sm">{forgotError}</p>}
+                {forgotMessage && <p className="text-[#70E844] text-sm">{forgotMessage}</p>}
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="w-full py-3 bg-[#70E844] text-[#131313] font-semibold rounded-lg hover:bg-[#5ed636] transition-colors disabled:opacity-50"
+                >
+                  {forgotLoading ? "Sending..." : "Send Reset Link"}
+                </button>
+              </form>
+              <button
+                onClick={() => { setShowForgotPassword(false); setForgotMessage(""); setForgotError(""); }}
+                className="w-full mt-3 text-[#888] text-sm hover:text-[#fafafa] transition-colors"
+              >
+                Back to sign in
+              </button>
+            </motion.div>
+          ) : mode === "signin" ? (
+            <motion.div
               key="signin"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              onSubmit={handleSignIn}
-              className="space-y-4"
             >
-              <div>
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={signInEmail}
-                  onChange={(e) => setSignInEmail(e.target.value)}
-                  className="auth-input"
-                />
-              </div>
-              <div>
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={signInPassword}
-                  onChange={(e) => setSignInPassword(e.target.value)}
-                  className="auth-input"
-                />
-              </div>
+              {unverifiedEmail ? (
+                <div className="text-center space-y-3">
+                  <p className="text-[#fafafa] text-sm">Please verify your email. Check your inbox.</p>
+                  <button
+                    onClick={handleResendVerification}
+                    disabled={resendingVerification}
+                    className="px-4 py-2 bg-[#2a2a2a] text-[#fafafa] rounded-lg text-sm hover:bg-[#333] disabled:opacity-50"
+                  >
+                    {resendingVerification ? "Sending..." : "Resend verification email"}
+                  </button>
+                  {resendSuccess && <p className="text-[#70E844] text-xs">Verification email sent!</p>}
+                  <button
+                    onClick={() => { setUnverifiedEmail(""); }}
+                    className="block mx-auto text-[#888] text-xs hover:text-[#fafafa]"
+                  >
+                    Try again
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSignIn} className="space-y-4">
+                  <div>
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={signInEmail}
+                      onChange={(e) => setSignInEmail(e.target.value)}
+                      className="auth-input"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      value={signInPassword}
+                      onChange={(e) => setSignInPassword(e.target.value)}
+                      className="auth-input"
+                    />
+                  </div>
 
-              {signInError && (
-                <p className="text-[#FE454E] text-sm">{signInError}</p>
+                  {signInError && (
+                    <p className="text-[#FE454E] text-sm">{signInError}</p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={signInLoading}
+                    className="w-full py-3 bg-[#70E844] text-[#131313] font-semibold rounded-lg hover:bg-[#5ed636] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {signInLoading ? "Signing in..." : "Sign In"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="w-full text-[#888] text-sm hover:text-[#fafafa] transition-colors"
+                  >
+                    Forgot Password?
+                  </button>
+                </form>
               )}
-
-              <button
-                type="submit"
-                disabled={signInLoading}
-                className="w-full py-3 bg-[#70E844] text-[#131313] font-semibold rounded-lg hover:bg-[#5ed636] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {signInLoading ? "Signing in..." : "Sign In"}
-              </button>
-            </motion.form>
+            </motion.div>
           ) : (
-            <motion.form
+            <motion.div
               key="signup"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              onSubmit={handleSignUp}
-              className="space-y-4"
             >
-              {/* First Name / Last Name side by side */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <input
-                    type="text"
-                    placeholder="First Name"
-                    value={firstName}
-                    onChange={(e) => {
-                      setFirstName(e.target.value);
-                      setFieldErrors((p) => ({ ...p, firstName: "" }));
-                    }}
-                    className="auth-input"
-                  />
-                  {fieldErrors.firstName && (
-                    <p className="text-[#FE454E] text-xs mt-1">
-                      {fieldErrors.firstName}
-                    </p>
+              {signUpSuccess ? (
+                <div className="text-center space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-[#70E844]/10 flex items-center justify-center mx-auto">
+                    <svg className="w-6 h-6 text-[#70E844]" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <p className="text-[#fafafa] font-medium">Account created!</p>
+                  <p className="text-[#888] text-sm">Please check your email to verify your account, then sign in.</p>
+                  <button
+                    onClick={() => { setMode("signin"); setSignUpSuccess(false); }}
+                    className="px-4 py-2 bg-[#70E844] text-[#131313] rounded-lg text-sm font-medium hover:bg-[#5ed636]"
+                  >
+                    Go to Sign In
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSignUp} className="space-y-4">
+                  {/* First Name / Last Name side by side */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="First Name"
+                        value={firstName}
+                        onChange={(e) => {
+                          setFirstName(e.target.value);
+                          setFieldErrors((p) => ({ ...p, firstName: "" }));
+                        }}
+                        className="auth-input"
+                      />
+                      {fieldErrors.firstName && (
+                        <p className="text-[#FE454E] text-xs mt-1">
+                          {fieldErrors.firstName}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Last Name"
+                        value={lastName}
+                        onChange={(e) => {
+                          setLastName(e.target.value);
+                          setFieldErrors((p) => ({ ...p, lastName: "" }));
+                        }}
+                        className="auth-input"
+                      />
+                      {fieldErrors.lastName && (
+                        <p className="text-[#FE454E] text-xs mt-1">
+                          {fieldErrors.lastName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        setFieldErrors((p) => ({ ...p, email: "" }));
+                      }}
+                      className="auth-input"
+                    />
+                    {fieldErrors.email && (
+                      <p className="text-[#FE454E] text-xs mt-1">
+                        {fieldErrors.email}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Username with availability indicator */}
+                  <div>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => {
+                          setUsername(e.target.value);
+                          setFieldErrors((p) => ({ ...p, username: "" }));
+                        }}
+                        className="auth-input pr-10"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                        {usernameStatus === "checking" && (
+                          <svg
+                            className="animate-spin h-4 w-4 text-[#888]"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                            />
+                          </svg>
+                        )}
+                        {usernameStatus === "available" && (
+                          <svg
+                            className="h-4 w-4 text-[#70E844]"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        )}
+                        {usernameStatus === "taken" && (
+                          <svg
+                            className="h-4 w-4 text-[#FE454E]"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        )}
+                      </span>
+                    </div>
+                    {fieldErrors.username && (
+                      <p className="text-[#FE454E] text-xs mt-1">
+                        {fieldErrors.username}
+                      </p>
+                    )}
+                    {usernameStatus === "taken" && !fieldErrors.username && (
+                      <p className="text-[#FE454E] text-xs mt-1">
+                        Username is already taken
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        setFieldErrors((p) => ({ ...p, password: "" }));
+                      }}
+                      className="auth-input"
+                    />
+                    {fieldErrors.password && (
+                      <p className="text-[#FE454E] text-xs mt-1">
+                        {fieldErrors.password}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <input
+                      type="password"
+                      placeholder="Confirm Password"
+                      value={confirmPassword}
+                      onChange={(e) => {
+                        setConfirmPassword(e.target.value);
+                        setFieldErrors((p) => ({ ...p, confirmPassword: "" }));
+                      }}
+                      className="auth-input"
+                    />
+                    {fieldErrors.confirmPassword && (
+                      <p className="text-[#FE454E] text-xs mt-1">
+                        {fieldErrors.confirmPassword}
+                      </p>
+                    )}
+                  </div>
+
+                  {signUpError && (
+                    <p className="text-[#FE454E] text-sm">{signUpError}</p>
                   )}
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Last Name"
-                    value={lastName}
-                    onChange={(e) => {
-                      setLastName(e.target.value);
-                      setFieldErrors((p) => ({ ...p, lastName: "" }));
-                    }}
-                    className="auth-input"
-                  />
-                  {fieldErrors.lastName && (
-                    <p className="text-[#FE454E] text-xs mt-1">
-                      {fieldErrors.lastName}
-                    </p>
-                  )}
-                </div>
-              </div>
 
-              <div>
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setFieldErrors((p) => ({ ...p, email: "" }));
-                  }}
-                  className="auth-input"
-                />
-                {fieldErrors.email && (
-                  <p className="text-[#FE454E] text-xs mt-1">
-                    {fieldErrors.email}
-                  </p>
-                )}
-              </div>
-
-              {/* Username with availability indicator */}
-              <div>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => {
-                      setUsername(e.target.value);
-                      setFieldErrors((p) => ({ ...p, username: "" }));
-                    }}
-                    className="auth-input pr-10"
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2">
-                    {usernameStatus === "checking" && (
-                      <svg
-                        className="animate-spin h-4 w-4 text-[#888]"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                        />
-                      </svg>
-                    )}
-                    {usernameStatus === "available" && (
-                      <svg
-                        className="h-4 w-4 text-[#70E844]"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    )}
-                    {usernameStatus === "taken" && (
-                      <svg
-                        className="h-4 w-4 text-[#FE454E]"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    )}
-                  </span>
-                </div>
-                {fieldErrors.username && (
-                  <p className="text-[#FE454E] text-xs mt-1">
-                    {fieldErrors.username}
-                  </p>
-                )}
-                {usernameStatus === "taken" && !fieldErrors.username && (
-                  <p className="text-[#FE454E] text-xs mt-1">
-                    Username is already taken
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setFieldErrors((p) => ({ ...p, password: "" }));
-                  }}
-                  className="auth-input"
-                />
-                {fieldErrors.password && (
-                  <p className="text-[#FE454E] text-xs mt-1">
-                    {fieldErrors.password}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  value={confirmPassword}
-                  onChange={(e) => {
-                    setConfirmPassword(e.target.value);
-                    setFieldErrors((p) => ({ ...p, confirmPassword: "" }));
-                  }}
-                  className="auth-input"
-                />
-                {fieldErrors.confirmPassword && (
-                  <p className="text-[#FE454E] text-xs mt-1">
-                    {fieldErrors.confirmPassword}
-                  </p>
-                )}
-              </div>
-
-              {signUpError && (
-                <p className="text-[#FE454E] text-sm">{signUpError}</p>
+                  <button
+                    type="submit"
+                    disabled={signUpLoading}
+                    className="w-full py-3 bg-[#70E844] text-[#131313] font-semibold rounded-lg hover:bg-[#5ed636] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {signUpLoading ? "Creating account..." : "Sign Up"}
+                  </button>
+                </form>
               )}
-
-              <button
-                type="submit"
-                disabled={signUpLoading}
-                className="w-full py-3 bg-[#70E844] text-[#131313] font-semibold rounded-lg hover:bg-[#5ed636] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {signUpLoading ? "Creating account..." : "Sign Up"}
-              </button>
-            </motion.form>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

@@ -6,6 +6,11 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const { pathname } = req.nextUrl;
 
+  // Public auth pages — allow through
+  if (pathname === "/verify-email" || pathname === "/reset-password" || pathname === "/complete-signup") {
+    return NextResponse.next();
+  }
+
   // Authenticated user visits /login → redirect to their dashboard
   if (pathname === "/login") {
     if (token) {
@@ -52,5 +57,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/login", "/admin/:path*", "/u/:path*/admin/:path*"],
+  matcher: ["/login", "/admin/:path*", "/u/:path*/admin/:path*", "/verify-email", "/reset-password", "/complete-signup"],
 };

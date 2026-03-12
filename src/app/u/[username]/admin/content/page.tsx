@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
+import {
+  DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext, verticalListSortingStrategy, useSortable, arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { FiMenu, FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
 
 interface Section {
   id: string;
@@ -34,14 +41,69 @@ interface FormData {
   image3: string;
   liveUrl: string;
   repoUrl: string;
-  order: number;
 }
 
 const emptyForm: FormData = {
   sectionId: "", title: "", description: "", tags: "",
   coverImage: "", image1: "", image2: "", image3: "",
-  liveUrl: "", repoUrl: "", order: 0,
+  liveUrl: "", repoUrl: "",
 };
+
+function SortableRow({
+  item, sectionName, onEdit, onDelete, deletingId, setDeletingId,
+}: {
+  item: ContentItem;
+  sectionName: string;
+  onEdit: (item: ContentItem) => void;
+  onDelete: (id: string) => void;
+  deletingId: string | null;
+  setDeletingId: (id: string | null) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
+  const style = { transform: CSS.Transform.toString(transform), transition };
+
+  return (
+    <div ref={setNodeRef} style={style} className="flex items-center gap-3 bg-[#181818] border border-[#2a2a2a] rounded-lg px-4 py-3">
+      <button {...attributes} {...listeners} className="cursor-grab text-[#555] hover:text-[#888]">
+        <FiMenu size={16} />
+      </button>
+      {item.coverImage ? (
+        <img src={item.coverImage} alt="" className="w-12 h-12 rounded object-cover bg-[#2a2a2a] flex-shrink-0" />
+      ) : (
+        <div className="w-12 h-12 rounded bg-[#2a2a2a] flex-shrink-0" />
+      )}
+      <div className="flex-1 min-w-0">
+        <p className="text-[#fafafa] font-medium text-sm truncate">{item.title}</p>
+        <p className="text-[#666] text-xs truncate">{sectionName}</p>
+        {item.tags && (
+          <div className="flex gap-1 mt-1 flex-wrap">
+            {item.tags.split(",").map((t) => t.trim()).filter(Boolean).map((tag) => (
+              <span key={tag} className="px-1.5 py-0.5 rounded text-[10px] bg-[#70E844]/10 text-[#70E844]">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+      {deletingId === item.id ? (
+        <div className="flex items-center gap-2">
+          <span className="text-[#FE454E] text-xs">Are you sure?</span>
+          <button onClick={() => onDelete(item.id)} className="px-3 py-1 rounded text-xs bg-[#FE454E] text-white hover:bg-[#e03d45]">Delete</button>
+          <button onClick={() => setDeletingId(null)} className="px-3 py-1 rounded text-xs bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333]">Cancel</button>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          <button onClick={() => onEdit(item)} className="p-1.5 rounded hover:bg-[#2a2a2a] text-[#888] hover:text-[#fafafa]">
+            <FiEdit2 size={14} />
+          </button>
+          <button onClick={() => setDeletingId(item.id)} className="p-1.5 rounded hover:bg-[#2a2a2a] text-[#888] hover:text-[#FE454E]">
+            <FiTrash2 size={14} />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ContentPage() {
   const [sections, setSections] = useState<Section[]>([]);
@@ -54,6 +116,8 @@ export default function ContentPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const load = useCallback(async () => {
     const [sRes, cRes] = await Promise.all([
@@ -72,7 +136,7 @@ export default function ContentPage() {
 
   const openAdd = () => {
     setEditingId(null);
-    setForm({ ...emptyForm, sectionId: sections[0]?.id || "" });
+    setForm({ ...emptyForm, sectionId: filter !== "all" ? filter : (sections[0]?.id || "") });
     setError("");
     setModalOpen(true);
   };
@@ -83,7 +147,7 @@ export default function ContentPage() {
       sectionId: item.sectionId, title: item.title, description: item.description,
       tags: item.tags, coverImage: item.coverImage, image1: item.image1,
       image2: item.image2, image3: item.image3, liveUrl: item.liveUrl,
-      repoUrl: item.repoUrl, order: item.order,
+      repoUrl: item.repoUrl,
     });
     setError("");
     setModalOpen(true);
@@ -122,7 +186,29 @@ export default function ContentPage() {
     setDeletingId(null);
   };
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIdx = filtered.findIndex((i) => i.id === active.id);
+    const newIdx = filtered.findIndex((i) => i.id === over.id);
+    const reordered = arrayMove(filtered, oldIdx, newIdx);
+    // Update local state
+    const newItems = items.map((item) => {
+      const idx = reordered.findIndex((r) => r.id === item.id);
+      if (idx !== -1) return { ...item, order: idx };
+      return item;
+    });
+    setItems(newItems);
+    await fetch("/api/content/reorder", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: reordered.map((item, i) => ({ id: item.id, order: i })) }),
+    });
+  };
+
   if (loading) return <div className="text-[#888] text-sm">Loading...</div>;
+
+  const isDraggable = filter !== "all";
 
   return (
     <div className="max-w-4xl">
@@ -158,6 +244,24 @@ export default function ContentPage() {
 
       {filtered.length === 0 ? (
         <p className="text-[#666] text-sm text-center py-12">No content yet.</p>
+      ) : isDraggable ? (
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={filtered.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-2">
+              {filtered.map((item) => (
+                <SortableRow
+                  key={item.id}
+                  item={item}
+                  sectionName={sectionName(item.sectionId)}
+                  onEdit={openEdit}
+                  onDelete={handleDelete}
+                  deletingId={deletingId}
+                  setDeletingId={setDeletingId}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       ) : (
         <div className="space-y-2">
           {filtered.map((item) => (
@@ -262,11 +366,6 @@ export default function ContentPage() {
                   <label className="text-xs text-[#888] mb-1 block">Repo URL</label>
                   <input className="dash-input" value={form.repoUrl} onChange={(e) => setForm((f) => ({ ...f, repoUrl: e.target.value }))} placeholder="https://..." />
                 </div>
-              </div>
-              <div>
-                <label className="text-xs text-[#888] mb-1 block">Order</label>
-                <input className="dash-input" type="number" value={form.order} onChange={(e) => setForm((f) => ({ ...f, order: parseInt(e.target.value) || 0 }))} />
-                <p className="text-[#555] text-[10px] mt-0.5">Lower numbers appear first</p>
               </div>
             </div>
 

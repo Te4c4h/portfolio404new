@@ -20,6 +20,7 @@ async function main() {
           lastName: "404",
           email: "__home__@internal.system",
           password: hashedPassword,
+          emailVerified: true,
         },
       });
 
@@ -86,6 +87,7 @@ async function main() {
         lastName: "User",
         email: ADMIN_EMAIL,
         password: adminHash,
+        emailVerified: true,
       },
     });
     await prisma.siteContent.create({ data: { userId: admin.id } });

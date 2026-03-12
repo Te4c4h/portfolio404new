@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import {
-  FiMail, FiGithub, FiLinkedin, FiInstagram, FiFacebook,
+  FiMail, FiPhone, FiGithub, FiLinkedin, FiInstagram, FiFacebook,
   FiYoutube, FiGlobe,
 } from "react-icons/fi";
 import { FaTelegram, FaWhatsapp, FaBehance, FaViber } from "react-icons/fa";
@@ -17,7 +17,7 @@ interface ContactProps {
 }
 
 const iconMap: Record<string, React.ElementType> = {
-  Email: FiMail, GitHub: FiGithub, LinkedIn: FiLinkedin,
+  Email: FiMail, Phone: FiPhone, GitHub: FiGithub, LinkedIn: FiLinkedin,
   Telegram: FaTelegram, WhatsApp: FaWhatsapp, Instagram: FiInstagram,
   Facebook: FiFacebook, Behance: FaBehance, Upwork: SiUpwork,
   Fiverr: SiFiverr, Viber: FaViber, YouTube: FiYoutube, Other: FiGlobe,
@@ -58,8 +58,7 @@ export default function Contact({ title, subtitle, links, accent }: ContactProps
               <motion.a
                 key={link.id}
                 href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
+                {...(link.url.startsWith("mailto:") || link.url.startsWith("tel:") ? {} : { target: "_blank", rel: "noopener noreferrer" })}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}

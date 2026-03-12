@@ -28,9 +28,15 @@ interface FormData {
 const emptyForm: FormData = { platform: "Email", url: "" };
 
 const platforms = [
-  "Email", "GitHub", "LinkedIn", "Telegram", "WhatsApp", "Instagram",
+  "Email", "Phone", "GitHub", "LinkedIn", "Telegram", "WhatsApp", "Instagram",
   "Facebook", "Behance", "Upwork", "Fiverr", "Viber", "YouTube", "Other",
 ];
+
+const urlHints: Record<string, string> = {
+  Email: "e.g. hello@gmail.com",
+  Phone: "e.g. +37400000000",
+};
+const defaultHint = "e.g. https://...";
 
 const iconMap: Record<string, React.ElementType> = {
   Email: FiMail, GitHub: FiGithub, LinkedIn: FiLinkedin,
@@ -96,14 +102,23 @@ export default function ContactLinksPage() {
   useEffect(() => { load(); }, [load]);
 
   const openAdd = () => { setEditingId(null); setForm(emptyForm); setError(""); setModalOpen(true); };
-  const openEdit = (l: ContactLink) => { setEditingId(l.id); setForm({ platform: l.platform, url: l.url }); setError(""); setModalOpen(true); };
+  const openEdit = (l: ContactLink) => {
+    let displayUrl = l.url;
+    if (l.platform === "Email" && displayUrl.startsWith("mailto:")) displayUrl = displayUrl.slice(7);
+    if (l.platform === "Phone" && displayUrl.startsWith("tel:")) displayUrl = displayUrl.slice(4);
+    setEditingId(l.id); setForm({ platform: l.platform, url: displayUrl }); setError(""); setModalOpen(true);
+  };
 
   const handleSave = async () => {
     if (!form.url.trim()) { setError("URL is required"); return; }
     setSaving(true); setError("");
+    let finalUrl = form.url.trim();
+    if (form.platform === "Email" && !finalUrl.startsWith("mailto:")) finalUrl = `mailto:${finalUrl}`;
+    if (form.platform === "Phone" && !finalUrl.startsWith("tel:")) finalUrl = `tel:${finalUrl}`;
+    const payload = { ...form, url: finalUrl };
     const url = editingId ? `/api/contact-links/${editingId}` : "/api/contact-links";
     const method = editingId ? "PUT" : "POST";
-    const r = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+    const r = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     if (!r.ok) { const d = await r.json(); setError(d.error || "Failed"); setSaving(false); return; }
     setModalOpen(false); setSaving(false); load();
   };
@@ -162,7 +177,8 @@ export default function ContactLinksPage() {
               </div>
               <div>
                 <label className="text-xs text-[#888] mb-1 block">URL *</label>
-                <input className="dash-input" value={form.url} onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))} placeholder="https://..." />
+                <input className="dash-input" value={form.url} onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))} placeholder={urlHints[form.platform] || defaultHint} />
+                <p className="text-[#555] text-[10px] mt-0.5">{urlHints[form.platform] || defaultHint}</p>
               </div>
             </div>
             {error && <p className="text-[#FE454E] text-xs mt-3">{error}</p>}
