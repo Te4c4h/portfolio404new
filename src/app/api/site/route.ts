@@ -22,7 +22,7 @@ export async function PUT(req: NextRequest) {
     siteTitle, logoText, headline, subtext,
     ctaLabel1, ctaTarget1, ctaLabel2, ctaTarget2,
     aboutText, skills, contactTitle, contactSubtitle,
-    footerText,
+    footerText, loadingHeading, loadingSubtitle,
   } = body;
 
   const siteContent = await prisma.siteContent.upsert({
@@ -41,6 +41,8 @@ export async function PUT(req: NextRequest) {
       contactTitle: contactTitle ?? "",
       contactSubtitle: contactSubtitle ?? "",
       footerText: footerText ?? "",
+      loadingHeading: loadingHeading ?? "",
+      loadingSubtitle: loadingSubtitle ?? "",
     },
     create: {
       userId: user.id,
@@ -57,6 +59,8 @@ export async function PUT(req: NextRequest) {
       contactTitle: contactTitle ?? "",
       contactSubtitle: contactSubtitle ?? "",
       footerText: footerText ?? "",
+      loadingHeading: loadingHeading ?? "",
+      loadingSubtitle: loadingSubtitle ?? "",
     },
   });
 

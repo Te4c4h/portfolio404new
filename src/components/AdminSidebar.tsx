@@ -62,7 +62,7 @@ export default function AdminSidebar({ username, isAdmin }: AdminSidebarProps) {
         </a>
       </div>
 
-      <nav className="flex-1 px-3 space-y-1">
+      <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
         {links.map((link) => {
           const Icon = link.icon;
           const active = isActive(link.href);
@@ -141,7 +141,7 @@ export default function AdminSidebar({ username, isAdmin }: AdminSidebarProps) {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
-              className="fixed left-0 top-0 h-screen w-60 bg-[#181818] border-r border-[#2a2a2a] z-50 lg:hidden"
+              className="fixed left-0 top-0 h-[100dvh] w-60 bg-[#181818] border-r border-[#2a2a2a] z-50 lg:hidden"
             >
               <button
                 onClick={() => setOpen(false)}

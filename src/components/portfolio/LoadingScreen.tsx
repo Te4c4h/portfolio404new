@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface LoadingScreenProps {
-  name: string;
+  heading: string;
+  subtitle: string;
   accent: string;
   headingFont: string;
 }
 
-export default function LoadingScreen({ name, accent, headingFont }: LoadingScreenProps) {
+export default function LoadingScreen({ heading, subtitle, accent, headingFont }: LoadingScreenProps) {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function LoadingScreen({ name, accent, headingFont }: LoadingScre
             className="text-4xl sm:text-6xl font-bold"
             style={{ fontFamily: headingFont + ", sans-serif", color: "var(--text)" }}
           >
-            {name}
+            {heading}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -43,7 +44,7 @@ export default function LoadingScreen({ name, accent, headingFont }: LoadingScre
             className="text-lg sm:text-xl mt-2 font-medium"
             style={{ color: accent }}
           >
-            Portfolio
+            {subtitle}
           </motion.p>
         </motion.div>
       )}

@@ -71,6 +71,17 @@ export async function POST(req: NextRequest) {
       await tx.siteContent.create({
         data: {
           userId: newUser.id,
+          siteTitle: `${firstName}'s Portfolio`,
+          logoText: firstName,
+          headline: `Hello, I'm ${firstName}`,
+          subtext: "Welcome to my portfolio",
+          ctaLabel1: "View Work",
+          ctaLabel2: "Contact Me",
+          contactTitle: "Get In Touch",
+          contactSubtitle: "Feel free to reach out",
+          loadingHeading: `${firstName} ${lastName}`,
+          loadingSubtitle: "Portfolio",
+          footerText: `© 2026 ${firstName} ${lastName}`,
         },
       });
 

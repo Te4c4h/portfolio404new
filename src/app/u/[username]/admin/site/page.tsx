@@ -25,6 +25,8 @@ interface SiteData {
   contactTitle: string;
   contactSubtitle: string;
   footerText: string;
+  loadingHeading: string;
+  loadingSubtitle: string;
 }
 
 interface Section {
@@ -37,6 +39,7 @@ const emptySite: SiteData = {
   siteTitle: "", logoText: "", headline: "", subtext: "",
   ctaLabel1: "", ctaTarget1: "", ctaLabel2: "", ctaTarget2: "",
   aboutText: "", skills: "", contactTitle: "", contactSubtitle: "", footerText: "",
+  loadingHeading: "", loadingSubtitle: "",
 };
 
 export default function SiteContentPage() {
@@ -70,6 +73,8 @@ export default function SiteContentPage() {
         contactTitle: siteData.contactTitle || "",
         contactSubtitle: siteData.contactSubtitle || "",
         footerText: siteData.footerText || "",
+        loadingHeading: siteData.loadingHeading || "",
+        loadingSubtitle: siteData.loadingSubtitle || "",
       });
     }
     setNavLinks(await navRes.json());
@@ -144,6 +149,21 @@ export default function SiteContentPage() {
       </div>
 
       <div className="space-y-8">
+        {/* Loading Screen */}
+        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Loading Screen</h2>
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-[#888] mb-1 block">Loading Heading</label>
+              <input className="dash-input" value={site.loadingHeading} onChange={(e) => setSite((s) => ({ ...s, loadingHeading: e.target.value }))} placeholder="Your Name" />
+            </div>
+            <div>
+              <label className="text-xs text-[#888] mb-1 block">Loading Subtitle</label>
+              <input className="dash-input" value={site.loadingSubtitle} onChange={(e) => setSite((s) => ({ ...s, loadingSubtitle: e.target.value }))} placeholder="Portfolio" />
+            </div>
+          </div>
+        </div>
+
         {/* Website Title */}
         <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Website Title</h2>

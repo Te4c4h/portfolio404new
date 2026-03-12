@@ -68,7 +68,7 @@ export default function ProjectModal({ item, onClose, accent }: ProjectModalProp
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-10 p-2 rounded-full transition-colors"
+              className="sticky top-3 ml-auto mr-3 mt-3 mb-[-44px] z-10 p-2 rounded-full transition-colors shrink-0"
               style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}
             >
               <FiX size={18} />

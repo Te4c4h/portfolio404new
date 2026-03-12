@@ -21,7 +21,7 @@ export async function PUT(req: NextRequest) {
   const {
     accentColor, backgroundColor, surfaceColor, textColor,
     dangerColor, cursorColor, bodyFont, headingFont,
-    logoUrl, faviconUrl, webclipUrl, websiteTitle,
+    logoUrl, faviconUrl, webclipUrl, websiteTitle, gridColor,
   } = body;
 
   const data = {
@@ -37,6 +37,7 @@ export async function PUT(req: NextRequest) {
     faviconUrl: faviconUrl ?? "",
     webclipUrl: webclipUrl ?? "",
     websiteTitle: websiteTitle ?? "",
+    gridColor: gridColor ?? "rgba(255,255,255,0.03)",
   };
 
   const theme = await prisma.theme.upsert({

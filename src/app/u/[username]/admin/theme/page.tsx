@@ -15,13 +15,14 @@ interface ThemeData {
   logoUrl: string;
   faviconUrl: string;
   webclipUrl: string;
+  gridColor: string;
 }
 
 const defaults: ThemeData = {
   accentColor: "#70E844", backgroundColor: "#131313", surfaceColor: "#181818",
   textColor: "#fafafa", dangerColor: "#FE454E", cursorColor: "#70E844",
   bodyFont: "Inter", headingFont: "Syne", logoUrl: "", faviconUrl: "",
-  webclipUrl: "",
+  webclipUrl: "", gridColor: "rgba(255,255,255,0.03)",
 };
 
 const fonts = [
@@ -61,6 +62,7 @@ export default function ThemePage() {
         logoUrl: data.logoUrl || "",
         faviconUrl: data.faviconUrl || "",
         webclipUrl: data.webclipUrl || "",
+        gridColor: data.gridColor || defaults.gridColor,
       });
     }
     setLoading(false);
@@ -118,6 +120,16 @@ export default function ThemePage() {
                 </div>
               </div>
             ))}
+          </div>
+          <div className="mt-4 pt-4 border-t border-[#2a2a2a]">
+            <label className="text-xs text-[#888] mb-1 block">Grid Color</label>
+            <input
+              className="dash-input"
+              value={theme.gridColor}
+              onChange={(e) => setTheme((t) => ({ ...t, gridColor: e.target.value }))}
+              placeholder="rgba(255,255,255,0.03)"
+            />
+            <p className="text-[#555] text-[10px] mt-0.5">Background grid overlay color. Use rgba for transparency.</p>
           </div>
         </div>
 

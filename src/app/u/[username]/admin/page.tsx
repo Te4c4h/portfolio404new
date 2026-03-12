@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useParams } from "next/navigation";
-import { FiLayers, FiGrid, FiFileText, FiLink, FiDroplet, FiExternalLink } from "react-icons/fi";
+import { FiExternalLink } from "react-icons/fi";
 
 interface Stats {
   sectionsCount: number;
@@ -11,14 +10,6 @@ interface Stats {
   lastUpdated: string | null;
   contentPerSection: { name: string; count: number }[];
 }
-
-const quickLinks = [
-  { href: "/sections", title: "Sections", subtitle: "Manage portfolio sections", icon: FiLayers },
-  { href: "/content", title: "Content", subtitle: "Add and edit content items", icon: FiGrid },
-  { href: "/site", title: "Site Content", subtitle: "Headlines, about, and CTAs", icon: FiFileText },
-  { href: "/contact", title: "Contact Links", subtitle: "Social and contact info", icon: FiLink },
-  { href: "/theme", title: "Theme", subtitle: "Colors, fonts, and branding", icon: FiDroplet },
-];
 
 export default function UserAdminPage() {
   const params = useParams();
@@ -84,24 +75,6 @@ export default function UserAdminPage() {
         </div>
       )}
 
-      {/* Quick Links */}
-      <h2 className="text-sm font-semibold text-[#fafafa] mb-3 uppercase tracking-wider">Quick Links</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {quickLinks.map((link) => {
-          const Icon = link.icon;
-          return (
-            <Link
-              key={link.href}
-              href={`/u/${username}/admin${link.href}`}
-              className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5 hover:border-[#70E844]/30 transition-colors group"
-            >
-              <Icon size={20} className="text-[#70E844] mb-2" />
-              <h3 className="text-[#fafafa] font-medium text-sm">{link.title}</h3>
-              <p className="text-[#666] text-xs mt-1">{link.subtitle}</p>
-            </Link>
-          );
-        })}
-      </div>
     </div>
   );
 }

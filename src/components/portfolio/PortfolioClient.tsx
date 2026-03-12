@@ -24,6 +24,7 @@ export interface ThemeData {
   faviconUrl: string;
   webclipUrl: string;
   websiteTitle: string;
+  gridColor: string;
 }
 
 export interface SiteContentData {
@@ -40,6 +41,8 @@ export interface SiteContentData {
   contactTitle: string;
   contactSubtitle: string;
   footerText: string;
+  loadingHeading: string;
+  loadingSubtitle: string;
 }
 
 export interface NavLinkData {
@@ -90,7 +93,7 @@ const defaults: ThemeData = {
   accentColor: "#70E844", backgroundColor: "#131313", surfaceColor: "#181818",
   textColor: "#fafafa", dangerColor: "#FE454E", cursorColor: "#70E844",
   bodyFont: "Inter", headingFont: "Syne", logoUrl: "", faviconUrl: "",
-  webclipUrl: "", websiteTitle: "",
+  webclipUrl: "", websiteTitle: "", gridColor: "rgba(255,255,255,0.03)",
 };
 
 function googleFontUrl(fonts: string[]): string {
@@ -121,6 +124,7 @@ export default function PortfolioClient({
     "--cursor": theme.cursorColor,
     "--font-body": theme.bodyFont + ", sans-serif",
     "--font-heading": theme.headingFont + ", sans-serif",
+    "--grid-color": theme.gridColor,
   } as React.CSSProperties;
 
   return (
@@ -132,8 +136,16 @@ export default function PortfolioClient({
 
       <div
         style={{ ...cssVars, backgroundColor: "var(--bg)", color: "var(--text)" }}
-        className="min-h-screen"
+        className="min-h-screen relative"
       >
+        {/* Grid overlay */}
+        <div
+          className="fixed inset-0 pointer-events-none z-[1]"
+          style={{
+            backgroundImage: `linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px)`,
+            backgroundSize: "60px 60px",
+          }}
+        />
         <style>{`
           html, body {
             background-color: ${theme.backgroundColor} !important;
@@ -144,7 +156,8 @@ export default function PortfolioClient({
         `}</style>
 
         <LoadingScreen
-          name={`${user.firstName} ${user.lastName}`}
+          heading={siteContent?.loadingHeading || `${user.firstName} ${user.lastName}`}
+          subtitle={siteContent?.loadingSubtitle || "Portfolio"}
           accent={theme.accentColor}
           headingFont={theme.headingFont}
         />

@@ -34,9 +34,7 @@ export default function ProjectCard({ item, accent, surface, onClick }: ProjectC
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-sm" style={{ color: "var(--text)", opacity: 0.2 }}>
-            No Image
-          </div>
+          <div className="w-full h-full" style={{ backgroundColor: surface }} />
         )}
       </div>
 
@@ -79,7 +77,7 @@ export default function ProjectCard({ item, accent, surface, onClick }: ProjectC
               className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors"
               style={{ backgroundColor: accent, color: "var(--bg)" }}
             >
-              <FiExternalLink size={12} /> Live
+              <FiExternalLink size={12} /> View
             </a>
           )}
           {item.repoUrl && (
