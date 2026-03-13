@@ -36,7 +36,6 @@ async function getPortfolioData(username: string) {
   if (!user || user.isBlocked || !user.isPublished) return null;
 
   // Fetch resume if showOnPortfolio is enabled
-  // @ts-expect-error prisma client generated at build time
   const resume = await prisma.resume.findUnique({
     where: { userId: user.id },
     include: {
