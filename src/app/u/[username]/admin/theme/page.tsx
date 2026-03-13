@@ -173,6 +173,71 @@ export default function ThemePage() {
             </div>
           </div>
         </div>
+
+        {/* Live Preview */}
+        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Live Preview</h2>
+          <div
+            className="rounded-lg overflow-hidden border border-[#2a2a2a] p-6 relative"
+            style={{ backgroundColor: theme.backgroundColor, color: theme.textColor, fontFamily: `${theme.bodyFont}, sans-serif` }}
+          >
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                backgroundImage: `linear-gradient(${theme.gridColor} 1px, transparent 1px), linear-gradient(90deg, ${theme.gridColor} 1px, transparent 1px)`,
+                backgroundSize: "40px 40px",
+              }}
+            />
+            <div className="relative z-[1]">
+              <div className="flex items-center justify-between mb-6">
+                {theme.logoUrl ? (
+                  <img src={theme.logoUrl} alt="Logo" className="h-6 object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                ) : (
+                  <span className="text-sm font-semibold" style={{ color: theme.textColor }}>Logo</span>
+                )}
+                <div className="flex gap-3 text-xs" style={{ color: `${theme.textColor}80` }}>
+                  <span>About</span>
+                  <span>Work</span>
+                  <span>Contact</span>
+                </div>
+              </div>
+              <h1 className="text-xl font-bold mb-2" style={{ fontFamily: `${theme.headingFont}, sans-serif`, color: theme.textColor }}>
+                Hello, I&apos;m a Developer
+              </h1>
+              <p className="text-xs mb-4" style={{ color: `${theme.textColor}99` }}>
+                Building amazing things on the web.
+              </p>
+              <div className="flex gap-2 mb-6">
+                <span className="px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: theme.accentColor, color: theme.backgroundColor }}>
+                  View Work
+                </span>
+                <span className="px-3 py-1 rounded-lg text-xs font-medium border" style={{ borderColor: `${theme.accentColor}40`, color: theme.textColor }}>
+                  Contact
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-lg p-3" style={{ backgroundColor: theme.surfaceColor }}>
+                  <div className="w-full h-12 rounded mb-2" style={{ backgroundColor: `${theme.accentColor}15` }} />
+                  <div className="flex gap-1 mb-1">
+                    <span className="px-1.5 py-0.5 rounded text-[9px]" style={{ backgroundColor: `${theme.accentColor}15`, color: theme.accentColor }}>React</span>
+                    <span className="px-1.5 py-0.5 rounded text-[9px]" style={{ backgroundColor: `${theme.accentColor}15`, color: theme.accentColor }}>Next.js</span>
+                  </div>
+                  <p className="text-[10px] font-medium" style={{ color: theme.textColor }}>Project One</p>
+                </div>
+                <div className="rounded-lg p-3" style={{ backgroundColor: theme.surfaceColor }}>
+                  <div className="w-full h-12 rounded mb-2" style={{ backgroundColor: `${theme.accentColor}15` }} />
+                  <div className="flex gap-1 mb-1">
+                    <span className="px-1.5 py-0.5 rounded text-[9px]" style={{ backgroundColor: `${theme.accentColor}15`, color: theme.accentColor }}>TypeScript</span>
+                  </div>
+                  <p className="text-[10px] font-medium" style={{ color: theme.textColor }}>Project Two</p>
+                </div>
+              </div>
+              <div className="mt-4 pt-3 border-t text-center" style={{ borderColor: `${theme.textColor}15` }}>
+                <p className="text-[10px]" style={{ color: theme.dangerColor }}>danger color sample</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <Toast message="Theme saved successfully!" show={toast} onClose={() => setToast(false)} />

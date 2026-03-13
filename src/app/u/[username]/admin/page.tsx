@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { FiExternalLink } from "react-icons/fi";
+import { FiExternalLink, FiMonitor, FiSmartphone, FiX } from "react-icons/fi";
 
 interface Stats {
   sectionsCount: number;
@@ -20,6 +20,8 @@ export default function UserAdminPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [isPublished, setIsPublished] = useState<boolean | null>(null);
   const [publishing, setPublishing] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
 
   useEffect(() => {
     fetch("/api/dashboard/stats")
@@ -77,6 +79,13 @@ export default function UserAdminPage() {
               {isPublished ? "Live" : "Draft"}
             </span>
           )}
+          <button
+            onClick={() => setPreviewOpen(true)}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333] transition-colors"
+          >
+            <FiMonitor size={14} />
+            Preview
+          </button>
           <a
             href={isAdmin ? "/" : `/u/${username}`}
             target="_blank"
@@ -122,6 +131,56 @@ export default function UserAdminPage() {
                 <span className="text-[#70E844] font-medium">{s.count}</span>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Preview Modal */}
+      {previewOpen && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex flex-col">
+          <div className="flex items-center justify-between px-4 py-3 bg-[#181818] border-b border-[#2a2a2a]">
+            <div className="flex items-center gap-3">
+              <h2 className="text-sm font-semibold text-[#fafafa]">
+                {isAdmin ? "Home Page Preview" : "Portfolio Preview"}
+              </h2>
+              <div className="flex items-center gap-1 bg-[#0d0d0d] rounded-lg p-0.5">
+                <button
+                  onClick={() => setPreviewDevice("desktop")}
+                  className={`p-1.5 rounded-md transition-colors ${
+                    previewDevice === "desktop" ? "bg-[#2a2a2a] text-[#fafafa]" : "text-[#888] hover:text-[#fafafa]"
+                  }`}
+                >
+                  <FiMonitor size={14} />
+                </button>
+                <button
+                  onClick={() => setPreviewDevice("mobile")}
+                  className={`p-1.5 rounded-md transition-colors ${
+                    previewDevice === "mobile" ? "bg-[#2a2a2a] text-[#fafafa]" : "text-[#888] hover:text-[#fafafa]"
+                  }`}
+                >
+                  <FiSmartphone size={14} />
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={() => setPreviewOpen(false)}
+              className="p-1.5 rounded-lg text-[#888] hover:text-[#fafafa] hover:bg-[#2a2a2a] transition-colors"
+            >
+              <FiX size={18} />
+            </button>
+          </div>
+          <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
+            <div
+              className={`bg-white rounded-xl overflow-hidden shadow-2xl transition-all duration-300 ${
+                previewDevice === "mobile" ? "w-[375px] h-[667px]" : "w-full h-full max-w-6xl"
+              }`}
+            >
+              <iframe
+                src={isAdmin ? "/" : `/u/${username}`}
+                className="w-full h-full border-0"
+                title="Portfolio Preview"
+              />
+            </div>
           </div>
         </div>
       )}

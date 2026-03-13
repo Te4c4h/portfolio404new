@@ -341,19 +341,39 @@ export default function ContentPage() {
                 <label className="text-xs text-[#888] mb-1 block">Cover Image URL</label>
                 <input className="dash-input" value={form.coverImage} onChange={(e) => setForm((f) => ({ ...f, coverImage: e.target.value }))} placeholder="https://..." />
                 <p className="text-[#555] text-[10px] mt-0.5">Recommended: 1200x675px (16:9)</p>
+                {form.coverImage && (
+                  <div className="mt-2 rounded-lg overflow-hidden border border-[#2a2a2a] bg-[#0d0d0d]">
+                    <img src={form.coverImage} alt="Cover preview" className="w-full h-32 object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div>
                   <label className="text-xs text-[#888] mb-1 block">Image 2</label>
                   <input className="dash-input" value={form.image1} onChange={(e) => setForm((f) => ({ ...f, image1: e.target.value }))} placeholder="URL" />
+                  {form.image1 && (
+                    <div className="mt-1 rounded overflow-hidden border border-[#2a2a2a] bg-[#0d0d0d]">
+                      <img src={form.image1} alt="Preview" className="w-full h-16 object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="text-xs text-[#888] mb-1 block">Image 3</label>
                   <input className="dash-input" value={form.image2} onChange={(e) => setForm((f) => ({ ...f, image2: e.target.value }))} placeholder="URL" />
+                  {form.image2 && (
+                    <div className="mt-1 rounded overflow-hidden border border-[#2a2a2a] bg-[#0d0d0d]">
+                      <img src={form.image2} alt="Preview" className="w-full h-16 object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="text-xs text-[#888] mb-1 block">Image 4</label>
                   <input className="dash-input" value={form.image3} onChange={(e) => setForm((f) => ({ ...f, image3: e.target.value }))} placeholder="URL" />
+                  {form.image3 && (
+                    <div className="mt-1 rounded overflow-hidden border border-[#2a2a2a] bg-[#0d0d0d]">
+                      <img src={form.image3} alt="Preview" className="w-full h-16 object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                    </div>
+                  )}
                 </div>
               </div>
               <p className="text-[#555] text-[10px]">Additional gallery images. Same dimensions as cover recommended.</p>
