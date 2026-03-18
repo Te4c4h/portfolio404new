@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiX, FiChevronLeft, FiChevronRight, FiExternalLink, FiGithub } from "react-icons/fi";
 import type { ContentItemData } from "./PortfolioClient";
@@ -79,10 +80,13 @@ export default function ProjectModal({ item, onClose, accent }: ProjectModalProp
             {/* Image Gallery */}
             {images.length > 0 && (
               <div className="relative aspect-video bg-black/30">
-                <img
+                <Image
                   src={images[imgIdx]}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
+                  alt={`${item.title} — image ${imgIdx + 1} of ${images.length}`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 672px"
+                  className="object-cover"
+                  priority
                 />
 
                 {images.length > 1 && (

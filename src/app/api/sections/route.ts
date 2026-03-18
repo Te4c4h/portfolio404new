@@ -25,6 +25,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
   }
 
+  // Enforce max 4 sections per user
+  const count = await prisma.section.count({ where: { userId } });
+  if (count >= 4) {
+    return NextResponse.json({ error: "Maximum 4 sections allowed" }, { status: 400 });
+  }
+
   const slug = name
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")

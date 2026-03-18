@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { FiExternalLink, FiGithub } from "react-icons/fi";
 import type { ContentItemData } from "./PortfolioClient";
 
@@ -17,7 +18,7 @@ export default function ProjectCard({ item, accent, surface, onClick }: ProjectC
     <div
       onClick={onClick}
       data-clickable
-      className="group rounded-xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer"
+      className="group rounded-xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer h-full flex flex-col"
       style={{
         backgroundColor: surface,
         borderColor: surface,
@@ -28,10 +29,12 @@ export default function ProjectCard({ item, accent, surface, onClick }: ProjectC
       {/* Cover image */}
       <div className="relative overflow-hidden aspect-video bg-black/20">
         {item.coverImage ? (
-          <img
+          <Image
             src={item.coverImage}
-            alt={item.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            alt={`Cover image for ${item.title}`}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="w-full h-full" style={{ backgroundColor: surface }} />
@@ -39,7 +42,7 @@ export default function ProjectCard({ item, accent, surface, onClick }: ProjectC
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-4 flex-1 flex flex-col">
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2">
             {tags.slice(0, 4).map((tag) => (

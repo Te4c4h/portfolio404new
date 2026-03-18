@@ -21,7 +21,7 @@ export async function PUT(req: NextRequest) {
   const {
     accentColor, backgroundColor, surfaceColor, textColor,
     dangerColor, cursorColor, bodyFont, headingFont,
-    logoUrl, faviconUrl, webclipUrl, websiteTitle, gridColor,
+    faviconUrl, webclipUrl, websiteTitle, gridColor,
   } = body;
 
   const data = {
@@ -33,7 +33,6 @@ export async function PUT(req: NextRequest) {
     cursorColor: cursorColor ?? "#70E844",
     bodyFont: bodyFont ?? "Inter",
     headingFont: headingFont ?? "Syne",
-    logoUrl: logoUrl ?? "",
     faviconUrl: faviconUrl ?? "",
     webclipUrl: webclipUrl ?? "",
     websiteTitle: websiteTitle ?? "",

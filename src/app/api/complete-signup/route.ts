@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
           username,
           password: "", // Google OAuth user — no password
           emailVerified: true, // Google-verified email
+          isPublished: true,
         },
       });
 

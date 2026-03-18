@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { FiExternalLink, FiMonitor, FiSmartphone, FiX } from "react-icons/fi";
+import Link from "next/link";
+import { FiZap } from "react-icons/fi";
 
 interface Stats {
   sectionsCount: number;
@@ -12,16 +12,19 @@ interface Stats {
   contentPerSection: { name: string; count: number }[];
 }
 
+interface SubStatus {
+  subscriptionStatus: string;
+  currentPeriodEnd: string | null;
+  isFreeAccess: boolean;
+  hasAccess: boolean;
+}
+
 export default function UserAdminPage() {
-  const params = useParams();
-  const username = params.username as string;
   const { data: session } = useSession();
   const isAdmin = session?.user?.isAdmin;
   const [stats, setStats] = useState<Stats | null>(null);
-  const [isPublished, setIsPublished] = useState<boolean | null>(null);
-  const [publishing, setPublishing] = useState(false);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
+  const [sub, setSub] = useState<SubStatus | null>(null);
+  const [checkingOut, setCheckingOut] = useState(false);
 
   useEffect(() => {
     fetch("/api/dashboard/stats")
@@ -30,73 +33,63 @@ export default function UserAdminPage() {
       .catch(() => {});
   }, []);
 
-  const loadPublishStatus = useCallback(async () => {
-    const r = await fetch("/api/user/publish");
-    if (r.ok) {
-      const data = await r.json();
-      setIsPublished(data.isPublished);
-    }
-  }, []);
-
   useEffect(() => {
-    if (!isAdmin) loadPublishStatus();
-  }, [isAdmin, loadPublishStatus]);
-
-  const togglePublish = async () => {
-    setPublishing(true);
-    const r = await fetch("/api/user/publish", { method: "PUT" });
-    if (r.ok) {
-      const data = await r.json();
-      setIsPublished(data.isPublished);
+    if (!isAdmin) {
+      fetch("/api/subscription")
+        .then((r) => r.json())
+        .then(setSub)
+        .catch(() => {});
     }
-    setPublishing(false);
+  }, [isAdmin]);
+
+  const handleSubscribe = async () => {
+    setCheckingOut(true);
+    try {
+      const r = await fetch("/api/subscription/checkout", { method: "POST" });
+      const data = await r.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      setCheckingOut(false);
+    }
   };
 
   return (
     <div className="max-w-5xl">
-      <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
-        <h1 className="text-2xl font-bold text-[#fafafa]">Dashboard</h1>
-        <div className="flex items-center gap-2">
-          {!isAdmin && isPublished !== null && (
-            <button
-              onClick={togglePublish}
-              disabled={publishing}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
-                isPublished
-                  ? "bg-[#2a2a2a] text-[#888] hover:text-[#FE454E] hover:bg-[#FE454E]/10"
-                  : "bg-[#70E844] text-[#131313] hover:bg-[#5ed636]"
-              }`}
-            >
-              {publishing ? "..." : isPublished ? "Unpublish" : "Publish"}
-            </button>
-          )}
-          {!isAdmin && isPublished !== null && (
-            <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-              isPublished
-                ? "bg-[#70E844]/15 text-[#70E844]"
-                : "bg-[#888]/15 text-[#888]"
-            }`}>
-              {isPublished ? "Live" : "Draft"}
-            </span>
-          )}
-          <button
-            onClick={() => setPreviewOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333] transition-colors"
-          >
-            <FiMonitor size={14} />
-            Preview
-          </button>
-          <a
-            href={isAdmin ? "/" : `/u/${username}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] transition-colors"
-          >
-            <FiExternalLink size={14} />
-            {isAdmin ? "View Home Page" : "View Portfolio"}
-          </a>
+      <h1 className="text-2xl font-bold text-[#fafafa] mb-6">Dashboard</h1>
+
+      {/* Upgrade Banner */}
+      {!isAdmin && sub && !sub.hasAccess && (
+        <div className="mb-6 bg-gradient-to-r from-[#70E844]/10 to-[#70E844]/5 border border-[#70E844]/20 rounded-xl p-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex-1">
+              <h2 className="text-[#70E844] font-semibold text-sm flex items-center gap-2">
+                <FiZap size={16} />
+                Upgrade to Portfolio 404 Pro
+              </h2>
+              <p className="text-[#888] text-xs mt-1">
+                Your portfolio is not visible to the public. Subscribe for <strong className="text-[#fafafa]">$1/month</strong> to publish and share it with the world.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleSubscribe}
+                disabled={checkingOut}
+                className="px-5 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] transition-colors disabled:opacity-50"
+              >
+                {checkingOut ? "Redirecting..." : "Subscribe — $1/mo"}
+              </button>
+              <Link
+                href="/pricing"
+                className="text-xs text-[#888] hover:text-[#fafafa] transition-colors"
+              >
+                Learn more
+              </Link>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -134,57 +127,6 @@ export default function UserAdminPage() {
           </div>
         </div>
       )}
-
-      {/* Preview Modal */}
-      {previewOpen && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex flex-col">
-          <div className="flex items-center justify-between px-4 py-3 bg-[#181818] border-b border-[#2a2a2a]">
-            <div className="flex items-center gap-3">
-              <h2 className="text-sm font-semibold text-[#fafafa]">
-                {isAdmin ? "Home Page Preview" : "Portfolio Preview"}
-              </h2>
-              <div className="flex items-center gap-1 bg-[#0d0d0d] rounded-lg p-0.5">
-                <button
-                  onClick={() => setPreviewDevice("desktop")}
-                  className={`p-1.5 rounded-md transition-colors ${
-                    previewDevice === "desktop" ? "bg-[#2a2a2a] text-[#fafafa]" : "text-[#888] hover:text-[#fafafa]"
-                  }`}
-                >
-                  <FiMonitor size={14} />
-                </button>
-                <button
-                  onClick={() => setPreviewDevice("mobile")}
-                  className={`p-1.5 rounded-md transition-colors ${
-                    previewDevice === "mobile" ? "bg-[#2a2a2a] text-[#fafafa]" : "text-[#888] hover:text-[#fafafa]"
-                  }`}
-                >
-                  <FiSmartphone size={14} />
-                </button>
-              </div>
-            </div>
-            <button
-              onClick={() => setPreviewOpen(false)}
-              className="p-1.5 rounded-lg text-[#888] hover:text-[#fafafa] hover:bg-[#2a2a2a] transition-colors"
-            >
-              <FiX size={18} />
-            </button>
-          </div>
-          <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
-            <div
-              className={`bg-white rounded-xl overflow-hidden shadow-2xl transition-all duration-300 ${
-                previewDevice === "mobile" ? "w-[375px] h-[667px]" : "w-full h-full max-w-6xl"
-              }`}
-            >
-              <iframe
-                src={isAdmin ? "/" : `/u/${username}`}
-                className="w-full h-full border-0"
-                title="Portfolio Preview"
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }

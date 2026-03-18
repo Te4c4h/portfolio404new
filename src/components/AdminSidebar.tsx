@@ -10,56 +10,72 @@ import {
   FiLayers,
   FiGrid,
   FiFileText,
-  FiLink,
-  FiDroplet,
   FiLogOut,
   FiMenu,
   FiX,
   FiExternalLink,
+  FiChevronDown,
+  FiNavigation,
+  FiStar,
+  FiUser,
+  FiMail,
+  FiType,
+  FiSettings,
+  FiLayout,
+  FiCreditCard,
 } from "react-icons/fi";
 
 interface AdminSidebarProps {
   username: string;
   isAdmin?: boolean;
+  firstName?: string;
+  lastName?: string;
 }
 
-const userLinks = [
-  { href: "", label: "Dashboard", icon: FiHome },
-  { href: "/sections", label: "Sections", icon: FiLayers },
-  { href: "/content", label: "Sections Content", icon: FiGrid },
-  { href: "/site", label: "Site Content", icon: FiFileText },
-  { href: "/contact", label: "Contact Links", icon: FiLink },
-  { href: "/theme", label: "Theme", icon: FiDroplet },
-  { href: "/resume", label: "Resume", icon: FiFileText },
+const portfolioChildren = [
+  { href: "/portfolio/navbar", label: "Navbar", icon: FiNavigation },
+  { href: "/portfolio/hero", label: "Hero", icon: FiStar },
+  { href: "/portfolio/about", label: "About", icon: FiUser },
+  { href: "/portfolio/sections", label: "Sections", icon: FiLayers },
+  { href: "/portfolio/sections-content", label: "Sections Content", icon: FiGrid },
+  { href: "/portfolio/contact", label: "Contact", icon: FiMail },
+  { href: "/portfolio/footer", label: "Footer", icon: FiType },
+  { href: "/portfolio/settings", label: "Settings", icon: FiSettings },
 ];
 
-export default function AdminSidebar({ username, isAdmin }: AdminSidebarProps) {
+export default function AdminSidebar({ username, isAdmin, firstName, lastName }: AdminSidebarProps) {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
   const basePath = `/u/${username}/admin`;
+  const [open, setOpen] = useState(false);
 
-  const links = userLinks;
+  const isPortfolioActive = pathname.startsWith(`${basePath}/portfolio`);
+  const [portfolioOpen, setPortfolioOpen] = useState(isPortfolioActive);
 
   const isActive = (href: string) => {
     const full = basePath + href;
     if (href === "") return pathname === basePath;
+    // Exact match for /portfolio/sections to avoid also matching /portfolio/sections-content
+    if (href === "/portfolio/sections") return pathname === full;
     return pathname.startsWith(full);
   };
 
+  const displayName = [firstName, lastName].filter(Boolean).join(" ") || username;
+
   const sidebar = (
     <div className="flex flex-col h-full">
+      {/* Header — User name + View Portfolio */}
       <div className="px-5 py-6">
-        <h2 className="text-[#70E844] font-bold text-lg tracking-tight">
-          Admin Panel
+        <h2 className="text-[#70E844] font-bold text-lg tracking-tight truncate">
+          {displayName}
         </h2>
         {!isAdmin && (
           <a
             href={`/u/${username}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs text-[#888] hover:text-[#70E844] transition-colors mt-1"
+            className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg text-xs font-medium border border-[#70E844]/30 text-[#70E844] hover:bg-[#70E844]/10 transition-colors"
           >
-            <FiExternalLink size={12} />
+            <FiExternalLink size={13} />
             View Portfolio
           </a>
         )}
@@ -68,34 +84,113 @@ export default function AdminSidebar({ username, isAdmin }: AdminSidebarProps) {
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs text-[#888] hover:text-[#70E844] transition-colors mt-1"
+            className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg text-xs font-medium border border-[#70E844]/30 text-[#70E844] hover:bg-[#70E844]/10 transition-colors"
           >
-            <FiExternalLink size={12} />
+            <FiExternalLink size={13} />
             View Home Page
           </a>
         )}
       </div>
 
+      {/* Navigation */}
       <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
-        {links.map((link) => {
-          const Icon = link.icon;
-          const active = isActive(link.href);
-          return (
-            <Link
-              key={link.href}
-              href={basePath + link.href}
-              onClick={() => setOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                active
-                  ? "bg-[#70E844]/10 text-[#70E844]"
-                  : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
-              }`}
-            >
-              <Icon size={18} />
-              {link.label}
-            </Link>
-          );
-        })}
+        {/* Dashboard */}
+        <Link
+          href={basePath}
+          onClick={() => setOpen(false)}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+            isActive("")
+              ? "bg-[#70E844]/10 text-[#70E844]"
+              : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+          }`}
+        >
+          <FiHome size={18} />
+          Dashboard
+        </Link>
+
+        {/* Portfolio Dropdown */}
+        <div>
+          <button
+            onClick={() => setPortfolioOpen((v) => !v)}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors w-full ${
+              isPortfolioActive
+                ? "bg-[#70E844]/10 text-[#70E844]"
+                : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+            }`}
+          >
+            <FiLayout size={18} />
+            <span className="flex-1 text-left">Portfolio</span>
+            <FiChevronDown
+              size={14}
+              className={`transition-transform duration-200 ${portfolioOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+          <AnimatePresence initial={false}>
+            {portfolioOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="ml-3 pl-3 border-l border-[#2a2a2a] mt-1 space-y-0.5">
+                  {portfolioChildren.map((child) => {
+                    const Icon = child.icon;
+                    const active = isActive(child.href);
+                    return (
+                      <Link
+                        key={child.href}
+                        href={basePath + child.href}
+                        onClick={() => setOpen(false)}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                          active
+                            ? "bg-[#70E844]/10 text-[#70E844]"
+                            : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+                        }`}
+                      >
+                        <Icon size={16} />
+                        {child.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Resume */}
+        <Link
+          href={basePath + "/resume"}
+          onClick={() => setOpen(false)}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+            isActive("/resume")
+              ? "bg-[#70E844]/10 text-[#70E844]"
+              : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+          }`}
+        >
+          <FiFileText size={18} />
+          Resume
+        </Link>
+
+        {/* Billing — non-admin only */}
+        {!isAdmin && (
+          <Link
+            href={basePath + "/billing"}
+            onClick={() => setOpen(false)}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+              isActive("/billing")
+                ? "bg-[#70E844]/10 text-[#70E844]"
+                : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+            }`}
+          >
+            <FiCreditCard size={18} />
+            Billing
+          </Link>
+        )}
+
+        {/* Admin: Manage Users */}
         {isAdmin && (
           <>
             <div className="my-3 border-t border-[#2a2a2a]" />
@@ -115,6 +210,7 @@ export default function AdminSidebar({ username, isAdmin }: AdminSidebarProps) {
         )}
       </nav>
 
+      {/* Logout — pinned to bottom */}
       <div className="px-3 pb-6">
         <button
           onClick={() => signOut({ callbackUrl: isAdmin ? "/" : `/u/${username}` })}

@@ -146,7 +146,7 @@ function ClassicTemplate({ resume, accent, surface }: ResumeSectionProps) {
 
 function ModernTemplate({ resume, accent, surface }: ResumeSectionProps) {
   return (
-    <div className="rounded-xl overflow-hidden grid grid-cols-1 md:grid-cols-[280px_1fr]" style={{ backgroundColor: surface }}>
+    <div className="rounded-xl overflow-hidden grid grid-cols-1 md:grid-cols-[240px_1fr] gap-0" style={{ backgroundColor: surface }}>
       {/* Sidebar */}
       <div className="p-6 space-y-6" style={{ backgroundColor: `${accent}08` }}>
         <div>
@@ -263,9 +263,9 @@ function MinimalTemplate({ resume, accent }: ResumeSectionProps) {
           <div className="space-y-4">
             {resume.experiences.map((exp) => (
               <div key={exp.id}>
-                <div className="flex items-baseline justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
                   <p className="font-semibold text-sm" style={{ color: "var(--text)" }}>{exp.position} <span style={{ opacity: 0.5, fontWeight: 400 }}>at {exp.company}</span></p>
-                  <p className="text-[10px] shrink-0 ml-3" style={{ color: "var(--text)", opacity: 0.4 }}>{exp.startDate} — {exp.endDate || "Present"}</p>
+                  <p className="text-[10px] shrink-0 sm:ml-3" style={{ color: "var(--text)", opacity: 0.4 }}>{exp.startDate} — {exp.endDate || "Present"}</p>
                 </div>
                 {exp.description && <p className="text-xs leading-relaxed mt-1 whitespace-pre-line" style={{ color: "var(--text)", opacity: 0.6 }}>{exp.description}</p>}
               </div>
@@ -281,12 +281,12 @@ function MinimalTemplate({ resume, accent }: ResumeSectionProps) {
           </div>
           <div className="space-y-3">
             {resume.educations.map((edu) => (
-              <div key={edu.id} className="flex items-baseline justify-between">
+              <div key={edu.id} className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
                 <p className="text-sm" style={{ color: "var(--text)" }}>
                   <span className="font-semibold">{edu.degree}</span>
                   {edu.field ? `, ${edu.field}` : ""} — {edu.school}
                 </p>
-                <p className="text-[10px] shrink-0 ml-3" style={{ color: "var(--text)", opacity: 0.4 }}>{edu.startDate} — {edu.endDate}</p>
+                <p className="text-[10px] shrink-0 sm:ml-3" style={{ color: "var(--text)", opacity: 0.4 }}>{edu.startDate} — {edu.endDate}</p>
               </div>
             ))}
           </div>

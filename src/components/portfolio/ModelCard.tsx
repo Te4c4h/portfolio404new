@@ -26,10 +26,10 @@ export default function ModelCard({ item, accent, surface }: ModelCardProps) {
 
   return (
     <div
-      className="group rounded-xl overflow-hidden border transition-all duration-300"
+      className="group rounded-xl overflow-hidden border transition-all duration-300 h-full flex flex-col"
       style={{ backgroundColor: surface, borderColor: surface }}
     >
-      <div className="relative aspect-video bg-black/20">
+      <div className="relative aspect-video bg-black/20 flex-shrink-0">
         {/* @ts-expect-error model-viewer is a web component */}
         <model-viewer
           src={item.modelUrl}
@@ -39,7 +39,7 @@ export default function ModelCard({ item, accent, surface }: ModelCardProps) {
           style={{ width: "100%", height: "100%", backgroundColor: "transparent" }}
         />
       </div>
-      <div className="p-4">
+      <div className="p-4 flex-1 flex flex-col">
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2">
             {tags.slice(0, 4).map((tag) => (

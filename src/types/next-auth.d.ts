@@ -7,6 +7,8 @@ declare module "next-auth" {
     username: string;
     email: string;
     isAdmin: boolean;
+    firstName: string;
+    lastName: string;
   }
 
   interface Session {
@@ -15,6 +17,8 @@ declare module "next-auth" {
       username: string;
       email: string;
       isAdmin: boolean;
+      firstName: string;
+      lastName: string;
     };
   }
 }
@@ -25,5 +29,7 @@ declare module "next-auth/jwt" {
     username: string;
     email: string;
     isAdmin: boolean;
+    firstName: string;
+    lastName: string;
   }
 }

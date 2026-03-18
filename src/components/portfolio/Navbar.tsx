@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiMenu, FiX } from "react-icons/fi";
 import type { NavLinkData } from "./PortfolioClient";
@@ -41,7 +42,26 @@ export default function Navbar({ logoUrl, logoText, navLinks, accent }: NavbarPr
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
         <a href="#" className="flex items-center gap-2">
           {logoUrl ? (
-            <img src={logoUrl} alt={logoText} className="h-8" />
+            <Image
+              src={logoUrl}
+              alt={logoText || "Logo"}
+              width={120}
+              height={32}
+              className="h-8 w-auto"
+              priority
+              onError={(e) => {
+                const parent = e.currentTarget.parentElement;
+                if (parent) {
+                  e.currentTarget.style.display = "none";
+                  const span = document.createElement("span");
+                  span.className = "text-lg font-bold";
+                  span.style.fontFamily = "var(--font-heading)";
+                  span.style.color = "var(--text)";
+                  span.textContent = logoText || "Logo";
+                  parent.appendChild(span);
+                }
+              }}
+            />
           ) : (
             <span className="text-lg font-bold" style={{ fontFamily: "var(--font-heading)", color: "var(--text)" }}>
               {logoText}

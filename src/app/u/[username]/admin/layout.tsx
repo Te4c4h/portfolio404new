@@ -45,7 +45,7 @@ export default function UserDashboardLayout({
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
         }
       `}</style>
-      <AdminSidebar username={username} isAdmin={session.user.isAdmin} />
+      <AdminSidebar username={username} isAdmin={session.user.isAdmin} firstName={session.user.firstName || ""} lastName={session.user.lastName || ""} />
       <main className="lg:ml-60 min-h-screen p-6 pt-16 lg:pt-6">
         {children}
       </main>

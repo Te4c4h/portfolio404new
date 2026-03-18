@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { FiPlus, FiTrash2, FiSave } from "react-icons/fi";
+import { FiPlus, FiTrash2, FiSave, FiDownload } from "react-icons/fi";
 import Toast from "@/components/Toast";
+// jsPDF and docx are dynamically imported at use-time to reduce initial bundle
 
 interface Experience {
   id: string;
@@ -60,6 +61,8 @@ export default function ResumePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("Resume saved!");
+  const [downloading, setDownloading] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const r = await fetch("/api/resume");
@@ -88,7 +91,358 @@ export default function ResumePage() {
       }),
     });
     setSaving(false);
+    setToastMsg("Resume saved!");
     setToast(true);
+  };
+
+  const hasContent = resume && (
+    resume.fullName.trim() ||
+    resume.experiences.length > 0 ||
+    resume.educations.length > 0 ||
+    resume.skills.length > 0
+  );
+
+  const downloadJSON = () => {
+    if (!resume || !hasContent) {
+      setToastMsg("Resume data incomplete — please fill in at least one section");
+      setToast(true);
+      return;
+    }
+    setDownloading("json");
+    const blob = new Blob([JSON.stringify(resume, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${resume.fullName || "resume"}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setDownloading(null);
+  };
+
+  const downloadPDF = async () => {
+    if (!resume || !hasContent) {
+      setToastMsg("Resume data incomplete — please fill in at least one section");
+      setToast(true);
+      return;
+    }
+    setDownloading("pdf");
+    try {
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF({ format: "a4" });
+      const margin = 45 * 0.352778; // ~16mm ≈ 45px
+      const marginL = margin + 2;
+      const marginR = margin + 2;
+      let y = margin + 4;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const maxWidth = pageWidth - marginL - marginR;
+      const lineH = 1.5; // line height multiplier
+
+      // Professional dark blue-gray accent
+      const accent = { r: 45, g: 55, b: 72 };
+      const body = { r: 33, g: 33, b: 33 };
+      const muted = { r: 110, g: 110, b: 110 };
+      const light = { r: 150, g: 150, b: 150 };
+
+      const checkPage = (needed: number) => {
+        if (y + needed > pageHeight - margin) {
+          doc.addPage();
+          y = margin + 4;
+        }
+      };
+
+      const drawSectionHeading = (title: string) => {
+        checkPage(18);
+        y += 4;
+        doc.setFontSize(10.5);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(accent.r, accent.g, accent.b);
+        // Letter-spaced uppercase
+        const spaced = title.toUpperCase().split("").join(" ");
+        doc.text(spaced, marginL, y);
+        y += 2.5;
+        doc.setDrawColor(accent.r, accent.g, accent.b);
+        doc.setLineWidth(0.4);
+        doc.line(marginL, y, pageWidth - marginR, y);
+        y += 6;
+        doc.setTextColor(body.r, body.g, body.b);
+      };
+
+      // ── Full Name ──
+      doc.setFontSize(26);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(body.r, body.g, body.b);
+      doc.text(resume.fullName || "Resume", marginL, y);
+      y += 9;
+
+      // ── Job Title ──
+      if (resume.jobTitle) {
+        doc.setFontSize(13);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(muted.r, muted.g, muted.b);
+        doc.text(resume.jobTitle, marginL, y);
+        y += 7;
+      }
+
+      // ── Contact Row ──
+      const contactParts = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean);
+      if (contactParts.length) {
+        doc.setFontSize(8.5);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(light.r, light.g, light.b);
+        doc.text(contactParts.join("   \u2022   "), marginL, y);
+        y += 5;
+      }
+
+      // ── Accent-colored header rule ──
+      y += 1;
+      doc.setDrawColor(accent.r, accent.g, accent.b);
+      doc.setLineWidth(0.8);
+      doc.line(marginL, y, pageWidth - marginR, y);
+      y += 8;
+
+      // ── Professional Summary ──
+      if (resume.summary) {
+        drawSectionHeading("Professional Summary");
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(body.r, body.g, body.b);
+        const lines = doc.splitTextToSize(resume.summary, maxWidth);
+        const lh = 10 * 0.352778 * lineH;
+        checkPage(lines.length * lh);
+        doc.text(lines, marginL, y, { lineHeightFactor: lineH });
+        y += lines.length * lh + 4;
+      }
+
+      // ── Experience ──
+      if (resume.experiences.length > 0) {
+        drawSectionHeading("Experience");
+        resume.experiences.forEach((exp, idx) => {
+          checkPage(24);
+          // Position + date on same line
+          doc.setFontSize(10.5);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(body.r, body.g, body.b);
+          doc.text(exp.position || "Position", marginL, y);
+          const dateStr = [exp.startDate, exp.endDate].filter(Boolean).join(" \u2013 ");
+          if (dateStr) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(light.r, light.g, light.b);
+            doc.text(dateStr, pageWidth - marginR, y, { align: "right" });
+          }
+          y += 4.5;
+          // Company · Location
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(9.5);
+          doc.setTextColor(muted.r, muted.g, muted.b);
+          doc.text([exp.company, exp.location].filter(Boolean).join(" \u00B7 "), marginL, y);
+          y += 5;
+          // Description
+          doc.setTextColor(body.r, body.g, body.b);
+          if (exp.description) {
+            doc.setFontSize(9.5);
+            const indent = marginL + 2;
+            const descWidth = maxWidth - 2;
+            const descLines = doc.splitTextToSize(exp.description, descWidth);
+            const lh = 9.5 * 0.352778 * 1.4;
+            checkPage(descLines.length * lh);
+            doc.text(descLines, indent, y, { lineHeightFactor: 1.4 });
+            y += descLines.length * lh;
+          }
+          y += idx < resume.experiences.length - 1 ? 5 : 2;
+        });
+        y += 2;
+      }
+
+      // ── Education ──
+      if (resume.educations.length > 0) {
+        drawSectionHeading("Education");
+        resume.educations.forEach((edu, idx) => {
+          checkPage(20);
+          // Degree + date on same line
+          doc.setFontSize(10.5);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(body.r, body.g, body.b);
+          doc.text([edu.degree, edu.field].filter(Boolean).join(" in ") || "Degree", marginL, y);
+          const dateStr = [edu.startDate, edu.endDate].filter(Boolean).join(" \u2013 ");
+          if (dateStr) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(light.r, light.g, light.b);
+            doc.text(dateStr, pageWidth - marginR, y, { align: "right" });
+          }
+          y += 4.5;
+          // School
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(9.5);
+          doc.setTextColor(muted.r, muted.g, muted.b);
+          doc.text(edu.school || "", marginL, y);
+          y += 5;
+          // Description
+          doc.setTextColor(body.r, body.g, body.b);
+          if (edu.description) {
+            doc.setFontSize(9.5);
+            const indent = marginL + 2;
+            const descWidth = maxWidth - 2;
+            const descLines = doc.splitTextToSize(edu.description, descWidth);
+            const lh = 9.5 * 0.352778 * 1.4;
+            checkPage(descLines.length * lh);
+            doc.text(descLines, indent, y, { lineHeightFactor: 1.4 });
+            y += descLines.length * lh;
+          }
+          y += idx < resume.educations.length - 1 ? 5 : 2;
+        });
+        y += 2;
+      }
+
+      // ── Skills ──
+      if (resume.skills.length > 0) {
+        drawSectionHeading("Skills");
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(body.r, body.g, body.b);
+        const skillsText = resume.skills.map((s) => s.level ? `${s.name} (${s.level})` : s.name).join("   \u2022   ");
+        const skillLines = doc.splitTextToSize(skillsText, maxWidth);
+        const lh = 10 * 0.352778 * lineH;
+        checkPage(skillLines.length * lh);
+        doc.text(skillLines, marginL, y, { lineHeightFactor: lineH });
+      }
+
+      doc.save(`${resume.fullName || "resume"}.pdf`);
+    } catch {
+      setToastMsg("Failed to generate PDF");
+      setToast(true);
+    }
+    setDownloading(null);
+  };
+
+  const downloadDOCX = async () => {
+    if (!resume || !hasContent) {
+      setToastMsg("Resume data incomplete — please fill in at least one section");
+      setToast(true);
+      return;
+    }
+    setDownloading("docx");
+    try {
+      const { Document, Packer, Paragraph, TextRun } = await import("docx");
+      const children: InstanceType<typeof Paragraph>[] = [];
+      const accentHex = "2D3748"; // professional dark blue-gray
+      const grayHex = "666666";
+      const lightGray = "999999";
+
+      const sectionHeading = (title: string) => new Paragraph({
+        children: [new TextRun({ text: title.toUpperCase(), bold: true, size: 22, font: "Calibri", color: accentHex })],
+        spacing: { before: 280, after: 80 },
+        border: { bottom: { style: "single" as const, size: 6, color: accentHex, space: 4 } },
+      });
+
+      // Name
+      children.push(new Paragraph({
+        children: [new TextRun({ text: resume.fullName || "Resume", bold: true, size: 48, font: "Calibri" })],
+        spacing: { after: 40 },
+      }));
+
+      // Job Title
+      if (resume.jobTitle) {
+        children.push(new Paragraph({
+          children: [new TextRun({ text: resume.jobTitle, size: 26, color: accentHex, font: "Calibri" })],
+          spacing: { after: 60 },
+        }));
+      }
+
+      // Contact
+      const contact = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean).join("   \u2022   ");
+      if (contact) {
+        children.push(new Paragraph({
+          children: [new TextRun({ text: contact, size: 18, color: lightGray, font: "Calibri" })],
+          spacing: { after: 120 },
+          border: { bottom: { style: "single" as const, size: 2, color: "CCCCCC", space: 8 } },
+        }));
+      }
+
+      // Summary
+      if (resume.summary) {
+        children.push(sectionHeading("Professional Summary"));
+        children.push(new Paragraph({
+          children: [new TextRun({ text: resume.summary, size: 20, font: "Calibri" })],
+          spacing: { after: 120 },
+        }));
+      }
+
+      // Experience
+      if (resume.experiences.length > 0) {
+        children.push(sectionHeading("Experience"));
+        resume.experiences.forEach((exp, idx) => {
+          const dateStr = [exp.startDate, exp.endDate].filter(Boolean).join(" \u2013 ");
+          children.push(new Paragraph({
+            children: [
+              new TextRun({ text: exp.position || "Position", bold: true, size: 22, font: "Calibri" }),
+              ...(dateStr ? [new TextRun({ text: `\t${dateStr}`, size: 18, color: lightGray, font: "Calibri" })] : []),
+            ],
+            spacing: { before: idx > 0 ? 160 : 0 },
+          }));
+          children.push(new Paragraph({
+            children: [new TextRun({ text: [exp.company, exp.location].filter(Boolean).join(" \u00B7 "), size: 20, color: grayHex, font: "Calibri" })],
+            spacing: { after: 40 },
+          }));
+          if (exp.description) {
+            children.push(new Paragraph({
+              children: [new TextRun({ text: exp.description, size: 20, font: "Calibri" })],
+              spacing: { after: 80 },
+            }));
+          }
+        });
+      }
+
+      // Education
+      if (resume.educations.length > 0) {
+        children.push(sectionHeading("Education"));
+        resume.educations.forEach((edu, idx) => {
+          const dateStr = [edu.startDate, edu.endDate].filter(Boolean).join(" \u2013 ");
+          children.push(new Paragraph({
+            children: [
+              new TextRun({ text: [edu.degree, edu.field].filter(Boolean).join(" in ") || "Degree", bold: true, size: 22, font: "Calibri" }),
+              ...(dateStr ? [new TextRun({ text: `\t${dateStr}`, size: 18, color: lightGray, font: "Calibri" })] : []),
+            ],
+            spacing: { before: idx > 0 ? 160 : 0 },
+          }));
+          children.push(new Paragraph({
+            children: [new TextRun({ text: edu.school || "", size: 20, color: grayHex, font: "Calibri" })],
+            spacing: { after: 40 },
+          }));
+          if (edu.description) {
+            children.push(new Paragraph({
+              children: [new TextRun({ text: edu.description, size: 20, font: "Calibri" })],
+              spacing: { after: 80 },
+            }));
+          }
+        });
+      }
+
+      // Skills
+      if (resume.skills.length > 0) {
+        children.push(sectionHeading("Skills"));
+        const skillsText = resume.skills.map((s) => s.level ? `${s.name} (${s.level})` : s.name).join("   \u2022   ");
+        children.push(new Paragraph({
+          children: [new TextRun({ text: skillsText, size: 20, font: "Calibri" })],
+          spacing: { after: 120 },
+        }));
+      }
+
+      const doc = new Document({ sections: [{ children }] });
+      const blob = await Packer.toBlob(doc);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${resume.fullName || "resume"}.docx`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setToastMsg("Failed to generate DOCX");
+      setToast(true);
+    }
+    setDownloading(null);
   };
 
   const addExperience = async () => {
@@ -176,6 +530,37 @@ export default function ResumePage() {
           <FiSave size={14} />
           {saving ? "Saving..." : "Save"}
         </button>
+      </div>
+
+      {/* Download Resume */}
+      <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5 mb-8">
+        <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-3">Download Resume</h2>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={downloadPDF}
+            disabled={downloading === "pdf"}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333] disabled:opacity-50 transition-colors"
+          >
+            <FiDownload size={14} />
+            {downloading === "pdf" ? "Generating..." : "PDF"}
+          </button>
+          <button
+            onClick={downloadDOCX}
+            disabled={downloading === "docx"}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333] disabled:opacity-50 transition-colors"
+          >
+            <FiDownload size={14} />
+            {downloading === "docx" ? "Generating..." : "DOCX"}
+          </button>
+          <button
+            onClick={downloadJSON}
+            disabled={downloading === "json"}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333] disabled:opacity-50 transition-colors"
+          >
+            <FiDownload size={14} />
+            {downloading === "json" ? "Generating..." : "JSON"}
+          </button>
+        </div>
       </div>
 
       <div className="space-y-8">
@@ -342,7 +727,7 @@ export default function ResumePage() {
         </div>
       </div>
 
-      <Toast message="Resume saved!" show={toast} onClose={() => setToast(false)} />
+      <Toast message={toastMsg} show={toast} onClose={() => setToast(false)} />
     </div>
   );
 }

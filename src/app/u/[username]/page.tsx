@@ -20,6 +20,8 @@ async function getPortfolioData(username: string) {
       lastName: true,
       isBlocked: true,
       isPublished: true,
+      subscriptionStatus: true,
+      isFreeAccess: true,
       theme: true,
       siteContent: true,
       navLinks: { orderBy: { order: "asc" } },
@@ -34,6 +36,7 @@ async function getPortfolioData(username: string) {
   });
 
   if (!user || user.isBlocked || !user.isPublished) return null;
+  if (user.subscriptionStatus !== "active" && !user.isFreeAccess) return null;
 
   // Fetch resume if showOnPortfolio is enabled
   const resume = await prisma.resume.findUnique({
@@ -69,11 +72,15 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: {
+      canonical: ogUrl,
+    },
     openGraph: {
       title: ogTitle,
       description,
       url: ogUrl,
-      images: [{ url: ogImage }],
+      type: "profile",
+      images: [{ url: ogImage, width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
@@ -94,19 +101,37 @@ export default async function PortfolioPage({
 
   const { theme, siteContent, navLinks, contactLinks, sections, resume } = data;
 
+  const fullName = `${data.firstName} ${data.lastName}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: fullName,
+    url: `https://www.portfolio404.site/u/${data.username}`,
+    ...(resume?.jobTitle ? { jobTitle: resume.jobTitle } : {}),
+    ...(resume?.email ? { email: `mailto:${resume.email}` } : {}),
+    ...(resume?.website ? { sameAs: [resume.website] } : {}),
+    ...(siteContent?.subtext ? { description: siteContent.subtext } : {}),
+  };
+
   return (
-    <PortfolioClient
-      user={{
-        firstName: data.firstName,
-        lastName: data.lastName,
-        username: data.username,
-      }}
-      theme={theme}
-      siteContent={siteContent}
-      navLinks={navLinks}
-      contactLinks={contactLinks}
-      sections={sections}
-      resume={resume}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <PortfolioClient
+        user={{
+          firstName: data.firstName,
+          lastName: data.lastName,
+          username: data.username,
+        }}
+        theme={theme}
+        siteContent={siteContent}
+        navLinks={navLinks}
+        contactLinks={contactLinks}
+        sections={sections}
+        resume={resume}
+      />
+    </>
   );
 }

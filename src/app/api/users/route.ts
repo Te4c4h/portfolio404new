@@ -7,6 +7,9 @@ export async function GET() {
   if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const users = await prisma.user.findMany({
+    where: {
+      username: { notIn: ["__home__"] },
+    },
     select: {
       id: true,
       username: true,
@@ -15,6 +18,8 @@ export async function GET() {
       email: true,
       isBlocked: true,
       registeredAt: true,
+      subscriptionStatus: true,
+      isFreeAccess: true,
     },
     orderBy: { registeredAt: "desc" },
   });

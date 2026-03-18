@@ -52,10 +52,10 @@ export default function CodeCard({ item, accent, surface }: CodeCardProps) {
 
   return (
     <div
-      className="group rounded-xl overflow-hidden border transition-all duration-300"
+      className="group rounded-xl overflow-hidden border transition-all duration-300 h-full flex flex-col"
       style={{ backgroundColor: surface, borderColor: surface }}
     >
-      <div className="relative">
+      <div className="relative flex-shrink-0">
         <div className="flex items-center justify-between px-4 py-2 border-b" style={{ borderColor: `${accent}20` }}>
           <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: accent }}>
             {item.codeLanguage || "code"}
@@ -71,7 +71,7 @@ export default function CodeCard({ item, accent, surface }: CodeCardProps) {
           </code>
         </pre>
       </div>
-      <div className="p-4 border-t" style={{ borderColor: `${accent}10` }}>
+      <div className="p-4 border-t flex-1 flex flex-col" style={{ borderColor: `${accent}10` }}>
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2">
             {tags.slice(0, 4).map((tag) => (

@@ -69,6 +69,7 @@ export default function SectionBlock({ section, accent, surface, defaultBg, onCa
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="h-full"
             >
               {(!item.contentType || item.contentType === "project") && (
                 <ProjectCard item={item} accent={accent} surface={surface} onClick={() => onCardClick(item)} />

@@ -24,10 +24,10 @@ export default function VideoCard({ item, accent, surface }: VideoCardProps) {
 
   return (
     <div
-      className="group rounded-xl overflow-hidden border transition-all duration-300"
+      className="group rounded-xl overflow-hidden border transition-all duration-300 h-full flex flex-col"
       style={{ backgroundColor: surface, borderColor: surface }}
     >
-      <div className="relative overflow-hidden aspect-video bg-black">
+      <div className="relative overflow-hidden aspect-video bg-black flex-shrink-0">
         {embedUrl ? (
           <iframe
             src={embedUrl}
@@ -42,7 +42,7 @@ export default function VideoCard({ item, accent, surface }: VideoCardProps) {
           </div>
         )}
       </div>
-      <div className="p-4">
+      <div className="p-4 flex-1 flex flex-col">
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2">
             {tags.slice(0, 4).map((tag) => (

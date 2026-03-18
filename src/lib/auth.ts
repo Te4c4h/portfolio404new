@@ -50,6 +50,8 @@ export const authOptions: NextAuthOptions = {
           username: user.username,
           email: user.email,
           isAdmin,
+          firstName: user.firstName,
+          lastName: user.lastName,
         };
       },
     }),
@@ -81,12 +83,16 @@ export const authOptions: NextAuthOptions = {
           token.username = dbUser.username;
           token.email = dbUser.email;
           token.isAdmin = dbUser.username === "admin";
+          token.firstName = dbUser.firstName;
+          token.lastName = dbUser.lastName;
         }
       } else if (user) {
         token.id = user.id;
         token.username = user.username;
         token.email = user.email;
         token.isAdmin = user.isAdmin;
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
       }
       return token;
     },
@@ -96,6 +102,8 @@ export const authOptions: NextAuthOptions = {
         username: token.username,
         email: token.email,
         isAdmin: token.isAdmin,
+        firstName: token.firstName,
+        lastName: token.lastName,
       };
       return session;
     },

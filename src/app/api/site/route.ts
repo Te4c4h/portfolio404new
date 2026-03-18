@@ -18,49 +18,30 @@ export async function PUT(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const {
-    siteTitle, logoText, headline, subtext,
-    ctaLabel1, ctaTarget1, ctaLabel2, ctaTarget2,
-    aboutText, skills, contactTitle, contactSubtitle,
-    footerText, loadingHeading, loadingSubtitle,
-  } = body;
+
+  // Only update fields that are explicitly present in the request body.
+  // This prevents one sub-page from zeroing out fields managed by another.
+  const allowedFields = [
+    "siteTitle", "logoText", "headline", "subtext",
+    "ctaLabel1", "ctaTarget1", "ctaLabel2", "ctaTarget2",
+    "aboutText", "skills", "contactTitle", "contactSubtitle",
+    "footerText", "loadingHeading", "loadingSubtitle",
+    "logoUrl", "useLogoImage",
+  ];
+
+  const update: Record<string, unknown> = {};
+  for (const key of allowedFields) {
+    if (key in body) {
+      update[key] = body[key];
+    }
+  }
 
   const siteContent = await prisma.siteContent.upsert({
     where: { userId },
-    update: {
-      siteTitle: siteTitle ?? "",
-      logoText: logoText ?? "",
-      headline: headline ?? "",
-      subtext: subtext ?? "",
-      ctaLabel1: ctaLabel1 ?? "",
-      ctaTarget1: ctaTarget1 ?? "",
-      ctaLabel2: ctaLabel2 ?? "",
-      ctaTarget2: ctaTarget2 ?? "",
-      aboutText: aboutText ?? "",
-      skills: skills ?? "",
-      contactTitle: contactTitle ?? "",
-      contactSubtitle: contactSubtitle ?? "",
-      footerText: footerText ?? "",
-      loadingHeading: loadingHeading ?? "",
-      loadingSubtitle: loadingSubtitle ?? "",
-    },
+    update,
     create: {
       userId,
-      siteTitle: siteTitle ?? "",
-      logoText: logoText ?? "",
-      headline: headline ?? "",
-      subtext: subtext ?? "",
-      ctaLabel1: ctaLabel1 ?? "",
-      ctaTarget1: ctaTarget1 ?? "",
-      ctaLabel2: ctaLabel2 ?? "",
-      ctaTarget2: ctaTarget2 ?? "",
-      aboutText: aboutText ?? "",
-      skills: skills ?? "",
-      contactTitle: contactTitle ?? "",
-      contactSubtitle: contactSubtitle ?? "",
-      footerText: footerText ?? "",
-      loadingHeading: loadingHeading ?? "",
-      loadingSubtitle: loadingSubtitle ?? "",
+      ...update,
     },
   });
 

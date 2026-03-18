@@ -12,6 +12,8 @@ interface User {
   email: string;
   isBlocked: boolean;
   registeredAt: string;
+  subscriptionStatus: string;
+  isFreeAccess: boolean;
 }
 
 export default function ManageUsersPage() {
@@ -39,6 +41,14 @@ export default function ManageUsersPage() {
       setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
     }
     setTogglingId(null);
+  };
+
+  const toggleFreeAccess = async (id: string) => {
+    const r = await fetch(`/api/users/${id}`, { method: "PATCH" });
+    if (r.ok) {
+      const updated = await r.json();
+      setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
+    }
   };
 
   const deleteUser = async (id: string) => {
@@ -71,6 +81,7 @@ export default function ManageUsersPage() {
               <th className="text-left px-4 py-3 text-[#888] font-medium text-xs uppercase tracking-wider">Username</th>
               <th className="text-left px-4 py-3 text-[#888] font-medium text-xs uppercase tracking-wider">Registered</th>
               <th className="text-left px-4 py-3 text-[#888] font-medium text-xs uppercase tracking-wider">Status</th>
+              <th className="text-left px-4 py-3 text-[#888] font-medium text-xs uppercase tracking-wider">Plan</th>
               <th className="text-right px-4 py-3 text-[#888] font-medium text-xs uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
@@ -98,6 +109,21 @@ export default function ManageUsersPage() {
                     {user.isBlocked ? "Blocked" : "Active"}
                   </span>
                 </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-1.5">
+                    {user.isFreeAccess ? (
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#70E844]/15 text-[#70E844]">Free Access</span>
+                    ) : user.subscriptionStatus === "active" ? (
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#70E844]/15 text-[#70E844]">Pro</span>
+                    ) : user.subscriptionStatus === "cancelled" ? (
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#FFA500]/15 text-[#FFA500]">Cancelled</span>
+                    ) : user.subscriptionStatus === "past_due" ? (
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#FE454E]/15 text-[#FE454E]">Past Due</span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#888]/15 text-[#888]">Free</span>
+                    )}
+                  </div>
+                </td>
                 <td className="px-4 py-3 text-right">
                   {deletingId === user.id ? (
                     <div className="flex items-center justify-end gap-2">
@@ -107,6 +133,16 @@ export default function ManageUsersPage() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => toggleFreeAccess(user.id)}
+                        className={`px-3 py-1 rounded text-xs transition-colors ${
+                          user.isFreeAccess
+                            ? "bg-[#FFA500]/15 text-[#FFA500] hover:bg-[#FFA500]/25"
+                            : "bg-[#70E844]/15 text-[#70E844] hover:bg-[#70E844]/25"
+                        }`}
+                      >
+                        {user.isFreeAccess ? "Revoke Free" : "Grant Free"}
+                      </button>
                       <button
                         onClick={() => toggleBlock(user.id)}
                         disabled={togglingId === user.id}
@@ -147,13 +183,26 @@ export default function ManageUsersPage() {
                   @{user.username}
                 </Link>
               </div>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${
-                user.isBlocked
-                  ? "bg-[#FE454E]/15 text-[#FE454E]"
-                  : "bg-[#70E844]/15 text-[#70E844]"
-              }`}>
-                {user.isBlocked ? "Blocked" : "Active"}
-              </span>
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                  user.isBlocked
+                    ? "bg-[#FE454E]/15 text-[#FE454E]"
+                    : "bg-[#70E844]/15 text-[#70E844]"
+                }`}>
+                  {user.isBlocked ? "Blocked" : "Active"}
+                </span>
+                {user.isFreeAccess ? (
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#70E844]/15 text-[#70E844]">Free Access</span>
+                ) : user.subscriptionStatus === "active" ? (
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#70E844]/15 text-[#70E844]">Pro</span>
+                ) : user.subscriptionStatus === "cancelled" ? (
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#FFA500]/15 text-[#FFA500]">Cancelled</span>
+                ) : user.subscriptionStatus === "past_due" ? (
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#FE454E]/15 text-[#FE454E]">Past Due</span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#888]/15 text-[#888]">Free</span>
+                )}
+              </div>
             </div>
             <div className="space-y-1">
               <p className="text-[#888] text-xs truncate">{user.email}</p>
@@ -170,7 +219,17 @@ export default function ManageUsersPage() {
                 <button onClick={() => setDeletingId(null)} className="px-3 py-1.5 rounded text-xs bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333]">Cancel</button>
               </div>
             ) : (
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-2 pt-1 flex-wrap">
+                <button
+                  onClick={() => toggleFreeAccess(user.id)}
+                  className={`px-3 py-1.5 rounded text-xs transition-colors ${
+                    user.isFreeAccess
+                      ? "bg-[#FFA500]/15 text-[#FFA500] hover:bg-[#FFA500]/25"
+                      : "bg-[#70E844]/15 text-[#70E844] hover:bg-[#70E844]/25"
+                  }`}
+                >
+                  {user.isFreeAccess ? "Revoke Free" : "Grant Free"}
+                </button>
                 <button
                   onClick={() => toggleBlock(user.id)}
                   disabled={togglingId === user.id}

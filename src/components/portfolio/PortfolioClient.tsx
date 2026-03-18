@@ -21,7 +21,6 @@ export interface ThemeData {
   cursorColor: string;
   bodyFont: string;
   headingFont: string;
-  logoUrl: string;
   faviconUrl: string;
   webclipUrl: string;
   websiteTitle: string;
@@ -44,6 +43,8 @@ export interface SiteContentData {
   footerText: string;
   loadingHeading: string;
   loadingSubtitle: string;
+  logoUrl: string;
+  useLogoImage: boolean;
 }
 
 export interface NavLinkData {
@@ -99,7 +100,7 @@ interface PortfolioClientProps {
 const defaults: ThemeData = {
   accentColor: "#70E844", backgroundColor: "#131313", surfaceColor: "#181818",
   textColor: "#fafafa", dangerColor: "#FE454E", cursorColor: "#70E844",
-  bodyFont: "Inter", headingFont: "Syne", logoUrl: "", faviconUrl: "",
+  bodyFont: "Inter", headingFont: "Syne", faviconUrl: "",
   webclipUrl: "", websiteTitle: "", gridColor: "rgba(255,255,255,0.03)",
 };
 
@@ -145,9 +146,9 @@ export default function PortfolioClient({
         style={{ ...cssVars, backgroundColor: "var(--bg)", color: "var(--text)" }}
         className="min-h-screen relative"
       >
-        {/* Grid overlay */}
+        {/* Grid overlay — z-[2] sits between section backgrounds and content */}
         <div
-          className="fixed inset-0 pointer-events-none z-0"
+          className="fixed inset-0 pointer-events-none z-[2]"
           style={{
             backgroundImage: `linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px)`,
             backgroundSize: "60px 60px",
@@ -162,7 +163,7 @@ export default function PortfolioClient({
           ::selection { background: ${theme.accentColor}; color: ${theme.backgroundColor}; }
         `}</style>
 
-        <div className="relative z-[1]">
+        <div className="relative z-[3]">
           <LoadingScreen
             heading={siteContent?.loadingHeading || `${user.firstName} ${user.lastName}`}
             subtitle={siteContent?.loadingSubtitle || "Portfolio"}
@@ -171,7 +172,7 @@ export default function PortfolioClient({
           />
           <CustomCursor cursorColor={theme.cursorColor} />
           <Navbar
-            logoUrl={theme.logoUrl}
+            logoUrl={siteContent?.useLogoImage ? (siteContent?.logoUrl || "") : ""}
             logoText={siteContent?.logoText || `${user.firstName} ${user.lastName}`}
             navLinks={navLinks}
             accent={theme.accentColor}

@@ -34,33 +34,39 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Section not found" }, { status: 404 });
   }
 
+  // Enforce max 6 items per section
+  const itemCount = await prisma.contentItem.count({ where: { sectionId } });
+  if (itemCount >= 6) {
+    return NextResponse.json({ error: "Maximum 6 items per section" }, { status: 400 });
+  }
+
   const maxOrder = await prisma.contentItem.findFirst({
     where: { sectionId },
     orderBy: { order: "desc" },
     select: { order: true },
   });
 
-  const item = await prisma.contentItem.create({
-    data: {
-      userId,
-      sectionId,
-      contentType: contentType || "project",
-      title,
-      description: description || "",
-      tags: tags || "",
-      coverImage: coverImage || "",
-      image1: image1 || "",
-      image2: image2 || "",
-      image3: image3 || "",
-      liveUrl: liveUrl || "",
-      repoUrl: repoUrl || "",
-      videoUrl: videoUrl || "",
-      codeContent: codeContent || "",
-      codeLanguage: codeLanguage || "",
-      modelUrl: modelUrl || "",
-      order: (maxOrder?.order ?? -1) + 1,
-    },
-  });
+  const data = {
+    userId,
+    sectionId,
+    contentType: contentType || "project",
+    title,
+    description: description || "",
+    tags: tags || "",
+    coverImage: coverImage || "",
+    image1: image1 || "",
+    image2: image2 || "",
+    image3: image3 || "",
+    liveUrl: liveUrl || "",
+    repoUrl: repoUrl || "",
+    videoUrl: videoUrl || "",
+    codeContent: codeContent || "",
+    codeLanguage: codeLanguage || "",
+    modelUrl: modelUrl || "",
+    order: (maxOrder?.order ?? -1) + 1,
+  };
+
+  const item = await prisma.contentItem.create({ data: data as Parameters<typeof prisma.contentItem.create>[0]["data"] });
 
   return NextResponse.json(item, { status: 201 });
 }

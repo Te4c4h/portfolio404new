@@ -10,6 +10,10 @@ export async function GET() {
       isPublished: true,
       isBlocked: false,
       username: { notIn: [HOME_USERNAME, "admin"] },
+      OR: [
+        { subscriptionStatus: "active" },
+        { isFreeAccess: true },
+      ],
     },
     select: {
       username: true,
