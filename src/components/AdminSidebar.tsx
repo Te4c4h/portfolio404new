@@ -23,6 +23,10 @@ import {
   FiSettings,
   FiLayout,
   FiCreditCard,
+  FiFolder,
+  FiBriefcase,
+  FiSliders,
+  FiMonitor,
 } from "react-icons/fi";
 
 interface AdminSidebarProps {
@@ -33,14 +37,15 @@ interface AdminSidebarProps {
 }
 
 const portfolioChildren = [
-  { href: "/portfolio/navbar", label: "Navbar", icon: FiNavigation },
+  { href: "/portfolio/navbar", label: "Navigation", icon: FiNavigation },
   { href: "/portfolio/hero", label: "Hero", icon: FiStar },
   { href: "/portfolio/about", label: "About", icon: FiUser },
-  { href: "/portfolio/sections", label: "Sections", icon: FiLayers },
-  { href: "/portfolio/sections-content", label: "Sections Content", icon: FiGrid },
-  { href: "/portfolio/contact", label: "Contact", icon: FiMail },
+  { href: "/portfolio/sections", label: "Categories", icon: FiFolder },
+  { href: "/portfolio/sections-content", label: "Projects", icon: FiBriefcase },
+  { href: "/portfolio/contact", label: "Contact Info", icon: FiMail },
   { href: "/portfolio/footer", label: "Footer", icon: FiType },
-  { href: "/portfolio/settings", label: "Settings", icon: FiSettings },
+  { href: "/portfolio/loading-screen", label: "Loading Screen", icon: FiMonitor },
+  { href: "/portfolio/settings", label: "Appearance", icon: FiSettings },
 ];
 
 export default function AdminSidebar({ username, isAdmin, firstName, lastName }: AdminSidebarProps) {
@@ -108,6 +113,22 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
           Analytics
         </Link>
 
+        {/* Account Settings — non-admin only */}
+        {!isAdmin && (
+          <Link
+            href={basePath + "/account-settings"}
+            onClick={() => setOpen(false)}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+              isActive("/account-settings")
+                ? "bg-[#70E844]/10 text-[#70E844]"
+                : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+            }`}
+          >
+            <FiSliders size={18} />
+            Account Settings
+          </Link>
+        )}
+
         {/* Portfolio Dropdown */}
         <div>
           <button
@@ -160,19 +181,21 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
           </AnimatePresence>
         </div>
 
-        {/* Resume */}
-        <Link
-          href={basePath + "/resume"}
-          onClick={() => setOpen(false)}
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-            isActive("/resume")
-              ? "bg-[#70E844]/10 text-[#70E844]"
-              : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
-          }`}
-        >
-          <FiFileText size={18} />
-          Resume
-        </Link>
+        {/* Resume — non-admin only */}
+        {!isAdmin && (
+          <Link
+            href={basePath + "/resume"}
+            onClick={() => setOpen(false)}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+              isActive("/resume")
+                ? "bg-[#70E844]/10 text-[#70E844]"
+                : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+            }`}
+          >
+            <FiFileText size={18} />
+            Resume
+          </Link>
+        )}
 
         {/* Billing — non-admin only, only when LemonSqueezy is enabled */}
         {!isAdmin && process.env.NEXT_PUBLIC_LEMONSQUEEZY_ENABLED === "true" && (
@@ -186,7 +209,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             }`}
           >
             <FiCreditCard size={18} />
-            Billing
+            Plan & Billing
           </Link>
         )}
 

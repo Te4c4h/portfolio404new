@@ -92,8 +92,9 @@ model SiteContent {
   contactTitle    String   @default("")
   contactSubtitle String   @default("")
   footerText      String   @default("")
-  loadingHeading  String   @default("")
-  loadingSubtitle String   @default("")
+  loadingHeading        String   @default("")
+  loadingSubtitle       String   @default("")
+  loadingScreenEnabled  Boolean  @default(true)
   logoUrl         String   @default("")
   useLogoImage    Boolean  @default(false)
   updatedAt       DateTime @updatedAt

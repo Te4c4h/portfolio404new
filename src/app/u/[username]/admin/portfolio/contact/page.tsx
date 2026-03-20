@@ -170,7 +170,7 @@ export default function ContactPage() {
   return (
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#fafafa]">Contact</h1>
+        <h1 className="text-2xl font-bold text-[#fafafa]">Contact Info</h1>
         <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] disabled:opacity-50">
           {saving ? "Saving..." : "Save Changes"}
         </button>

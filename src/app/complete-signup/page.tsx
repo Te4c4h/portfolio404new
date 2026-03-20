@@ -2,6 +2,7 @@
 
 import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 function CompleteSignupContent() {
   const searchParams = useSearchParams();
@@ -79,8 +80,8 @@ function CompleteSignupContent() {
         setLoading(false);
         return;
       }
-      // Redirect to login — user signs in with Google again
-      router.push("/login");
+      // Auto-login via Google OAuth — user goes straight to dashboard
+      await signIn("google", { callbackUrl: `/u/${data.user.username}/admin` });
     } catch {
       setError("Something went wrong");
       setLoading(false);

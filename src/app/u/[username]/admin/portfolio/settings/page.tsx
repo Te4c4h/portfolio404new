@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useSession, signOut } from "next-auth/react";
 import Toast from "@/components/Toast";
 import dynamic from "next/dynamic";
 
@@ -47,19 +46,12 @@ const colorFields: { key: keyof ThemeData; label: string }[] = [
 ];
 
 export default function SettingsPage() {
-  const { data: session } = useSession();
-  const isAdmin = session?.user?.isAdmin;
-
   const [siteTitle, setSiteTitle] = useState("");
-  const [loadingHeading, setLoadingHeading] = useState("");
-  const [loadingSubtitle, setLoadingSubtitle] = useState("");
   const [theme, setTheme] = useState<ThemeData>(themeDefaults);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   const load = useCallback(async () => {
     const [siteRes, themeRes] = await Promise.all([
@@ -69,8 +61,6 @@ export default function SettingsPage() {
     const siteData = await siteRes.json();
     if (siteData) {
       setSiteTitle(siteData.siteTitle || "");
-      setLoadingHeading(siteData.loadingHeading || "");
-      setLoadingSubtitle(siteData.loadingSubtitle || "");
     }
     const themeData = await themeRes.json();
     if (themeData) {
@@ -99,7 +89,7 @@ export default function SettingsPage() {
       fetch("/api/site", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ siteTitle, loadingHeading, loadingSubtitle }),
+        body: JSON.stringify({ siteTitle }),
       }),
       fetch("/api/theme", {
         method: "PUT",
@@ -120,7 +110,7 @@ export default function SettingsPage() {
   return (
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#fafafa]">Settings</h1>
+        <h1 className="text-2xl font-bold text-[#fafafa]">Appearance</h1>
         <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] disabled:opacity-50">
           {saving ? "Saving..." : "Save Changes"}
         </button>
@@ -133,21 +123,6 @@ export default function SettingsPage() {
           <div>
             <label className="text-xs text-[#888] mb-1 block">Site Title</label>
             <input className="dash-input" value={siteTitle} onChange={(e) => setSiteTitle(e.target.value)} placeholder="My Portfolio" />
-          </div>
-        </div>
-
-        {/* Loading Screen */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Loading Screen</h2>
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs text-[#888] mb-1 block">Loading Heading</label>
-              <input className="dash-input" value={loadingHeading} onChange={(e) => setLoadingHeading(e.target.value)} placeholder="Your Name" />
-            </div>
-            <div>
-              <label className="text-xs text-[#888] mb-1 block">Loading Subtitle</label>
-              <input className="dash-input" value={loadingSubtitle} onChange={(e) => setLoadingSubtitle(e.target.value)} placeholder="Portfolio" />
-            </div>
           </div>
         </div>
 
@@ -283,58 +258,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Danger Zone — only for non-admin users */}
-        {!isAdmin && (
-          <div className="bg-[#181818] border border-[#FE454E]/30 rounded-xl p-5">
-            <h2 className="text-xs font-semibold text-[#FE454E] uppercase tracking-wider mb-2">Danger Zone</h2>
-            <p className="text-[#888] text-sm mb-4">Permanently delete your account and all portfolio data. This action cannot be undone.</p>
-            <button
-              onClick={() => setDeleteModalOpen(true)}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-[#FE454E]/10 text-[#FE454E] border border-[#FE454E]/30 hover:bg-[#FE454E]/20 transition-colors"
-            >
-              Delete Account
-            </button>
-          </div>
-        )}
       </div>
-
-      {/* Delete Account Confirmation Modal */}
-      {deleteModalOpen && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setDeleteModalOpen(false)}>
-          <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-semibold text-[#fafafa] mb-2">Delete Account</h2>
-            <p className="text-[#888] text-sm mb-6">Are you sure? This will permanently delete your account and all your portfolio data.</p>
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setDeleteModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333]">Cancel</button>
-              <button
-                onClick={async () => {
-                  setDeleting(true);
-                  try {
-                    const r = await fetch("/api/user/account", { method: "DELETE" });
-                    if (r.ok) {
-                      await signOut({ callbackUrl: "/" });
-                    } else {
-                      const err = await r.json().catch(() => ({}));
-                      alert(err.error || `Delete failed (${r.status})`);
-                      setDeleting(false);
-                      setDeleteModalOpen(false);
-                    }
-                  } catch (e) {
-                    console.error("Delete account error:", e);
-                    alert("Network error — please try again");
-                    setDeleting(false);
-                    setDeleteModalOpen(false);
-                  }
-                }}
-                disabled={deleting}
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-[#FE454E] text-white hover:bg-[#e03d45] disabled:opacity-50"
-              >
-                {deleting ? "Deleting..." : "Delete Forever"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <Toast message="Settings saved!" show={toast} onClose={() => setToast(false)} />
     </div>

@@ -43,6 +43,7 @@ export interface SiteContentData {
   footerText: string;
   loadingHeading: string;
   loadingSubtitle: string;
+  loadingScreenEnabled: boolean;
   logoUrl: string;
   useLogoImage: boolean;
 }
@@ -173,12 +174,14 @@ export default function PortfolioClient({
         `}</style>
 
         <div className="relative z-[3]">
-          <LoadingScreen
-            heading={siteContent?.loadingHeading || `${user.firstName} ${user.lastName}`}
-            subtitle={siteContent?.loadingSubtitle || "Portfolio"}
-            accent={theme.accentColor}
-            headingFont={theme.headingFont}
-          />
+          {(siteContent?.loadingScreenEnabled !== false) && (
+            <LoadingScreen
+              heading={siteContent?.loadingHeading || `${user.firstName} ${user.lastName}`}
+              subtitle={siteContent?.loadingSubtitle || "Portfolio"}
+              accent={theme.accentColor}
+              headingFont={theme.headingFont}
+            />
+          )}
           <CustomCursor cursorColor={theme.cursorColor} />
           <Navbar
             logoUrl={siteContent?.useLogoImage ? (siteContent?.logoUrl || "") : ""}

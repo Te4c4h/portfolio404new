@@ -25,7 +25,7 @@ export async function PUT(req: NextRequest) {
     "siteTitle", "logoText", "headline", "subtext",
     "ctaLabel1", "ctaTarget1", "ctaLabel2", "ctaTarget2",
     "aboutText", "skills", "contactTitle", "contactSubtitle",
-    "footerText", "loadingHeading", "loadingSubtitle",
+    "footerText", "loadingHeading", "loadingSubtitle", "loadingScreenEnabled",
     "logoUrl", "useLogoImage",
   ];
 

@@ -206,7 +206,7 @@ export default function SectionsPage() {
   return (
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#fafafa]">Sections</h1>
+        <h1 className="text-2xl font-bold text-[#fafafa]">Categories</h1>
         <button
           onClick={openAdd}
           disabled={sections.length >= 4}

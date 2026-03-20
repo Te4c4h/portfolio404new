@@ -22,6 +22,8 @@ export async function DELETE() {
   }
 
   await prisma.$transaction([
+    prisma.pageView.deleteMany({ where: { username: user.username } }),
+    prisma.contactClick.deleteMany({ where: { username: user.username } }),
     prisma.contactLink.deleteMany({ where: { userId: user.id } }),
     prisma.navLink.deleteMany({ where: { userId: user.id } }),
     prisma.contentItem.deleteMany({ where: { userId: user.id } }),
