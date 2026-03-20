@@ -75,7 +75,7 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger }) {
       if (account?.provider === "google" && user?.email) {
         const dbUser = await prisma.user.findUnique({ where: { email: user.email } });
         if (dbUser) {
@@ -94,6 +94,22 @@ export const authOptions: NextAuthOptions = {
         token.firstName = user.firstName;
         token.lastName = user.lastName;
       }
+
+      // Re-fetch user data from DB on session update trigger (e.g. after username change)
+      if (trigger === "update" && token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { username: true, firstName: true, lastName: true, email: true },
+        });
+        if (dbUser) {
+          token.username = dbUser.username;
+          token.firstName = dbUser.firstName;
+          token.lastName = dbUser.lastName;
+          token.email = dbUser.email;
+          token.isAdmin = dbUser.username === "admin";
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {

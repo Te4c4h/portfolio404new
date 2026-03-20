@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Toast from "@/components/Toast";
 
 interface ProfileData {
@@ -16,6 +16,7 @@ interface ProfileData {
 export default function AccountSettingsPage() {
   const params = useParams();
   const currentUsername = params.username as string;
+  const { update: updateSession } = useSession();
 
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -105,6 +106,7 @@ export default function AccountSettingsPage() {
         body: JSON.stringify({ firstName, lastName }),
       });
       if (res.ok) {
+        await updateSession();
         showToast("Profile updated!");
       } else {
         const data = await res.json();
@@ -134,6 +136,8 @@ export default function AccountSettingsPage() {
       });
       const data = await res.json();
       if (res.ok) {
+        // Force session refresh so JWT picks up new username from DB
+        await updateSession();
         showToast("Username updated! Redirecting...");
         setTimeout(() => {
           window.location.href = `/u/${data.username}/admin/account-settings`;
