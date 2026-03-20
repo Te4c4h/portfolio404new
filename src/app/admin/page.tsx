@@ -22,8 +22,8 @@ export default function AdminPage() {
   }, [session, status, router]);
 
   return (
-    <div className="min-h-screen bg-[#131313] flex items-center justify-center">
-      <div className="text-[#888] text-sm">Redirecting...</div>
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+      <div className="text-[var(--muted)] text-sm">Redirecting...</div>
     </div>
   );
 }

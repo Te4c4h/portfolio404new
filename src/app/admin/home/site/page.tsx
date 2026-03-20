@@ -139,47 +139,47 @@ export default function AdminHomeSitePage() {
     { value: "/login#signup", label: "Sign Up page" },
   ];
 
-  if (loading) return <div className="text-[#888] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
 
   return (
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#fafafa]">Home Page — Site Content</h1>
-        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] disabled:opacity-50">
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Home Page — Site Content</h1>
+        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
       <div className="space-y-8">
         {/* Loading Screen */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Loading Screen</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Loading Screen</h2>
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Loading Heading</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Loading Heading</label>
               <input className="dash-input" value={site.loadingHeading} onChange={(e) => setSite((s) => ({ ...s, loadingHeading: e.target.value }))} placeholder="Your Name" />
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Loading Subtitle</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Loading Subtitle</label>
               <input className="dash-input" value={site.loadingSubtitle} onChange={(e) => setSite((s) => ({ ...s, loadingSubtitle: e.target.value }))} placeholder="Portfolio" />
             </div>
           </div>
         </div>
 
         {/* Website Title */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Website Title</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Website Title</h2>
           <div>
-            <label className="text-xs text-[#888] mb-1 block">Site Title</label>
+            <label className="text-xs text-[var(--muted)] mb-1 block">Site Title</label>
             <input className="dash-input" value={site.siteTitle} onChange={(e) => setSite((s) => ({ ...s, siteTitle: e.target.value }))} placeholder="My Portfolio" />
           </div>
         </div>
 
         {/* Navigation */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Navigation</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Navigation</h2>
           <div className="mb-4">
-            <label className="text-xs text-[#888] mb-1 block">Logo / Brand Text</label>
+            <label className="text-xs text-[var(--muted)] mb-1 block">Logo / Brand Text</label>
             <input className="dash-input" value={site.logoText} onChange={(e) => setSite((s) => ({ ...s, logoText: e.target.value }))} placeholder="Your Name" />
           </div>
           <div className="space-y-2 mb-3">
@@ -189,7 +189,7 @@ export default function AdminHomeSitePage() {
                 <select className="dash-input flex-1" value={link.href} onChange={(e) => updateNavLinkHref(link.id, e.target.value)}>
                   {navTargetOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
-                <button onClick={() => deleteNavLink(link.id)} className="p-1.5 rounded hover:bg-[#2a2a2a] text-[#888] hover:text-[#FE454E]"><FiX size={14} /></button>
+                <button onClick={() => deleteNavLink(link.id)} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)]"><FiX size={14} /></button>
               </div>
             ))}
           </div>
@@ -199,45 +199,45 @@ export default function AdminHomeSitePage() {
               <option value="">Select target</option>
               {navTargetOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
-            <button onClick={addNavLink} className="p-2 rounded-lg bg-[#70E844] text-[#131313] hover:bg-[#5ed636]"><FiPlus size={16} /></button>
+            <button onClick={addNavLink} className="p-2 rounded-lg bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]"><FiPlus size={16} /></button>
           </div>
         </div>
 
         {/* Hero Section */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Hero Section</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Hero Section</h2>
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Headline</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Headline</label>
               <input className="dash-input" value={site.headline} onChange={(e) => setSite((s) => ({ ...s, headline: e.target.value }))} placeholder="Welcome to my portfolio" />
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Subtext</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Subtext</label>
               <input className="dash-input" value={site.subtext} onChange={(e) => setSite((s) => ({ ...s, subtext: e.target.value }))} placeholder="A short description" />
             </div>
           </div>
         </div>
 
         {/* Hero Buttons */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Hero Buttons</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Hero Buttons</h2>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Primary CTA Label</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Primary CTA Label</label>
               <input className="dash-input" value={site.ctaLabel1} onChange={(e) => setSite((s) => ({ ...s, ctaLabel1: e.target.value }))} placeholder="View Projects" />
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Primary CTA Target</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Primary CTA Target</label>
               <select className="dash-input" value={site.ctaTarget1} onChange={(e) => setSite((s) => ({ ...s, ctaTarget1: e.target.value }))}>
                 {ctaOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Secondary CTA Label</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Secondary CTA Label</label>
               <input className="dash-input" value={site.ctaLabel2} onChange={(e) => setSite((s) => ({ ...s, ctaLabel2: e.target.value }))} placeholder="Contact Me" />
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Secondary CTA Target</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Secondary CTA Target</label>
               <select className="dash-input" value={site.ctaTarget2} onChange={(e) => setSite((s) => ({ ...s, ctaTarget2: e.target.value }))}>
                 {ctaOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
@@ -246,37 +246,37 @@ export default function AdminHomeSitePage() {
         </div>
 
         {/* About Section */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">About Section</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">About Section</h2>
           <textarea className="dash-input min-h-[120px]" value={site.aboutText} onChange={(e) => setSite((s) => ({ ...s, aboutText: e.target.value }))} placeholder="Tell visitors about yourself..." />
         </div>
 
         {/* Skills */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Skills</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Skills</h2>
           <input className="dash-input" value={site.skills} onChange={(e) => setSite((s) => ({ ...s, skills: e.target.value }))} placeholder="React, TypeScript, Product Strategy" />
         </div>
 
         {/* Contact Section */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Contact Section</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Contact Section</h2>
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Contact Title</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Contact Title</label>
               <input className="dash-input" maxLength={30} value={site.contactTitle} onChange={(e) => setSite((s) => ({ ...s, contactTitle: e.target.value }))} placeholder="Get in Touch" />
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Contact Subtitle</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Contact Subtitle</label>
               <input className="dash-input" value={site.contactSubtitle} onChange={(e) => setSite((s) => ({ ...s, contactSubtitle: e.target.value }))} placeholder="I'd love to hear from you" />
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Footer</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Footer</h2>
           <div>
-            <label className="text-xs text-[#888] mb-1 block">Footer Copyright Text</label>
+            <label className="text-xs text-[var(--muted)] mb-1 block">Footer Copyright Text</label>
             <input className="dash-input" value={site.footerText} onChange={(e) => setSite((s) => ({ ...s, footerText: e.target.value }))} placeholder="e.g. © 2026 Your Name" />
           </div>
         </div>

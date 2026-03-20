@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 
 const RgbaColorPicker = dynamic(() => import("@/components/RgbaColorPicker"), {
   ssr: false,
-  loading: () => <div className="h-10 bg-[#2a2a2a] rounded-lg animate-pulse" />,
+  loading: () => <div className="h-10 bg-[var(--border)] rounded-lg animate-pulse" />,
 });
 
 interface ThemeData {
@@ -105,40 +105,40 @@ export default function SettingsPage() {
     setTheme((t) => ({ ...t, [key]: value }));
   };
 
-  if (loading) return <div className="text-[#888] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
 
   return (
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#fafafa]">Appearance</h1>
-        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] disabled:opacity-50">
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Appearance</h1>
+        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
       <div className="space-y-8">
         {/* Website Title */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Website Title</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Website Title</h2>
           <div>
-            <label className="text-xs text-[#888] mb-1 block">Site Title</label>
+            <label className="text-xs text-[var(--muted)] mb-1 block">Site Title</label>
             <input className="dash-input" value={siteTitle} onChange={(e) => setSiteTitle(e.target.value)} placeholder="My Portfolio" />
           </div>
         </div>
 
         {/* Colors */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Colors</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Colors</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {colorFields.map(({ key, label }) => (
               <div key={key}>
-                <label className="text-xs text-[#888] mb-1 block">{label}</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">{label}</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
                     value={theme[key] as string}
                     onChange={(e) => updateColor(key, e.target.value)}
-                    className="w-9 h-9 rounded border border-[#2a2a2a] bg-transparent cursor-pointer"
+                    className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer"
                   />
                   <input
                     className="dash-input"
@@ -150,29 +150,29 @@ export default function SettingsPage() {
               </div>
             ))}
           </div>
-          <div className="mt-4 pt-4 border-t border-[#2a2a2a]">
-            <label className="text-xs text-[#888] mb-1 block">Grid Color</label>
+          <div className="mt-4 pt-4 border-t border-[var(--border)]">
+            <label className="text-xs text-[var(--muted)] mb-1 block">Grid Color</label>
             <RgbaColorPicker
               value={theme.gridColor}
               onChange={(val) => setTheme((t) => ({ ...t, gridColor: val }))}
               placeholder="rgba(255,255,255,0.03)"
             />
-            <p className="text-[#555] text-[10px] mt-0.5">Background grid overlay color. Use rgba for transparency.</p>
+            <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">Background grid overlay color. Use rgba for transparency.</p>
           </div>
         </div>
 
         {/* Fonts */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Fonts</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Fonts</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Body Font</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Body Font</label>
               <select className="dash-input" value={theme.bodyFont} onChange={(e) => setTheme((t) => ({ ...t, bodyFont: e.target.value }))}>
                 {fonts.map((f) => <option key={f} value={f}>{f}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Heading Font</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Heading Font</label>
               <select className="dash-input" value={theme.headingFont} onChange={(e) => setTheme((t) => ({ ...t, headingFont: e.target.value }))}>
                 {fonts.map((f) => <option key={f} value={f}>{f}</option>)}
               </select>
@@ -181,27 +181,27 @@ export default function SettingsPage() {
         </div>
 
         {/* Branding */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Branding</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Branding</h2>
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Favicon URL</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Favicon URL</label>
               <input className="dash-input" value={theme.faviconUrl} onChange={(e) => setTheme((t) => ({ ...t, faviconUrl: e.target.value }))} placeholder="https://..." />
-              <p className="text-[#555] text-[10px] mt-0.5">Recommended: 32×32px or 64×64px (ICO or PNG)</p>
+              <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">Recommended: 32×32px or 64×64px (ICO or PNG)</p>
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">OG Image / Webclip URL</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">OG Image / Webclip URL</label>
               <input className="dash-input" value={theme.webclipUrl} onChange={(e) => setTheme((t) => ({ ...t, webclipUrl: e.target.value }))} placeholder="https://..." />
-              <p className="text-[#555] text-[10px] mt-0.5">Recommended: 1200×630px (JPG or PNG)</p>
+              <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">Recommended: 1200×630px (JPG or PNG)</p>
             </div>
           </div>
         </div>
 
         {/* Live Preview */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Live Preview</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Live Preview</h2>
           <div
-            className="rounded-lg overflow-hidden border border-[#2a2a2a] p-6 relative"
+            className="rounded-lg overflow-hidden border border-[var(--border)] p-6 relative"
             style={{ backgroundColor: theme.backgroundColor, color: theme.textColor, fontFamily: `${theme.bodyFont}, sans-serif` }}
           >
             <div
@@ -241,18 +241,18 @@ export default function SettingsPage() {
                     <span className="px-1.5 py-0.5 rounded text-[9px]" style={{ backgroundColor: `${theme.accentColor}15`, color: theme.accentColor }}>React</span>
                     <span className="px-1.5 py-0.5 rounded text-[9px]" style={{ backgroundColor: `${theme.accentColor}15`, color: theme.accentColor }}>Next.js</span>
                   </div>
-                  <p className="text-[10px] font-medium" style={{ color: theme.textColor }}>Project One</p>
+                  <p className="text-[var(--accent)] font-medium" style={{ color: theme.textColor }}>Project One</p>
                 </div>
                 <div className="rounded-lg p-3" style={{ backgroundColor: theme.surfaceColor }}>
                   <div className="w-full h-12 rounded mb-2" style={{ backgroundColor: `${theme.accentColor}15` }} />
                   <div className="flex gap-1 mb-1">
                     <span className="px-1.5 py-0.5 rounded text-[9px]" style={{ backgroundColor: `${theme.accentColor}15`, color: theme.accentColor }}>TypeScript</span>
                   </div>
-                  <p className="text-[10px] font-medium" style={{ color: theme.textColor }}>Project Two</p>
+                  <p className="text-[var(--accent)] font-medium" style={{ color: theme.textColor }}>Project Two</p>
                 </div>
               </div>
               <div className="mt-4 pt-3 border-t text-center" style={{ borderColor: `${theme.textColor}15` }}>
-                <p className="text-[10px]" style={{ color: theme.dangerColor }}>danger color sample</p>
+                <p className="text-[var(--accent)]" style={{ color: theme.dangerColor }}>danger color sample</p>
               </div>
             </div>
           </div>

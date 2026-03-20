@@ -94,37 +94,37 @@ export default function NavbarPage() {
     setNavLinks((prev) => prev.filter((l) => l.id !== id));
   };
 
-  if (loading) return <div className="text-[#888] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
 
   return (
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#fafafa]">Navigation</h1>
-        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] disabled:opacity-50">
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Navigation</h1>
+        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
       <div className="space-y-8">
         {/* Logo / Brand Text */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Logo / Brand Text</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Logo / Brand Text</h2>
           <div className="flex items-center gap-3 mb-4">
             <button
               type="button"
               onClick={() => setUseLogoImage(!useLogoImage)}
-              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${useLogoImage ? "bg-[#70E844]" : "bg-[#2a2a2a]"}`}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${useLogoImage ? "bg-[var(--accent)]" : "bg-[var(--border)]"}`}
             >
               <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${useLogoImage ? "translate-x-[18px]" : "translate-x-[3px]"}`} />
             </button>
-            <span className="text-xs text-[#888]">{useLogoImage ? "Use logo image" : "Use brand text"}</span>
+            <span className="text-xs text-[var(--muted)]">{useLogoImage ? "Use logo image" : "Use brand text"}</span>
           </div>
           {useLogoImage ? (
             <div>
               <input className="dash-input" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://your-logo-url.png" />
-              <p className="text-[#555] text-[10px] mt-1">Recommended: 200&times;80px (PNG or SVG, transparent background)</p>
+              <p className="text-[var(--muted)] text-[10px] mt-1">Recommended: 200&times;80px (PNG or SVG, transparent background)</p>
               {logoUrl && (
-                <div className="mt-3 p-3 rounded-lg bg-[#0d0d0d] border border-[#2a2a2a] inline-block">
+                <div className="mt-3 p-3 rounded-lg bg-[var(--surface)] border border-[var(--border)] inline-block">
                   <img
                     src={logoUrl}
                     alt="Logo preview"
@@ -137,25 +137,25 @@ export default function NavbarPage() {
           ) : (
             <div>
               <input className="dash-input" value={logoText} onChange={(e) => setLogoText(e.target.value)} placeholder="Your Name" />
-              <p className="text-[#555] text-[10px] mt-1">Displayed as text in the navbar</p>
+              <p className="text-[var(--muted)] text-[10px] mt-1">Displayed as text in the navbar</p>
             </div>
           )}
         </div>
 
         {/* Navigation Links */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider">Navigation Links</h2>
+            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Navigation Links</h2>
             <button
               onClick={() => { if (navLinks.length < 4) setShowAddRow(true); }}
               disabled={navLinks.length >= 4}
-              className="p-1.5 rounded-lg bg-[#70E844] text-[#131313] hover:bg-[#5ed636] disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-1.5 rounded-lg bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <FiPlus size={14} />
             </button>
           </div>
           {navLinks.length === 0 && !showAddRow && (
-            <p className="text-[#555] text-xs text-center py-4">No navigation links yet. Click + to add one.</p>
+            <p className="text-[var(--muted)] text-xs text-center py-4">No navigation links yet. Click + to add one.</p>
           )}
           <div className="space-y-2">
             {navLinks.map((link) => (
@@ -170,7 +170,7 @@ export default function NavbarPage() {
                     <option key={o.value} value={o.value}>{o.label}</option>
                   ))}
                 </select>
-                <button onClick={() => deleteNavLink(link.id)} className="p-1.5 rounded hover:bg-[#2a2a2a] text-[#888] hover:text-[#FE454E]">
+                <button onClick={() => deleteNavLink(link.id)} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)]">
                   <FiX size={14} />
                 </button>
               </div>
@@ -186,18 +186,18 @@ export default function NavbarPage() {
                 </select>
                 <button
                   onClick={async () => { await addNavLink(); setShowAddRow(false); }}
-                  className="p-1.5 rounded-lg bg-[#70E844] text-[#131313] hover:bg-[#5ed636]"
+                  className="p-1.5 rounded-lg bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]"
                 >
                   <FiPlus size={14} />
                 </button>
-                <button onClick={() => { setShowAddRow(false); setNewLink({ label: "", href: "" }); }} className="p-1.5 rounded hover:bg-[#2a2a2a] text-[#888] hover:text-[#FE454E]">
+                <button onClick={() => { setShowAddRow(false); setNewLink({ label: "", href: "" }); }} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)]">
                   <FiX size={14} />
                 </button>
               </div>
             )}
           </div>
           {navLinks.length >= 4 && (
-            <p className="text-[#888] text-[10px] mt-2">Maximum 4 navigation links reached</p>
+            <p className="text-[var(--muted)] text-[10px] mt-2">Maximum 4 navigation links reached</p>
           )}
         </div>
       </div>

@@ -80,7 +80,7 @@ export default function RgbaColorPicker({ value, onChange, placeholder }: RgbaCo
           type="color"
           value={rgbToHex(rgba.r, rgba.g, rgba.b)}
           onChange={(e) => handleColorChange(e.target.value)}
-          className="w-9 h-9 rounded border border-[#2a2a2a] bg-transparent cursor-pointer flex-shrink-0"
+          className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer flex-shrink-0"
         />
         <input
           className="dash-input flex-1"
@@ -90,7 +90,7 @@ export default function RgbaColorPicker({ value, onChange, placeholder }: RgbaCo
         />
       </div>
       <div className="flex items-center gap-3">
-        <span className="text-[10px] text-[#888] w-12 flex-shrink-0">Alpha: {rgba.a}</span>
+        <span className="text-[10px] text-[var(--muted)] w-12 flex-shrink-0">Alpha: {rgba.a}</span>
         <input
           type="range"
           min="0"
@@ -104,7 +104,7 @@ export default function RgbaColorPicker({ value, onChange, placeholder }: RgbaCo
           }}
         />
         <div
-          className="w-6 h-6 rounded border border-[#2a2a2a] flex-shrink-0"
+          className="w-6 h-6 rounded border border-[var(--border)] flex-shrink-0"
           style={{
             backgroundColor: `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`,
             backgroundImage: "linear-gradient(45deg, #333 25%, transparent 25%), linear-gradient(-45deg, #333 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #333 75%), linear-gradient(-45deg, transparent 75%, #333 75%)",

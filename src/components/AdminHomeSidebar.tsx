@@ -44,14 +44,14 @@ export default function AdminHomeSidebar({ username }: AdminHomeSidebarProps) {
   const sidebar = (
     <div className="flex flex-col h-full">
       <div className="px-5 py-6">
-        <h2 className="text-[#70E844] font-bold text-lg tracking-tight">
+        <h2 className="text-[var(--accent)] font-bold text-lg tracking-tight">
           Home Page
         </h2>
         <a
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-xs text-[#888] hover:text-[#70E844] transition-colors mt-1"
+          className="flex items-center gap-1.5 text-xs text-[var(--muted)] hover:text-[var(--accent)] transition-colors mt-1"
         >
           <FiExternalLink size={12} />
           View Home Page
@@ -69,8 +69,8 @@ export default function AdminHomeSidebar({ username }: AdminHomeSidebarProps) {
               onClick={() => setOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 active
-                  ? "bg-[#70E844]/10 text-[#70E844]"
-                  : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+                  ? "bg-[var(--accent)]/10 text-[var(--accent)]"
+                  : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--foreground)]/5"
               }`}
             >
               <Icon size={18} />
@@ -79,12 +79,12 @@ export default function AdminHomeSidebar({ username }: AdminHomeSidebarProps) {
           );
         })}
 
-        <div className="my-3 border-t border-[#2a2a2a]" />
+        <div className="my-3 border-t border-[var(--border)]" />
 
         <Link
           href={`/u/${username}/admin`}
           onClick={() => setOpen(false)}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08] transition-colors"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--foreground)]/5 transition-colors"
         >
           <FiArrowLeft size={18} />
           My Dashboard
@@ -92,7 +92,7 @@ export default function AdminHomeSidebar({ username }: AdminHomeSidebarProps) {
         <Link
           href={`/u/${username}/admin/users`}
           onClick={() => setOpen(false)}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08] transition-colors"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--foreground)]/5 transition-colors"
         >
           <FiLayers size={18} />
           Manage Users
@@ -102,7 +102,7 @@ export default function AdminHomeSidebar({ username }: AdminHomeSidebarProps) {
       <div className="px-3 pb-6">
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#888] hover:text-[#FE454E] hover:bg-[#FE454E]/10 transition-colors w-full"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-colors w-full"
         >
           <FiLogOut size={18} />
           Logout
@@ -116,13 +116,13 @@ export default function AdminHomeSidebar({ username }: AdminHomeSidebarProps) {
       {/* Mobile hamburger */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed top-4 left-4 z-50 lg:hidden p-2 rounded-lg bg-[#181818] border border-[#2a2a2a] text-[#fafafa]"
+        className="fixed top-4 left-4 z-50 lg:hidden p-2 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)]"
       >
         <FiMenu size={20} />
       </button>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-60 bg-[#181818] border-r border-[#2a2a2a]">
+      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-60 bg-[var(--surface)] border-r border-[var(--border)]">
         {sidebar}
       </aside>
 
@@ -135,18 +135,18 @@ export default function AdminHomeSidebar({ username }: AdminHomeSidebarProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setOpen(false)}
-              className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+              className="fixed inset-0 bg-[var(--overlay)] z-40 lg:hidden"
             />
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
-              className="fixed left-0 top-0 h-[100dvh] w-60 bg-[#181818] border-r border-[#2a2a2a] z-50 lg:hidden"
+              className="fixed left-0 top-0 h-[100dvh] w-60 bg-[var(--surface)] border-r border-[var(--border)] z-50 lg:hidden"
             >
               <button
                 onClick={() => setOpen(false)}
-                className="absolute top-4 right-4 text-[#888] hover:text-[#fafafa]"
+                className="absolute top-4 right-4 text-[var(--muted)] hover:text-[var(--foreground)]"
               >
                 <FiX size={20} />
               </button>

@@ -42,24 +42,24 @@ function SortableRow({
   const [confirming, setConfirming] = useState(false);
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-3 bg-[#181818] border border-[#2a2a2a] rounded-lg px-4 py-3">
-      <button {...attributes} {...listeners} className="cursor-grab text-[#555] hover:text-[#888]">
+    <div ref={setNodeRef} style={style} className="flex items-center gap-3 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-4 py-3">
+      <button {...attributes} {...listeners} className="cursor-grab text-[var(--muted-foreground)] hover:text-[var(--muted)]">
         <FiMenu size={16} />
       </button>
       <div className="flex-1 min-w-0">
-        <p className="text-[#fafafa] font-medium text-sm truncate">{section.name}</p>
-        <p className="text-[#666] text-xs truncate">/{section.slug} &middot; {section.label}</p>
+        <p className="text-[var(--foreground)] font-medium text-sm truncate">{section.name}</p>
+        <p className="text-[var(--muted-foreground)] text-xs truncate">/{section.slug} &middot; {section.label}</p>
       </div>
       {confirming ? (
         <div className="flex items-center gap-2">
-          <span className="text-[#FE454E] text-xs">Are you sure?</span>
-          <button onClick={() => { onDelete(section.id); setConfirming(false); }} className="px-3 py-1 rounded text-xs bg-[#FE454E] text-white hover:bg-[#e03d45]">Delete</button>
-          <button onClick={() => setConfirming(false)} className="px-3 py-1 rounded text-xs bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333]">Cancel</button>
+          <span className="text-[var(--danger)] text-xs">Are you sure?</span>
+          <button onClick={() => { onDelete(section.id); setConfirming(false); }} className="px-3 py-1 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)]">Delete</button>
+          <button onClick={() => setConfirming(false)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">Cancel</button>
         </div>
       ) : (
         <div className="flex items-center gap-2">
-          <button onClick={() => onEdit(section)} className="p-1.5 rounded hover:bg-[#2a2a2a] text-[#888] hover:text-[#fafafa]"><FiEdit2 size={14} /></button>
-          <button onClick={() => setConfirming(true)} className="p-1.5 rounded hover:bg-[#2a2a2a] text-[#888] hover:text-[#FE454E]"><FiTrash2 size={14} /></button>
+          <button onClick={() => onEdit(section)} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)]"><FiEdit2 size={14} /></button>
+          <button onClick={() => setConfirming(true)} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)]"><FiTrash2 size={14} /></button>
         </div>
       )}
     </div>
@@ -124,17 +124,17 @@ export default function AdminHomeSectionsPage() {
     });
   };
 
-  if (loading) return <div className="text-[#888] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
 
   return (
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#fafafa]">Home Page — Sections</h1>
-        <button onClick={openAdd} className="px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636]">+ Add Section</button>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Home Page — Sections</h1>
+        <button onClick={openAdd} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]">+ Add Section</button>
       </div>
 
       {sections.length === 0 ? (
-        <p className="text-[#666] text-sm text-center py-12">No sections yet.</p>
+        <p className="text-[var(--muted-foreground)] text-sm text-center py-12">No sections yet.</p>
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
@@ -146,41 +146,41 @@ export default function AdminHomeSectionsPage() {
       )}
 
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
-          <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-semibold text-[#fafafa] mb-4">{editingId ? "Edit Section" : "Add Section"}</h2>
+        <div className="fixed inset-0 bg-[var(--overlay)] z-50 flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">{editingId ? "Edit Section" : "Add Section"}</h2>
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-[#888] mb-1 block">Name *</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">Name *</label>
                 <input className="dash-input" maxLength={40} value={form.name} onChange={(e) => { const name = e.target.value; setForm((f) => ({ ...f, name, ...(slugManual ? {} : { slug: autoSlug(name) }) })); }} placeholder="e.g. Projects" />
               </div>
               <div>
-                <label className="text-xs text-[#888] mb-1 block">Slug *</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">Slug *</label>
                 <input className="dash-input" value={form.slug} onChange={(e) => { setSlugManual(true); setForm((f) => ({ ...f, slug: e.target.value })); }} placeholder="auto-generated-from-name" />
               </div>
               <div>
-                <label className="text-xs text-[#888] mb-1 block">Section Label</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">Section Label</label>
                 <input className="dash-input" maxLength={30} value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} placeholder="Display label" />
               </div>
               <div>
-                <label className="text-xs text-[#888] mb-1 block">Section Subtitle</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">Section Subtitle</label>
                 <input className="dash-input" maxLength={100} value={form.subtitle} onChange={(e) => setForm((f) => ({ ...f, subtitle: e.target.value }))} placeholder="Optional subtitle" />
               </div>
               <div>
-                <label className="text-xs text-[#888] mb-1 block">
+                <label className="text-xs text-[var(--muted)] mb-1 block">
                   Background Color
-                  {form.backgroundColor && <button onClick={() => setForm((f) => ({ ...f, backgroundColor: "" }))} className="ml-2 text-[#70E844] text-xs hover:underline">Clear</button>}
+                  {form.backgroundColor && <button onClick={() => setForm((f) => ({ ...f, backgroundColor: "" }))} className="ml-2 text-[var(--accent)] text-xs hover:underline">Clear</button>}
                 </label>
                 <div className="flex items-center gap-2">
-                  <input type="color" value={form.backgroundColor || "#181818"} onChange={(e) => setForm((f) => ({ ...f, backgroundColor: e.target.value }))} className="w-9 h-9 rounded border border-[#2a2a2a] bg-transparent cursor-pointer" />
+                  <input type="color" value={form.backgroundColor || "#181818"} onChange={(e) => setForm((f) => ({ ...f, backgroundColor: e.target.value }))} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
                   <input className="dash-input" value={form.backgroundColor} onChange={(e) => setForm((f) => ({ ...f, backgroundColor: e.target.value }))} placeholder="#181818 (default)" />
                 </div>
               </div>
             </div>
-            {error && <p className="text-[#FE454E] text-xs mt-3">{error}</p>}
+            {error && <p className="text-[var(--danger)] text-xs mt-3">{error}</p>}
             <div className="flex justify-end gap-2 mt-5">
-              <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333]">Cancel</button>
-              <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] disabled:opacity-50">{saving ? "Saving..." : editingId ? "Update" : "Create"}</button>
+              <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">Cancel</button>
+              <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">{saving ? "Saving..." : editingId ? "Update" : "Create"}</button>
             </div>
           </div>
         </div>

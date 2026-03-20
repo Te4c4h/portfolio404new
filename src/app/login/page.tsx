@@ -223,13 +223,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#131313] flex items-center justify-center px-4">
-      <a href="/" className="fixed top-6 left-6 text-[#888] text-sm hover:text-[#fafafa] transition-colors">
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
+      <a href="/" className="fixed top-6 left-6 text-[var(--muted)] text-sm hover:text-[var(--foreground)] transition-colors">
         &larr; Back to Home
       </a>
-      <div className="w-full max-w-md bg-[#181818] border border-[#2a2a2a] rounded-2xl p-8">
+      <div className="w-full max-w-md bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8">
         {/* Toggle */}
-        <div className="flex mb-8 bg-[#131313] rounded-lg p-1">
+        <div className="flex mb-8 bg-[var(--background)] rounded-lg p-1">
           <button
             onClick={() => {
               setMode("signin");
@@ -238,8 +238,8 @@ export default function LoginPage() {
             }}
             className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all duration-200 ${
               mode === "signin"
-                ? "bg-[#70E844] text-[#131313]"
-                : "text-[#888] hover:text-[#fafafa]"
+                ? "bg-[var(--accent)] text-[var(--background)]"
+                : "text-[var(--muted)] hover:text-[var(--foreground)]"
             }`}
           >
             Sign In
@@ -251,8 +251,8 @@ export default function LoginPage() {
             }}
             className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all duration-200 ${
               mode === "signup"
-                ? "bg-[#70E844] text-[#131313]"
-                : "text-[#888] hover:text-[#fafafa]"
+                ? "bg-[var(--accent)] text-[var(--background)]"
+                : "text-[var(--muted)] hover:text-[var(--foreground)]"
             }`}
           >
             Sign Up
@@ -262,7 +262,7 @@ export default function LoginPage() {
         {/* Google Sign In */}
         <button
           onClick={handleGoogleSignIn}
-          className="w-full py-3 mb-4 bg-white text-[#131313] font-semibold rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 mb-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
@@ -274,9 +274,9 @@ export default function LoginPage() {
         </button>
 
         <div className="flex items-center gap-3 mb-4">
-          <div className="flex-1 h-px bg-[#2a2a2a]" />
-          <span className="text-[#555] text-xs">or</span>
-          <div className="flex-1 h-px bg-[#2a2a2a]" />
+          <div className="flex-1 h-px bg-[var(--border)]" />
+          <span className="text-[var(--muted-foreground)] text-xs">or</span>
+          <div className="flex-1 h-px bg-[var(--border)]" />
         </div>
 
         <AnimatePresence mode="wait">
@@ -288,7 +288,7 @@ export default function LoginPage() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              <h3 className="text-[#fafafa] font-medium text-center mb-4">Reset your password</h3>
+              <h3 className="text-[var(--foreground)] font-medium text-center mb-4">Reset your password</h3>
               <form onSubmit={handleForgotPassword} className="space-y-4">
                 <input
                   type="email"
@@ -297,19 +297,19 @@ export default function LoginPage() {
                   onChange={(e) => setForgotEmail(e.target.value)}
                   className="auth-input"
                 />
-                {forgotError && <p className="text-[#FE454E] text-sm">{forgotError}</p>}
-                {forgotMessage && <p className="text-[#70E844] text-sm">{forgotMessage}</p>}
+                {forgotError && <p className="text-[var(--danger)] text-sm">{forgotError}</p>}
+                {forgotMessage && <p className="text-[var(--accent)] text-sm">{forgotMessage}</p>}
                 <button
                   type="submit"
                   disabled={forgotLoading}
-                  className="w-full py-3 bg-[#70E844] text-[#131313] font-semibold rounded-lg hover:bg-[#5ed636] transition-colors disabled:opacity-50"
+                  className="w-full py-3 bg-[var(--accent)] text-[var(--background)] font-semibold rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-50"
                 >
                   {forgotLoading ? "Sending..." : "Send Reset Link"}
                 </button>
               </form>
               <button
                 onClick={() => { setShowForgotPassword(false); setForgotMessage(""); setForgotError(""); }}
-                className="w-full mt-3 text-[#888] text-sm hover:text-[#fafafa] transition-colors"
+                className="w-full mt-3 text-[var(--muted)] text-sm hover:text-[var(--foreground)] transition-colors"
               >
                 Back to sign in
               </button>
@@ -324,18 +324,18 @@ export default function LoginPage() {
             >
               {unverifiedEmail ? (
                 <div className="text-center space-y-3">
-                  <p className="text-[#fafafa] text-sm">Please verify your email. Check your inbox.</p>
+                  <p className="text-[var(--foreground)] text-sm">Please verify your email. Check your inbox.</p>
                   <button
                     onClick={handleResendVerification}
                     disabled={resendingVerification}
-                    className="px-4 py-2 bg-[#2a2a2a] text-[#fafafa] rounded-lg text-sm hover:bg-[#333] disabled:opacity-50"
+                    className="px-4 py-2 bg-[var(--border)] text-[var(--foreground)] rounded-lg text-sm hover:bg-[var(--border)] disabled:opacity-50"
                   >
                     {resendingVerification ? "Sending..." : "Resend verification email"}
                   </button>
-                  {resendSuccess && <p className="text-[#70E844] text-xs">Verification email sent!</p>}
+                  {resendSuccess && <p className="text-[var(--accent)] text-xs">Verification email sent!</p>}
                   <button
                     onClick={() => { setUnverifiedEmail(""); }}
-                    className="block mx-auto text-[#888] text-xs hover:text-[#fafafa]"
+                    className="block mx-auto text-[var(--muted)] text-xs hover:text-[var(--foreground)]"
                   >
                     Try again
                   </button>
@@ -362,13 +362,13 @@ export default function LoginPage() {
                   </div>
 
                   {signInError && (
-                    <p className="text-[#FE454E] text-sm">{signInError}</p>
+                    <p className="text-[var(--danger)] text-sm">{signInError}</p>
                   )}
 
                   <button
                     type="submit"
                     disabled={signInLoading}
-                    className="w-full py-3 bg-[#70E844] text-[#131313] font-semibold rounded-lg hover:bg-[#5ed636] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-3 bg-[var(--accent)] text-[var(--background)] font-semibold rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {signInLoading ? "Signing in..." : "Sign In"}
                   </button>
@@ -376,7 +376,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowForgotPassword(true)}
-                    className="w-full text-[#888] text-sm hover:text-[#fafafa] transition-colors"
+                    className="w-full text-[var(--muted)] text-sm hover:text-[var(--foreground)] transition-colors"
                   >
                     Forgot Password?
                   </button>
@@ -393,16 +393,16 @@ export default function LoginPage() {
             >
               {signUpSuccess ? (
                 <div className="text-center space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-[#70E844]/10 flex items-center justify-center mx-auto">
-                    <svg className="w-6 h-6 text-[#70E844]" viewBox="0 0 20 20" fill="currentColor">
+                  <div className="w-12 h-12 rounded-full bg-[var(--accent)]/10 flex items-center justify-center mx-auto">
+                    <svg className="w-6 h-6 text-[var(--accent)]" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <p className="text-[#fafafa] font-medium">Account created!</p>
-                  <p className="text-[#888] text-sm">Please check your email to verify your account, then sign in.</p>
+                  <p className="text-[var(--foreground)] font-medium">Account created!</p>
+                  <p className="text-[var(--muted)] text-sm">Please check your email to verify your account, then sign in.</p>
                   <button
                     onClick={() => { setMode("signin"); setSignUpSuccess(false); }}
-                    className="px-4 py-2 bg-[#70E844] text-[#131313] rounded-lg text-sm font-medium hover:bg-[#5ed636]"
+                    className="px-4 py-2 bg-[var(--accent)] text-[var(--background)] rounded-lg text-sm font-medium hover:bg-[var(--accent-hover)]"
                   >
                     Go to Sign In
                   </button>
@@ -423,7 +423,7 @@ export default function LoginPage() {
                         className="auth-input"
                       />
                       {fieldErrors.firstName && (
-                        <p className="text-[#FE454E] text-xs mt-1">
+                        <p className="text-[var(--danger)] text-xs mt-1">
                           {fieldErrors.firstName}
                         </p>
                       )}
@@ -440,7 +440,7 @@ export default function LoginPage() {
                         className="auth-input"
                       />
                       {fieldErrors.lastName && (
-                        <p className="text-[#FE454E] text-xs mt-1">
+                        <p className="text-[var(--danger)] text-xs mt-1">
                           {fieldErrors.lastName}
                         </p>
                       )}
@@ -459,7 +459,7 @@ export default function LoginPage() {
                       className="auth-input"
                     />
                     {fieldErrors.email && (
-                      <p className="text-[#FE454E] text-xs mt-1">
+                      <p className="text-[var(--danger)] text-xs mt-1">
                         {fieldErrors.email}
                       </p>
                     )}
@@ -481,7 +481,7 @@ export default function LoginPage() {
                       <span className="absolute right-3 top-1/2 -translate-y-1/2">
                         {usernameStatus === "checking" && (
                           <svg
-                            className="animate-spin h-4 w-4 text-[#888]"
+                            className="animate-spin h-4 w-4 text-[var(--muted)]"
                             viewBox="0 0 24 24"
                             fill="none"
                           >
@@ -502,7 +502,7 @@ export default function LoginPage() {
                         )}
                         {usernameStatus === "available" && (
                           <svg
-                            className="h-4 w-4 text-[#70E844]"
+                            className="h-4 w-4 text-[var(--accent)]"
                             viewBox="0 0 20 20"
                             fill="currentColor"
                           >
@@ -515,7 +515,7 @@ export default function LoginPage() {
                         )}
                         {usernameStatus === "taken" && (
                           <svg
-                            className="h-4 w-4 text-[#FE454E]"
+                            className="h-4 w-4 text-[var(--danger)]"
                             viewBox="0 0 20 20"
                             fill="currentColor"
                           >
@@ -529,12 +529,12 @@ export default function LoginPage() {
                       </span>
                     </div>
                     {fieldErrors.username && (
-                      <p className="text-[#FE454E] text-xs mt-1">
+                      <p className="text-[var(--danger)] text-xs mt-1">
                         {fieldErrors.username}
                       </p>
                     )}
                     {usernameStatus === "taken" && !fieldErrors.username && (
-                      <p className="text-[#FE454E] text-xs mt-1">
+                      <p className="text-[var(--danger)] text-xs mt-1">
                         Username is already taken
                       </p>
                     )}
@@ -552,7 +552,7 @@ export default function LoginPage() {
                       className="auth-input"
                     />
                     {fieldErrors.password && (
-                      <p className="text-[#FE454E] text-xs mt-1">
+                      <p className="text-[var(--danger)] text-xs mt-1">
                         {fieldErrors.password}
                       </p>
                     )}
@@ -570,20 +570,20 @@ export default function LoginPage() {
                       className="auth-input"
                     />
                     {fieldErrors.confirmPassword && (
-                      <p className="text-[#FE454E] text-xs mt-1">
+                      <p className="text-[var(--danger)] text-xs mt-1">
                         {fieldErrors.confirmPassword}
                       </p>
                     )}
                   </div>
 
                   {signUpError && (
-                    <p className="text-[#FE454E] text-sm">{signUpError}</p>
+                    <p className="text-[var(--danger)] text-sm">{signUpError}</p>
                   )}
 
                   <button
                     type="submit"
                     disabled={signUpLoading}
-                    className="w-full py-3 bg-[#70E844] text-[#131313] font-semibold rounded-lg hover:bg-[#5ed636] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-3 bg-[var(--accent)] text-[var(--background)] font-semibold rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {signUpLoading ? "Creating account..." : "Sign Up"}
                   </button>

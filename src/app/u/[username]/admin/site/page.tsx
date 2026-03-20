@@ -12,5 +12,5 @@ export default function SiteContentRedirect() {
     router.replace(`/u/${username}/admin/portfolio/navbar`);
   }, [router, username]);
 
-  return <div className="text-[#888] text-sm">Redirecting...</div>;
+  return <div className="text-[var(--muted)] text-sm">Redirecting...</div>;
 }

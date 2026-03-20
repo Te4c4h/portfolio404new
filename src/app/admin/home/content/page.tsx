@@ -63,36 +63,36 @@ function SortableRow({
   const style = { transform: CSS.Transform.toString(transform), transition };
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-3 bg-[#181818] border border-[#2a2a2a] rounded-lg px-4 py-3">
-      <button {...attributes} {...listeners} className="cursor-grab text-[#555] hover:text-[#888]">
+    <div ref={setNodeRef} style={style} className="flex items-center gap-3 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-4 py-3">
+      <button {...attributes} {...listeners} className="cursor-grab text-[var(--muted-foreground)] hover:text-[var(--muted)]">
         <FiMenu size={16} />
       </button>
       {item.coverImage ? (
-        <img src={item.coverImage} alt="" className="w-12 h-12 rounded object-cover bg-[#2a2a2a] flex-shrink-0" />
+        <img src={item.coverImage} alt="" className="w-12 h-12 rounded object-cover bg-[var(--border)] flex-shrink-0" />
       ) : (
-        <div className="w-12 h-12 rounded bg-[#2a2a2a] flex-shrink-0" />
+        <div className="w-12 h-12 rounded bg-[var(--border)] flex-shrink-0" />
       )}
       <div className="flex-1 min-w-0">
-        <p className="text-[#fafafa] font-medium text-sm truncate">{item.title}</p>
-        <p className="text-[#666] text-xs truncate">{sectionName}</p>
+        <p className="text-[var(--foreground)] font-medium text-sm truncate">{item.title}</p>
+        <p className="text-[var(--muted-foreground)] text-xs truncate">{sectionName}</p>
         {item.tags && (
           <div className="flex gap-1 mt-1 flex-wrap">
             {item.tags.split(",").map((t) => t.trim()).filter(Boolean).map((tag) => (
-              <span key={tag} className="px-1.5 py-0.5 rounded text-[10px] bg-[#70E844]/10 text-[#70E844]">{tag}</span>
+              <span key={tag} className="px-1.5 py-0.5 rounded text-[10px] bg-[var(--accent)]/10 text-[var(--accent)]">{tag}</span>
             ))}
           </div>
         )}
       </div>
       {deletingId === item.id ? (
         <div className="flex items-center gap-2">
-          <span className="text-[#FE454E] text-xs">Are you sure?</span>
-          <button onClick={() => onDelete(item.id)} className="px-3 py-1 rounded text-xs bg-[#FE454E] text-white hover:bg-[#e03d45]">Delete</button>
-          <button onClick={() => setDeletingId(null)} className="px-3 py-1 rounded text-xs bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333]">Cancel</button>
+          <span className="text-[var(--danger)] text-xs">Are you sure?</span>
+          <button onClick={() => onDelete(item.id)} className="px-3 py-1 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)]">Delete</button>
+          <button onClick={() => setDeletingId(null)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">Cancel</button>
         </div>
       ) : (
         <div className="flex items-center gap-2">
-          <button onClick={() => onEdit(item)} className="p-1.5 rounded hover:bg-[#2a2a2a] text-[#888] hover:text-[#fafafa]"><FiEdit2 size={14} /></button>
-          <button onClick={() => setDeletingId(item.id)} className="p-1.5 rounded hover:bg-[#2a2a2a] text-[#888] hover:text-[#FE454E]"><FiTrash2 size={14} /></button>
+          <button onClick={() => onEdit(item)} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)]"><FiEdit2 size={14} /></button>
+          <button onClick={() => setDeletingId(item.id)} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)]"><FiTrash2 size={14} /></button>
         </div>
       )}
     </div>
@@ -176,28 +176,28 @@ export default function AdminHomeContentPage() {
     });
   };
 
-  if (loading) return <div className="text-[#888] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
 
   const isDraggable = filter !== "all";
 
   return (
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#fafafa]">Home Page — Content</h1>
-        <button onClick={openAdd} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636]">
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Home Page — Content</h1>
+        <button onClick={openAdd} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]">
           <FiPlus size={16} /> Add
         </button>
       </div>
 
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-        <button onClick={() => setFilter("all")} className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${filter === "all" ? "bg-[#70E844] text-[#131313]" : "bg-[#2a2a2a] text-[#888] hover:text-[#fafafa]"}`}>All</button>
+        <button onClick={() => setFilter("all")} className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${filter === "all" ? "bg-[var(--accent)] text-[var(--background)]" : "bg-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)]"}`}>All</button>
         {sections.map((s) => (
-          <button key={s.id} onClick={() => setFilter(s.id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${filter === s.id ? "bg-[#70E844] text-[#131313]" : "bg-[#2a2a2a] text-[#888] hover:text-[#fafafa]"}`}>{s.name}</button>
+          <button key={s.id} onClick={() => setFilter(s.id)} className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${filter === s.id ? "bg-[var(--accent)] text-[var(--background)]" : "bg-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)]"}`}>{s.name}</button>
         ))}
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-[#666] text-sm text-center py-12">No content yet.</p>
+        <p className="text-[var(--muted-foreground)] text-sm text-center py-12">No content yet.</p>
       ) : isDraggable ? (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={filtered.map((i) => i.id)} strategy={verticalListSortingStrategy}>
@@ -219,33 +219,33 @@ export default function AdminHomeContentPage() {
       ) : (
         <div className="space-y-2">
           {filtered.map((item) => (
-            <div key={item.id} className="flex items-center gap-3 bg-[#181818] border border-[#2a2a2a] rounded-lg px-4 py-3">
+            <div key={item.id} className="flex items-center gap-3 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-4 py-3">
               {item.coverImage ? (
-                <img src={item.coverImage} alt="" className="w-12 h-12 rounded object-cover bg-[#2a2a2a] flex-shrink-0" />
+                <img src={item.coverImage} alt="" className="w-12 h-12 rounded object-cover bg-[var(--border)] flex-shrink-0" />
               ) : (
-                <div className="w-12 h-12 rounded bg-[#2a2a2a] flex-shrink-0" />
+                <div className="w-12 h-12 rounded bg-[var(--border)] flex-shrink-0" />
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-[#fafafa] font-medium text-sm truncate">{item.title}</p>
-                <p className="text-[#666] text-xs truncate">{sectionName(item.sectionId)}</p>
+                <p className="text-[var(--foreground)] font-medium text-sm truncate">{item.title}</p>
+                <p className="text-[var(--muted-foreground)] text-xs truncate">{sectionName(item.sectionId)}</p>
                 {item.tags && (
                   <div className="flex gap-1 mt-1 flex-wrap">
                     {item.tags.split(",").map((t) => t.trim()).filter(Boolean).map((tag) => (
-                      <span key={tag} className="px-1.5 py-0.5 rounded text-[10px] bg-[#70E844]/10 text-[#70E844]">{tag}</span>
+                      <span key={tag} className="px-1.5 py-0.5 rounded text-[10px] bg-[var(--accent)]/10 text-[var(--accent)]">{tag}</span>
                     ))}
                   </div>
                 )}
               </div>
               {deletingId === item.id ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-[#FE454E] text-xs">Are you sure?</span>
-                  <button onClick={() => handleDelete(item.id)} className="px-3 py-1 rounded text-xs bg-[#FE454E] text-white hover:bg-[#e03d45]">Delete</button>
-                  <button onClick={() => setDeletingId(null)} className="px-3 py-1 rounded text-xs bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333]">Cancel</button>
+                  <span className="text-[var(--danger)] text-xs">Are you sure?</span>
+                  <button onClick={() => handleDelete(item.id)} className="px-3 py-1 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)]">Delete</button>
+                  <button onClick={() => setDeletingId(null)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">Cancel</button>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <button onClick={() => openEdit(item)} className="p-1.5 rounded hover:bg-[#2a2a2a] text-[#888] hover:text-[#fafafa]"><FiEdit2 size={14} /></button>
-                  <button onClick={() => setDeletingId(item.id)} className="p-1.5 rounded hover:bg-[#2a2a2a] text-[#888] hover:text-[#FE454E]"><FiTrash2 size={14} /></button>
+                  <button onClick={() => openEdit(item)} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)]"><FiEdit2 size={14} /></button>
+                  <button onClick={() => setDeletingId(item.id)} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)]"><FiTrash2 size={14} /></button>
                 </div>
               )}
             </div>
@@ -254,47 +254,47 @@ export default function AdminHomeContentPage() {
       )}
 
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
-          <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-semibold text-[#fafafa] mb-4">{editingId ? "Edit Content" : "Add Content"}</h2>
+        <div className="fixed inset-0 bg-[var(--overlay)] z-50 flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">{editingId ? "Edit Content" : "Add Content"}</h2>
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-[#888] mb-1 block">Section *</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">Section *</label>
                 <select className="dash-input" value={form.sectionId} onChange={(e) => setForm((f) => ({ ...f, sectionId: e.target.value }))}>
                   <option value="">Select section</option>
                   {sections.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-[#888] mb-1 block">Title *</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">Title *</label>
                 <input className="dash-input" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Project title" />
               </div>
               <div>
-                <label className="text-xs text-[#888] mb-1 block">Description *</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">Description *</label>
                 <textarea className="dash-input min-h-[80px]" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Project description" />
               </div>
               <div>
-                <label className="text-xs text-[#888] mb-1 block">Tags</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">Tags</label>
                 <input className="dash-input" value={form.tags} onChange={(e) => setForm((f) => ({ ...f, tags: e.target.value }))} placeholder="React, Next.js, TypeScript" />
               </div>
               <div>
-                <label className="text-xs text-[#888] mb-1 block">Cover Image URL</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">Cover Image URL</label>
                 <input className="dash-input" value={form.coverImage} onChange={(e) => setForm((f) => ({ ...f, coverImage: e.target.value }))} placeholder="https://..." />
               </div>
               <div className="grid grid-cols-3 gap-2">
-                <div><label className="text-xs text-[#888] mb-1 block">Image 2</label><input className="dash-input" value={form.image1} onChange={(e) => setForm((f) => ({ ...f, image1: e.target.value }))} placeholder="URL" /></div>
-                <div><label className="text-xs text-[#888] mb-1 block">Image 3</label><input className="dash-input" value={form.image2} onChange={(e) => setForm((f) => ({ ...f, image2: e.target.value }))} placeholder="URL" /></div>
-                <div><label className="text-xs text-[#888] mb-1 block">Image 4</label><input className="dash-input" value={form.image3} onChange={(e) => setForm((f) => ({ ...f, image3: e.target.value }))} placeholder="URL" /></div>
+                <div><label className="text-xs text-[var(--muted)] mb-1 block">Image 2</label><input className="dash-input" value={form.image1} onChange={(e) => setForm((f) => ({ ...f, image1: e.target.value }))} placeholder="URL" /></div>
+                <div><label className="text-xs text-[var(--muted)] mb-1 block">Image 3</label><input className="dash-input" value={form.image2} onChange={(e) => setForm((f) => ({ ...f, image2: e.target.value }))} placeholder="URL" /></div>
+                <div><label className="text-xs text-[var(--muted)] mb-1 block">Image 4</label><input className="dash-input" value={form.image3} onChange={(e) => setForm((f) => ({ ...f, image3: e.target.value }))} placeholder="URL" /></div>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <div><label className="text-xs text-[#888] mb-1 block">Live URL</label><input className="dash-input" value={form.liveUrl} onChange={(e) => setForm((f) => ({ ...f, liveUrl: e.target.value }))} placeholder="https://..." /></div>
-                <div><label className="text-xs text-[#888] mb-1 block">Repo URL</label><input className="dash-input" value={form.repoUrl} onChange={(e) => setForm((f) => ({ ...f, repoUrl: e.target.value }))} placeholder="https://..." /></div>
+                <div><label className="text-xs text-[var(--muted)] mb-1 block">Live URL</label><input className="dash-input" value={form.liveUrl} onChange={(e) => setForm((f) => ({ ...f, liveUrl: e.target.value }))} placeholder="https://..." /></div>
+                <div><label className="text-xs text-[var(--muted)] mb-1 block">Repo URL</label><input className="dash-input" value={form.repoUrl} onChange={(e) => setForm((f) => ({ ...f, repoUrl: e.target.value }))} placeholder="https://..." /></div>
               </div>
             </div>
-            {error && <p className="text-[#FE454E] text-xs mt-3">{error}</p>}
+            {error && <p className="text-[var(--danger)] text-xs mt-3">{error}</p>}
             <div className="flex justify-end gap-2 mt-5">
-              <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333]">Cancel</button>
-              <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] disabled:opacity-50">{saving ? "Saving..." : editingId ? "Update" : "Create"}</button>
+              <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">Cancel</button>
+              <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">{saving ? "Saving..." : editingId ? "Update" : "Create"}</button>
             </div>
           </div>
         </div>

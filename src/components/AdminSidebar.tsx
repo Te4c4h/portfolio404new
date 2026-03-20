@@ -27,6 +27,7 @@ import {
   FiSliders,
   FiMonitor,
 } from "react-icons/fi";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface AdminSidebarProps {
   username: string;
@@ -69,7 +70,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
     <div className="flex flex-col h-full">
       {/* Header — User name + View Portfolio */}
       <div className="px-5 py-6">
-        <h2 className="text-[#70E844] font-bold text-lg tracking-tight truncate">
+        <h2 className="text-[var(--accent)] font-bold text-lg tracking-tight truncate">
           {displayName}
         </h2>
         {!isAdmin && (
@@ -77,7 +78,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             href={`/u/${username}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg text-xs font-medium border border-[#70E844]/30 text-[#70E844] hover:bg-[#70E844]/10 transition-colors"
+            className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--accent)]/30 text-[var(--accent)] hover:bg-[var(--sidebar-active)] transition-colors"
           >
             <FiExternalLink size={13} />
             View Portfolio
@@ -88,7 +89,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg text-xs font-medium border border-[#70E844]/30 text-[#70E844] hover:bg-[#70E844]/10 transition-colors"
+            className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--accent)]/30 text-[var(--accent)] hover:bg-[var(--sidebar-active)] transition-colors"
           >
             <FiExternalLink size={13} />
             View Home Page
@@ -104,8 +105,8 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
           onClick={() => setOpen(false)}
           className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
             isActive("")
-              ? "bg-[#70E844]/10 text-[#70E844]"
-              : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+              ? "bg-[var(--sidebar-active)] text-[var(--accent)]"
+              : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
           }`}
         >
           <FiBarChart2 size={18} />
@@ -119,8 +120,8 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             onClick={() => setOpen(false)}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
               isActive("/account-settings")
-                ? "bg-[#70E844]/10 text-[#70E844]"
-                : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+                ? "bg-[var(--sidebar-active)] text-[var(--accent)]"
+                : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
             }`}
           >
             <FiSliders size={18} />
@@ -134,8 +135,8 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             onClick={() => setPortfolioOpen((v) => !v)}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors w-full ${
               isPortfolioActive
-                ? "bg-[#70E844]/10 text-[#70E844]"
-                : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+                ? "bg-[var(--sidebar-active)] text-[var(--accent)]"
+                : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
             }`}
           >
             <FiLayout size={18} />
@@ -154,7 +155,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
                 transition={{ duration: 0.2 }}
                 className="overflow-hidden"
               >
-                <div className="ml-3 pl-3 border-l border-[#2a2a2a] mt-1 space-y-0.5">
+                <div className="ml-3 pl-3 border-l border-[var(--border)] mt-1 space-y-0.5">
                   {portfolioChildren.map((child) => {
                     const Icon = child.icon;
                     const active = isActive(child.href);
@@ -165,8 +166,8 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
                         onClick={() => setOpen(false)}
                         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
                           active
-                            ? "bg-[#70E844]/10 text-[#70E844]"
-                            : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+                            ? "bg-[var(--sidebar-active)] text-[var(--accent)]"
+                            : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
                         }`}
                       >
                         <Icon size={16} />
@@ -187,8 +188,8 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             onClick={() => setOpen(false)}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
               isActive("/resume")
-                ? "bg-[#70E844]/10 text-[#70E844]"
-                : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+                ? "bg-[var(--sidebar-active)] text-[var(--accent)]"
+                : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
             }`}
           >
             <FiFileText size={18} />
@@ -203,8 +204,8 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             onClick={() => setOpen(false)}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
               isActive("/billing")
-                ? "bg-[#70E844]/10 text-[#70E844]"
-                : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+                ? "bg-[var(--sidebar-active)] text-[var(--accent)]"
+                : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
             }`}
           >
             <FiCreditCard size={18} />
@@ -215,14 +216,14 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
         {/* Admin: Manage Users */}
         {isAdmin && (
           <>
-            <div className="my-3 border-t border-[#2a2a2a]" />
+            <div className="my-3 border-t border-[var(--border)]" />
             <Link
               href={`${basePath}/users`}
               onClick={() => setOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 pathname.startsWith(`${basePath}/users`)
-                  ? "bg-[#70E844]/10 text-[#70E844]"
-                  : "text-[#888] hover:text-[#fafafa] hover:bg-[#ffffff08]"
+                  ? "bg-[var(--sidebar-active)] text-[var(--accent)]"
+                  : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
               }`}
             >
               <FiLayers size={18} />
@@ -233,10 +234,11 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
       </nav>
 
       {/* Logout — pinned to bottom */}
-      <div className="px-3 pb-6">
+      <div className="px-3 pb-6 space-y-1">
+        <ThemeToggle className="w-full flex items-center justify-center" />
         <button
           onClick={() => signOut({ callbackUrl: isAdmin ? "/" : `/u/${username}` })}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#888] hover:text-[#FE454E] hover:bg-[#FE454E]/10 transition-colors w-full"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-colors w-full"
         >
           <FiLogOut size={18} />
           Logout
@@ -250,13 +252,13 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
       {/* Mobile hamburger */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed top-4 left-4 z-50 lg:hidden p-2 rounded-lg bg-[#181818] border border-[#2a2a2a] text-[#fafafa]"
+        className="fixed top-4 left-4 z-50 lg:hidden p-2 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)]"
       >
         <FiMenu size={20} />
       </button>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-60 bg-[#181818] border-r border-[#2a2a2a]">
+      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-60 bg-[var(--surface)] border-r border-[var(--border)]">
         {sidebar}
       </aside>
 
@@ -269,18 +271,18 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setOpen(false)}
-              className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+              className="fixed inset-0 bg-[var(--overlay)] z-40 lg:hidden"
             />
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
-              className="fixed left-0 top-0 h-[100dvh] w-60 bg-[#181818] border-r border-[#2a2a2a] z-50 lg:hidden"
+              className="fixed left-0 top-0 h-[100dvh] w-60 bg-[var(--surface)] border-r border-[var(--border)] z-50 lg:hidden"
             >
               <button
                 onClick={() => setOpen(false)}
-                className="absolute top-4 right-4 text-[#888] hover:text-[#fafafa]"
+                className="absolute top-4 right-4 text-[var(--muted)] hover:text-[var(--foreground)]"
               >
                 <FiX size={20} />
               </button>

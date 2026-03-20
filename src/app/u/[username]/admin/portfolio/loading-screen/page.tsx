@@ -36,28 +36,28 @@ export default function LoadingScreenPage() {
     setToast(true);
   };
 
-  if (loading) return <div className="text-[#888] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
 
   return (
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#fafafa]">Loading Screen</h1>
-        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] disabled:opacity-50">
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Loading Screen</h1>
+        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
       <div className="space-y-6">
         {/* Toggle */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[#fafafa]">Show loading screen when portfolio is visited</p>
-              <p className="text-xs text-[#888] mt-0.5">When off, your portfolio loads directly without the intro animation.</p>
+              <p className="text-sm font-medium text-[var(--foreground)]">Show loading screen when portfolio is visited</p>
+              <p className="text-xs text-[var(--muted)] mt-0.5">When off, your portfolio loads directly without the intro animation.</p>
             </div>
             <button
               onClick={() => setEnabled((v) => !v)}
-              className={`relative w-11 h-6 rounded-full transition-colors ${enabled ? "bg-[#70E844]" : "bg-[#2a2a2a]"}`}
+              className={`relative w-11 h-6 rounded-full transition-colors ${enabled ? "bg-[var(--accent)]" : "bg-[var(--border)]"}`}
             >
               <span
                 className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${enabled ? "translate-x-5" : ""}`}
@@ -67,15 +67,15 @@ export default function LoadingScreenPage() {
         </div>
 
         {/* Fields */}
-        <div className={`bg-[#181818] border border-[#2a2a2a] rounded-xl p-5 transition-opacity ${!enabled ? "opacity-50 pointer-events-none" : ""}`}>
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Loading Screen Content</h2>
+        <div className={`bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 transition-opacity ${!enabled ? "opacity-50 pointer-events-none" : ""}`}>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Loading Screen Content</h2>
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Loading Heading</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Loading Heading</label>
               <input className="dash-input" value={loadingHeading} onChange={(e) => setLoadingHeading(e.target.value)} placeholder="Your Name" />
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Loading Subtitle</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Loading Subtitle</label>
               <input className="dash-input" value={loadingSubtitle} onChange={(e) => setLoadingSubtitle(e.target.value)} placeholder="Portfolio" />
             </div>
           </div>

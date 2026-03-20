@@ -12,5 +12,5 @@ export default function ThemeRedirect() {
     router.replace(`/u/${username}/admin/portfolio/settings`);
   }, [router, username]);
 
-  return <div className="text-[#888] text-sm">Redirecting...</div>;
+  return <div className="text-[var(--muted)] text-sm">Redirecting...</div>;
 }

@@ -28,8 +28,8 @@ export default function UserDashboardLayout({
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-[#131313] flex items-center justify-center">
-        <div className="text-[#888] text-sm">Loading...</div>
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+        <div className="text-[var(--muted)] text-sm">Loading...</div>
       </div>
     );
   }
@@ -37,14 +37,7 @@ export default function UserDashboardLayout({
   if (!session) return null;
 
   return (
-    <div className="min-h-screen bg-[#131313] text-[#fafafa]">
-      <style>{`
-        html, body {
-          background-color: #131313 !important;
-          color: #fafafa !important;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-        }
-      `}</style>
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <AdminSidebar username={username} isAdmin={session.user.isAdmin} firstName={session.user.firstName || ""} lastName={session.user.lastName || ""} />
       <main className="lg:ml-60 min-h-screen p-6 pt-16 lg:pt-6">
         {children}

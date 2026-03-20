@@ -54,8 +54,8 @@ function MiniLineChart({ data, accent }: { data: { date: string; views: number }
         const y = py + chartH - (tick / max) * chartH;
         return (
           <g key={tick}>
-            <line x1={px} y1={y} x2={w - px} y2={y} stroke="#2a2a2a" strokeWidth={1} />
-            <text x={px - 6} y={y + 4} textAnchor="end" fill="#555" fontSize={10}>{tick}</text>
+            <line x1={px} y1={y} x2={w - px} y2={y} stroke="var(--border)" strokeWidth={1} />
+            <text x={px - 6} y={y + 4} textAnchor="end" fill="var(--muted-foreground)" fontSize={10}>{tick}</text>
           </g>
         );
       })}
@@ -66,7 +66,7 @@ function MiniLineChart({ data, accent }: { data: { date: string; views: number }
       ))}
       {/* X-axis labels — show every 7th */}
       {points.filter((_, i) => i % 7 === 0).map((p) => (
-        <text key={p.date} x={p.x} y={h - 2} textAnchor="middle" fill="#555" fontSize={9}>
+        <text key={p.date} x={p.x} y={h - 2} textAnchor="middle" fill="var(--muted-foreground)" fontSize={9}>
           {new Date(p.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
         </text>
       ))}
@@ -122,30 +122,30 @@ export default function AnalyticsPage() {
 
   return (
     <div className="max-w-5xl">
-      <h1 className="text-2xl font-bold text-[#fafafa] mb-6">Analytics</h1>
+      <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">Analytics</h1>
 
       {/* Upgrade Banner */}
       {lsEnabled && !isAdmin && sub && !sub.hasAccess && (
-        <div className="mb-6 bg-gradient-to-r from-[#70E844]/10 to-[#70E844]/5 border border-[#70E844]/20 rounded-xl p-5">
+        <div className="mb-6 bg-gradient-to-r from-[var(--accent)]/10 to-[var(--accent)]/5 border border-[var(--accent)]/20 rounded-xl p-5">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="flex-1">
-              <h2 className="text-[#70E844] font-semibold text-sm flex items-center gap-2">
+              <h2 className="text-[var(--accent)] font-semibold text-sm flex items-center gap-2">
                 <FiZap size={16} />
                 Upgrade to Portfolio 404 Pro
               </h2>
-              <p className="text-[#888] text-xs mt-1">
-                Subscribe for <strong className="text-[#fafafa]">$1/month</strong> to publish and share your portfolio with the world.
+              <p className="text-[var(--muted)] text-xs mt-1">
+                Subscribe for <strong className="text-[var(--foreground)]">$1/month</strong> to publish and share your portfolio with the world.
               </p>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={handleSubscribe}
                 disabled={checkingOut}
-                className="px-5 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] transition-colors disabled:opacity-50"
+                className="px-5 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-50"
               >
                 {checkingOut ? "Redirecting..." : "Subscribe — $1/mo"}
               </button>
-              <Link href="/pricing" className="text-xs text-[#888] hover:text-[#fafafa] transition-colors">
+              <Link href="/pricing" className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
                 Learn more
               </Link>
             </div>
@@ -154,71 +154,71 @@ export default function AnalyticsPage() {
       )}
 
       {loading ? (
-        <div className="text-[#888] text-sm">Loading analytics...</div>
+        <div className="text-[var(--muted)] text-sm">Loading analytics...</div>
       ) : !analytics ? (
-        <div className="text-[#888] text-sm">Could not load analytics.</div>
+        <div className="text-[var(--muted)] text-sm">Could not load analytics.</div>
       ) : (
         <>
           {/* Visitor Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
               <div className="flex items-center gap-2 mb-2">
-                <FiEye size={14} className="text-[#888]" />
-                <p className="text-[#888] text-xs uppercase tracking-wider">Total Views</p>
+                <FiEye size={14} className="text-[var(--muted)]" />
+                <p className="text-[var(--muted)] text-xs uppercase tracking-wider">Total Views</p>
               </div>
-              <p className="text-3xl font-bold text-[#70E844]">{analytics.totalViews.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-[var(--accent)]">{analytics.totalViews.toLocaleString()}</p>
             </div>
-            <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
               <div className="flex items-center gap-2 mb-2">
-                <FiUsers size={14} className="text-[#888]" />
-                <p className="text-[#888] text-xs uppercase tracking-wider">Unique Days</p>
+                <FiUsers size={14} className="text-[var(--muted)]" />
+                <p className="text-[var(--muted)] text-xs uppercase tracking-wider">Unique Days</p>
               </div>
-              <p className="text-3xl font-bold text-[#70E844]">{analytics.uniqueVisitors}</p>
+              <p className="text-3xl font-bold text-[var(--accent)]">{analytics.uniqueVisitors}</p>
             </div>
-            <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
               <div className="flex items-center gap-2 mb-2">
-                <FiEye size={14} className="text-[#888]" />
-                <p className="text-[#888] text-xs uppercase tracking-wider">This Month</p>
+                <FiEye size={14} className="text-[var(--muted)]" />
+                <p className="text-[var(--muted)] text-xs uppercase tracking-wider">This Month</p>
               </div>
-              <p className="text-3xl font-bold text-[#70E844]">{analytics.viewsThisMonth.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-[var(--accent)]">{analytics.viewsThisMonth.toLocaleString()}</p>
               <div className="flex items-center gap-1 mt-1">
                 {analytics.monthChange >= 0 ? (
-                  <FiTrendingUp size={12} className="text-[#70E844]" />
+                  <FiTrendingUp size={12} className="text-[var(--accent)]" />
                 ) : (
-                  <FiTrendingDown size={12} className="text-[#FE454E]" />
+                  <FiTrendingDown size={12} className="text-[var(--danger)]" />
                 )}
-                <span className={`text-xs font-medium ${analytics.monthChange >= 0 ? "text-[#70E844]" : "text-[#FE454E]"}`}>
+                <span className={`text-xs font-medium ${analytics.monthChange >= 0 ? "text-[var(--accent)]" : "text-[var(--danger)]"}`}>
                   {analytics.monthChange >= 0 ? "+" : ""}{analytics.monthChange}% vs last month
                 </span>
               </div>
             </div>
-            <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
               <div className="flex items-center gap-2 mb-2">
-                <FiEye size={14} className="text-[#888]" />
-                <p className="text-[#888] text-xs uppercase tracking-wider">Last Month</p>
+                <FiEye size={14} className="text-[var(--muted)]" />
+                <p className="text-[var(--muted)] text-xs uppercase tracking-wider">Last Month</p>
               </div>
-              <p className="text-3xl font-bold text-[#888]">{analytics.viewsLastMonth.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-[var(--muted)]">{analytics.viewsLastMonth.toLocaleString()}</p>
             </div>
           </div>
 
           {/* Daily Chart */}
-          <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5 mb-6">
-            <h2 className="text-sm font-semibold text-[#fafafa] mb-4 uppercase tracking-wider">Daily Visitors — Last 30 Days</h2>
-            <MiniLineChart data={analytics.dailyChart} accent="#70E844" />
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 mb-6">
+            <h2 className="text-sm font-semibold text-[var(--foreground)] mb-4 uppercase tracking-wider">Daily Visitors — Last 30 Days</h2>
+            <MiniLineChart data={analytics.dailyChart} accent="var(--accent)" />
           </div>
 
           {/* Contact Analytics */}
           {analytics.contactStats.length > 0 && (
-            <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5 mb-6">
-              <h2 className="text-sm font-semibold text-[#fafafa] mb-4 uppercase tracking-wider flex items-center gap-2">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 mb-6">
+              <h2 className="text-sm font-semibold text-[var(--foreground)] mb-4 uppercase tracking-wider flex items-center gap-2">
                 <FiMousePointer size={14} />
                 Contact Link Clicks
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {analytics.contactStats.map((c) => (
-                  <div key={c.type} className="bg-[#131313] border border-[#2a2a2a] rounded-lg p-4 text-center">
-                    <p className="text-xs text-[#888] uppercase tracking-wider mb-1">{c.type}</p>
-                    <p className="text-2xl font-bold text-[#70E844]">{c.clicks}</p>
+                  <div key={c.type} className="bg-[var(--background)] border border-[var(--border)] rounded-lg p-4 text-center">
+                    <p className="text-xs text-[var(--muted)] uppercase tracking-wider mb-1">{c.type}</p>
+                    <p className="text-2xl font-bold text-[var(--accent)]">{c.clicks}</p>
                   </div>
                 ))}
               </div>
@@ -227,39 +227,39 @@ export default function AnalyticsPage() {
 
           {/* Content Analytics */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-              <p className="text-[#888] text-xs uppercase tracking-wider mb-1">Total Sections</p>
-              <p className="text-3xl font-bold text-[#70E844]">{analytics.sectionsCount}</p>
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+              <p className="text-[var(--muted)] text-xs uppercase tracking-wider mb-1">Total Sections</p>
+              <p className="text-3xl font-bold text-[var(--accent)]">{analytics.sectionsCount}</p>
             </div>
-            <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-              <p className="text-[#888] text-xs uppercase tracking-wider mb-1">Total Content Items</p>
-              <p className="text-3xl font-bold text-[#70E844]">{analytics.contentCount}</p>
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+              <p className="text-[var(--muted)] text-xs uppercase tracking-wider mb-1">Total Content Items</p>
+              <p className="text-3xl font-bold text-[var(--accent)]">{analytics.contentCount}</p>
             </div>
-            <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-              <p className="text-[#888] text-xs uppercase tracking-wider mb-1">Top Section</p>
-              <p className="text-lg font-semibold text-[#70E844] truncate">{analytics.mostViewedSection || "—"}</p>
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+              <p className="text-[var(--muted)] text-xs uppercase tracking-wider mb-1">Top Section</p>
+              <p className="text-lg font-semibold text-[var(--accent)] truncate">{analytics.mostViewedSection || "—"}</p>
             </div>
           </div>
 
           {/* Meta */}
-          <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-[#888] text-xs uppercase tracking-wider">Last Updated</span>
-                  <span className="text-sm text-[#fafafa]">
+                  <span className="text-[var(--muted)] text-xs uppercase tracking-wider">Last Updated</span>
+                  <span className="text-sm text-[var(--foreground)]">
                     {analytics.lastUpdated
                       ? new Date(analytics.lastUpdated).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
                       : "—"}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[#888] text-xs uppercase tracking-wider">Portfolio URL</span>
-                  <a href={analytics.portfolioUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-[#70E844] hover:underline truncate max-w-xs">
+                  <span className="text-[var(--muted)] text-xs uppercase tracking-wider">Portfolio URL</span>
+                  <a href={analytics.portfolioUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-[var(--accent)] hover:underline truncate max-w-xs break-all">
                     {analytics.portfolioUrl}
                   </a>
-                  <button onClick={copyUrl} className="text-[#888] hover:text-[#fafafa] transition-colors" title="Copy URL">
-                    {copied ? <FiCheck size={14} className="text-[#70E844]" /> : <FiCopy size={14} />}
+                  <button onClick={copyUrl} className="text-[var(--muted)] hover:text-[var(--foreground)] transition-colors flex-shrink-0" title="Copy URL">
+                    {copied ? <FiCheck size={14} className="text-[var(--accent)]" /> : <FiCopy size={14} />}
                   </button>
                 </div>
               </div>

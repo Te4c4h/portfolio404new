@@ -85,51 +85,51 @@ export default function AdminHomeThemePage() {
     setTheme((t) => ({ ...t, [key]: value }));
   };
 
-  if (loading) return <div className="text-[#888] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
 
   return (
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#fafafa]">Home Page — Theme</h1>
-        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] disabled:opacity-50">
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Home Page — Theme</h1>
+        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
       <div className="space-y-8">
         {/* Colors */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Colors</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Colors</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {colorFields.map(({ key, label }) => (
               <div key={key}>
-                <label className="text-xs text-[#888] mb-1 block">{label}</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">{label}</label>
                 <div className="flex items-center gap-2">
-                  <input type="color" value={theme[key]} onChange={(e) => updateColor(key, e.target.value)} className="w-9 h-9 rounded border border-[#2a2a2a] bg-transparent cursor-pointer" />
+                  <input type="color" value={theme[key]} onChange={(e) => updateColor(key, e.target.value)} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
                   <input className="dash-input" value={theme[key]} onChange={(e) => updateColor(key, e.target.value)} placeholder={defaults[key]} />
                 </div>
               </div>
             ))}
           </div>
-          <div className="mt-4 pt-4 border-t border-[#2a2a2a]">
-            <label className="text-xs text-[#888] mb-1 block">Grid Color</label>
+          <div className="mt-4 pt-4 border-t border-[var(--border)]">
+            <label className="text-xs text-[var(--muted)] mb-1 block">Grid Color</label>
             <input className="dash-input" value={theme.gridColor} onChange={(e) => setTheme((t) => ({ ...t, gridColor: e.target.value }))} placeholder="rgba(255,255,255,0.03)" />
-            <p className="text-[#555] text-[10px] mt-0.5">Background grid overlay color. Use rgba for transparency.</p>
+            <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">Background grid overlay color. Use rgba for transparency.</p>
           </div>
         </div>
 
         {/* Fonts */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Fonts</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Fonts</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Body Font</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Body Font</label>
               <select className="dash-input" value={theme.bodyFont} onChange={(e) => setTheme((t) => ({ ...t, bodyFont: e.target.value }))}>
                 {fonts.map((f) => <option key={f} value={f}>{f}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Heading Font</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Heading Font</label>
               <select className="dash-input" value={theme.headingFont} onChange={(e) => setTheme((t) => ({ ...t, headingFont: e.target.value }))}>
                 {fonts.map((f) => <option key={f} value={f}>{f}</option>)}
               </select>
@@ -138,19 +138,19 @@ export default function AdminHomeThemePage() {
         </div>
 
         {/* Branding */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Branding</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Branding</h2>
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Logo URL</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Logo URL</label>
               <input className="dash-input" value={theme.logoUrl} onChange={(e) => setTheme((t) => ({ ...t, logoUrl: e.target.value }))} placeholder="https://..." />
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Favicon URL</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Favicon URL</label>
               <input className="dash-input" value={theme.faviconUrl} onChange={(e) => setTheme((t) => ({ ...t, faviconUrl: e.target.value }))} placeholder="https://..." />
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Webclip / OG Image URL</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Webclip / OG Image URL</label>
               <input className="dash-input" value={theme.webclipUrl} onChange={(e) => setTheme((t) => ({ ...t, webclipUrl: e.target.value }))} placeholder="https://..." />
             </div>
           </div>

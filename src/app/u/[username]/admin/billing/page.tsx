@@ -62,7 +62,7 @@ export default function BillingPage() {
     }
   };
 
-  if (loading) return <div className="text-[#888] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
 
   const status = sub?.subscriptionStatus || "free";
   const periodEnd = sub?.currentPeriodEnd
@@ -73,32 +73,32 @@ export default function BillingPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-[#fafafa] mb-6">Plan & Billing</h1>
+      <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">Plan & Billing</h1>
 
       {/* Success banner after checkout */}
       {successBanner && (
-        <div className="mb-6 bg-[#70E844]/10 border border-[#70E844]/20 rounded-xl p-4 flex items-center gap-3">
-          <FiCheck size={18} className="text-[#70E844] flex-shrink-0" />
-          <p className="text-sm text-[#ccc]">
+        <div className="mb-6 bg-[var(--accent)]/10 border border-[var(--accent)]/20 rounded-xl p-4 flex items-center gap-3">
+          <FiCheck size={18} className="text-[var(--accent)] flex-shrink-0" />
+          <p className="text-sm text-[var(--foreground)]/80">
             Payment successful! Your subscription is being activated. It may take a moment for your status to update.
           </p>
         </div>
       )}
 
       {/* Current Plan Card */}
-      <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-6 mb-6">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-[#fafafa] uppercase tracking-wider">Current Plan</h2>
+          <h2 className="text-sm font-semibold text-[var(--foreground)] uppercase tracking-wider">Current Plan</h2>
           <PlanBadge status={status} isFreeAccess={sub?.isFreeAccess || false} />
         </div>
 
         {/* Free Access */}
         {sub?.isFreeAccess && (
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-[#70E844]/5 border border-[#70E844]/10">
-            <FiZap size={18} className="text-[#70E844] mt-0.5" />
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-[var(--accent)]/5 border border-[var(--accent)]/10">
+            <FiZap size={18} className="text-[var(--accent)] mt-0.5" />
             <div>
-              <p className="text-sm text-[#fafafa] font-medium">Free Access Granted</p>
-              <p className="text-xs text-[#888] mt-0.5">
+              <p className="text-sm text-[var(--foreground)] font-medium">Free Access Granted</p>
+              <p className="text-xs text-[var(--muted)] mt-0.5">
                 An admin has granted you full access. No subscription required.
               </p>
             </div>
@@ -108,37 +108,37 @@ export default function BillingPage() {
         {/* Active */}
         {status === "active" && !sub?.isFreeAccess && (
           <div>
-            <div className="flex items-start gap-3 p-4 rounded-lg bg-[#70E844]/5 border border-[#70E844]/10 mb-4">
-              <FiCheck size={18} className="text-[#70E844] mt-0.5" />
+            <div className="flex items-start gap-3 p-4 rounded-lg bg-[var(--accent)]/5 border border-[var(--accent)]/10 mb-4">
+              <FiCheck size={18} className="text-[var(--accent)] mt-0.5" />
               <div>
-                <p className="text-sm text-[#fafafa] font-medium">Portfolio 404 Pro — $1/month</p>
+                <p className="text-sm text-[var(--foreground)] font-medium">Portfolio 404 Pro — $1/month</p>
                 {periodEnd && (
-                  <p className="text-xs text-[#888] mt-0.5">Next billing date: {periodEnd}</p>
+                  <p className="text-xs text-[var(--muted)] mt-0.5">Next billing date: {periodEnd}</p>
                 )}
               </div>
             </div>
             {!confirmCancel ? (
               <button
                 onClick={() => setConfirmCancel(true)}
-                className="text-xs text-[#888] hover:text-[#FE454E] transition-colors"
+                className="text-xs text-[var(--muted)] hover:text-[var(--danger)] transition-colors"
               >
                 Cancel subscription
               </button>
             ) : (
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-[#FE454E]/5 border border-[#FE454E]/10">
-                <p className="text-xs text-[#ccc] flex-1">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-[var(--danger)]/5 border border-[var(--danger)]/10">
+                <p className="text-xs text-[var(--foreground)]/80 flex-1">
                   Are you sure? You&apos;ll keep access until {periodEnd || "the end of your billing period"}.
                 </p>
                 <button
                   onClick={handleCancel}
                   disabled={cancelling}
-                  className="px-3 py-1.5 rounded text-xs bg-[#FE454E] text-white hover:bg-[#e03d45] disabled:opacity-50"
+                  className="px-3 py-1.5 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)] disabled:opacity-50"
                 >
                   {cancelling ? "Cancelling..." : "Confirm"}
                 </button>
                 <button
                   onClick={() => setConfirmCancel(false)}
-                  className="px-3 py-1.5 rounded text-xs bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333]"
+                  className="px-3 py-1.5 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]"
                 >
                   Keep Plan
                 </button>
@@ -152,8 +152,8 @@ export default function BillingPage() {
           <div className="flex items-start gap-3 p-4 rounded-lg bg-[#FFA500]/5 border border-[#FFA500]/10">
             <FiClock size={18} className="text-[#FFA500] mt-0.5" />
             <div>
-              <p className="text-sm text-[#fafafa] font-medium">Subscription Cancelled</p>
-              <p className="text-xs text-[#888] mt-0.5">
+              <p className="text-sm text-[var(--foreground)] font-medium">Subscription Cancelled</p>
+              <p className="text-xs text-[var(--muted)] mt-0.5">
                 {periodEnd
                   ? `You still have access until ${periodEnd}. After that, your portfolio will no longer be public.`
                   : "Your access will end at the end of your billing period."}
@@ -164,11 +164,11 @@ export default function BillingPage() {
 
         {/* Past Due */}
         {status === "past_due" && (
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-[#FE454E]/5 border border-[#FE454E]/10">
-            <FiAlertTriangle size={18} className="text-[#FE454E] mt-0.5" />
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-[var(--danger)]/5 border border-[var(--danger)]/10">
+            <FiAlertTriangle size={18} className="text-[var(--danger)] mt-0.5" />
             <div>
-              <p className="text-sm text-[#fafafa] font-medium">Payment Failed</p>
-              <p className="text-xs text-[#888] mt-0.5">
+              <p className="text-sm text-[var(--foreground)] font-medium">Payment Failed</p>
+              <p className="text-xs text-[var(--muted)] mt-0.5">
                 Your last payment failed. Please update your payment method to keep your portfolio published.
               </p>
             </div>
@@ -178,11 +178,11 @@ export default function BillingPage() {
         {/* Free — upgrade prompt */}
         {status === "free" && !sub?.isFreeAccess && (
           <div>
-            <div className="flex items-start gap-3 p-4 rounded-lg bg-[#2a2a2a]/50 border border-[#2a2a2a] mb-4">
-              <FiZap size={18} className="text-[#888] mt-0.5" />
+            <div className="flex items-start gap-3 p-4 rounded-lg bg-[var(--border)]/50 border border-[var(--border)] mb-4">
+              <FiZap size={18} className="text-[var(--muted)] mt-0.5" />
               <div>
-                <p className="text-sm text-[#fafafa] font-medium">Free Plan</p>
-                <p className="text-xs text-[#888] mt-0.5">
+                <p className="text-sm text-[var(--foreground)] font-medium">Free Plan</p>
+                <p className="text-xs text-[var(--muted)] mt-0.5">
                   You can build and edit your portfolio, but it won&apos;t be publicly visible until you subscribe.
                 </p>
               </div>
@@ -191,13 +191,13 @@ export default function BillingPage() {
               <button
                 onClick={handleSubscribe}
                 disabled={checkingOut}
-                className="px-5 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] transition-colors disabled:opacity-50"
+                className="px-5 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-50"
               >
                 {checkingOut ? "Redirecting..." : "Upgrade to Pro — $1/mo"}
               </button>
               <Link
                 href="/pricing"
-                className="text-xs text-[#888] hover:text-[#fafafa] transition-colors"
+                className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
               >
                 View features
               </Link>
@@ -212,7 +212,7 @@ export default function BillingPage() {
 function PlanBadge({ status, isFreeAccess }: { status: string; isFreeAccess: boolean }) {
   if (isFreeAccess) {
     return (
-      <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#70E844]/15 text-[#70E844]">
+      <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)]">
         Free Access
       </span>
     );
@@ -221,7 +221,7 @@ function PlanBadge({ status, isFreeAccess }: { status: string; isFreeAccess: boo
   switch (status) {
     case "active":
       return (
-        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#70E844]/15 text-[#70E844]">
+        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)]">
           Pro
         </span>
       );
@@ -233,13 +233,13 @@ function PlanBadge({ status, isFreeAccess }: { status: string; isFreeAccess: boo
       );
     case "past_due":
       return (
-        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#FE454E]/15 text-[#FE454E]">
+        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--danger)]/15 text-[var(--danger)]">
           Past Due
         </span>
       );
     default:
       return (
-        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#888]/15 text-[#888]">
+        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--muted)]/15 text-[var(--muted)]">
           Free
         </span>
       );

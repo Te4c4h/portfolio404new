@@ -58,25 +58,25 @@ function SortableRow({
   const Icon = iconMap[link.platform] || FiGlobe;
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-3 bg-[#181818] border border-[#2a2a2a] rounded-lg px-4 py-3">
-      <button {...attributes} {...listeners} className="cursor-grab text-[#555] hover:text-[#888]">
+    <div ref={setNodeRef} style={style} className="flex items-center gap-3 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-4 py-3">
+      <button {...attributes} {...listeners} className="cursor-grab text-[var(--muted-foreground)] hover:text-[var(--muted)]">
         <FiMenu size={16} />
       </button>
-      <Icon size={16} className="text-[#70E844] flex-shrink-0" />
+      <Icon size={16} className="text-[var(--accent)] flex-shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-[#fafafa] font-medium text-sm truncate">{link.platform}</p>
-        <p className="text-[#666] text-xs truncate">{link.url}</p>
+        <p className="text-[var(--foreground)] font-medium text-sm truncate">{link.platform}</p>
+        <p className="text-[var(--muted-foreground)] text-xs truncate">{link.url}</p>
       </div>
       {confirming ? (
         <div className="flex items-center gap-2">
-          <span className="text-[#FE454E] text-xs">Sure?</span>
-          <button onClick={() => { onDelete(link.id); setConfirming(false); }} className="px-3 py-1 rounded text-xs bg-[#FE454E] text-white hover:bg-[#e03d45]">Delete</button>
-          <button onClick={() => setConfirming(false)} className="px-3 py-1 rounded text-xs bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333]">Cancel</button>
+          <span className="text-[var(--danger)] text-xs">Sure?</span>
+          <button onClick={() => { onDelete(link.id); setConfirming(false); }} className="px-3 py-1 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)]">Delete</button>
+          <button onClick={() => setConfirming(false)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">Cancel</button>
         </div>
       ) : (
         <div className="flex items-center gap-2">
-          <button onClick={() => onEdit(link)} className="p-1.5 rounded hover:bg-[#2a2a2a] text-[#888] hover:text-[#fafafa]"><FiEdit2 size={14} /></button>
-          <button onClick={() => setConfirming(true)} className="p-1.5 rounded hover:bg-[#2a2a2a] text-[#888] hover:text-[#FE454E]"><FiTrash2 size={14} /></button>
+          <button onClick={() => onEdit(link)} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)]"><FiEdit2 size={14} /></button>
+          <button onClick={() => setConfirming(true)} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)]"><FiTrash2 size={14} /></button>
         </div>
       )}
     </div>
@@ -165,43 +165,43 @@ export default function ContactPage() {
     });
   };
 
-  if (loading) return <div className="text-[#888] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
 
   return (
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#fafafa]">Contact Info</h1>
-        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] disabled:opacity-50">
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Contact Info</h1>
+        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
       <div className="space-y-8">
         {/* Contact Section Text */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Contact Section</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Contact Section</h2>
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Contact Title</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Contact Title</label>
               <input className="dash-input" maxLength={30} value={contactTitle} onChange={(e) => setContactTitle(e.target.value)} placeholder="Get in Touch" />
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Contact Subtitle</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Contact Subtitle</label>
               <input className="dash-input" value={contactSubtitle} onChange={(e) => setContactSubtitle(e.target.value)} placeholder="I'd love to hear from you" />
             </div>
           </div>
         </div>
 
         {/* Contact Links */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider">Contact Links</h2>
-            <button onClick={openAdd} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636]">
+            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Contact Links</h2>
+            <button onClick={openAdd} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]">
               <FiPlus size={14} /> Add
             </button>
           </div>
           {links.length === 0 ? (
-            <p className="text-[#666] text-sm text-center py-8">No contact links yet.</p>
+            <p className="text-[var(--muted-foreground)] text-sm text-center py-8">No contact links yet.</p>
           ) : (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <SortableContext items={links.map((l) => l.id)} strategy={verticalListSortingStrategy}>
@@ -216,26 +216,26 @@ export default function ContactPage() {
 
       {/* Add/Edit Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
-          <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-semibold text-[#fafafa] mb-4">{editingId ? "Edit Link" : "Add Link"}</h2>
+        <div className="fixed inset-0 bg-[var(--overlay)] z-50 flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">{editingId ? "Edit Link" : "Add Link"}</h2>
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-[#888] mb-1 block">Platform</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">Platform</label>
                 <select className="dash-input" value={form.platform} onChange={(e) => setForm((f) => ({ ...f, platform: e.target.value }))}>
                   {platforms.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-[#888] mb-1 block">URL *</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">URL *</label>
                 <input className="dash-input" value={form.url} onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))} placeholder={urlHints[form.platform] || defaultHint} />
-                <p className="text-[#555] text-[10px] mt-0.5">{urlHints[form.platform] || defaultHint}</p>
+                <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">{urlHints[form.platform] || defaultHint}</p>
               </div>
             </div>
-            {error && <p className="text-[#FE454E] text-xs mt-3">{error}</p>}
+            {error && <p className="text-[var(--danger)] text-xs mt-3">{error}</p>}
             <div className="flex justify-end gap-2 mt-5">
-              <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[#2a2a2a] text-[#fafafa] hover:bg-[#333]">Cancel</button>
-              <button onClick={handleLinkSave} disabled={linkSaving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] disabled:opacity-50">
+              <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">Cancel</button>
+              <button onClick={handleLinkSave} disabled={linkSaving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
                 {linkSaving ? "Saving..." : editingId ? "Update" : "Create"}
               </button>
             </div>

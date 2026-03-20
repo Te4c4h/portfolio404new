@@ -66,53 +66,53 @@ export default function HeroPage() {
     ] : []),
   ];
 
-  if (loading) return <div className="text-[#888] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
 
   return (
     <div className="max-w-3xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#fafafa]">Hero</h1>
-        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[#70E844] text-[#131313] hover:bg-[#5ed636] disabled:opacity-50">
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">Hero</h1>
+        <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
       <div className="space-y-8">
         {/* Hero Section */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Hero Section</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Hero Section</h2>
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Headline</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Headline</label>
               <input className="dash-input" value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder="Welcome to my portfolio" />
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Subtext</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Subtext</label>
               <input className="dash-input" value={subtext} onChange={(e) => setSubtext(e.target.value)} placeholder="A short description" />
             </div>
           </div>
         </div>
 
         {/* Hero Buttons */}
-        <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#888] uppercase tracking-wider mb-4">Hero Buttons</h2>
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Hero Buttons</h2>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Primary CTA Label</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Primary CTA Label</label>
               <input className="dash-input" value={ctaLabel1} onChange={(e) => setCtaLabel1(e.target.value)} placeholder="View Projects" />
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Primary CTA Target</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Primary CTA Target</label>
               <select className="dash-input" value={ctaTarget1} onChange={(e) => setCtaTarget1(e.target.value)}>
                 {ctaOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Secondary CTA Label</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Secondary CTA Label</label>
               <input className="dash-input" value={ctaLabel2} onChange={(e) => setCtaLabel2(e.target.value)} placeholder="Contact Me" />
             </div>
             <div>
-              <label className="text-xs text-[#888] mb-1 block">Secondary CTA Target</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Secondary CTA Target</label>
               <select className="dash-input" value={ctaTarget2} onChange={(e) => setCtaTarget2(e.target.value)}>
                 {ctaOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
