@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { HOME_USERNAME } from "@/lib/home-user";
@@ -58,7 +57,24 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const data = await getHomeData();
-  if (!data) notFound();
+  
+  // Show default landing page if no home user exists
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-[#131313] text-[#fafafa] flex flex-col items-center justify-center px-4">
+        <h1 className="text-4xl md:text-6xl font-bold mb-4 text-[#70E844]">Portfolio 404</h1>
+        <p className="text-lg md:text-xl text-gray-400 mb-8 text-center max-w-2xl">
+          Build Your Personal Portfolio — Coming Soon
+        </p>
+        <a 
+          href="/register" 
+          className="px-8 py-3 bg-[#70E844] text-[#131313] font-semibold rounded-lg hover:opacity-90 transition"
+        >
+          Get Started
+        </a>
+      </div>
+    );
+  }
 
   const { theme, siteContent, navLinks, contactLinks, sections } = data;
 
