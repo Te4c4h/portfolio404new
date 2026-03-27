@@ -11,29 +11,23 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
   return (
     <button
       onClick={toggleTheme}
-      className={`relative flex items-center w-[52px] h-[28px] rounded-full transition-colors duration-300 ${
+      className={`flex items-center justify-center gap-2 px-3 py-2.5 w-full rounded-lg text-sm font-medium transition-colors duration-200 border ${
         isDark
-          ? "bg-[var(--accent)]/15 border border-[var(--accent)]/30"
-          : "bg-[var(--border)] border border-[var(--border)]"
+          ? "bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/20 hover:bg-[var(--accent)]/20"
+          : "bg-white text-[var(--foreground)] border-[var(--border)] hover:bg-[var(--foreground)]/5 shadow-sm"
       } ${className}`}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
-      <motion.span
-        layout
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        className={`flex items-center justify-center w-[22px] h-[22px] rounded-full shadow-sm ${
-          isDark
-            ? "bg-[var(--accent)] ml-[26px]"
-            : "bg-white ml-[3px]"
-        }`}
+      <motion.div
+        initial={false}
+        animate={{ rotate: isDark ? 0 : 180 }}
+        transition={{ duration: 0.3 }}
+        className="flex items-center justify-center"
       >
-        {isDark ? (
-          <FiSun size={12} className="text-[var(--background)]" />
-        ) : (
-          <FiMoon size={12} className="text-[var(--muted)]" />
-        )}
-      </motion.span>
+        {isDark ? <FiMoon size={16} /> : <FiSun size={16} />}
+      </motion.div>
+      <span>{isDark ? "Dark Mode" : "Light Mode"}</span>
     </button>
   );
 }

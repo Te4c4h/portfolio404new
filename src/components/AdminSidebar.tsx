@@ -221,11 +221,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
       </nav>
 
       {/* Bottom — pinned */}
-      <div className="px-3 pb-6 space-y-1">
-        <div className="flex items-center justify-center gap-2 py-1">
-          <ThemeToggle />
-          <LanguageSwitcher />
-        </div>
+      <div className="px-3 pb-6 space-y-2">
         <Link
           href={basePath + "/account-settings"}
           onClick={() => setOpen(false)}
@@ -238,6 +234,10 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
           <FiSliders size={18} />
           {t("sidebar.accountSettings")}
         </Link>
+        <ThemeToggle />
+        <div className="flex justify-center">
+          <LanguageSwitcher />
+        </div>
         <button
           onClick={() => signOut({ callbackUrl: isAdmin ? "/" : `/u/${username}` })}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-colors w-full"
