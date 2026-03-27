@@ -21,7 +21,7 @@ export default function AdminHomeDashboard() {
   }, []);
 
   return (
-    <div className="max-w-5xl">
+    <div className="w-full">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-[var(--foreground)]">Home Page Dashboard</h1>
         <a

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import Toast from "@/components/Toast";
+import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
 interface ProfileData {
   firstName: string;
@@ -16,7 +17,9 @@ interface ProfileData {
 export default function AccountSettingsPage() {
   const params = useParams();
   const currentUsername = params.username as string;
-  const { update: updateSession } = useSession();
+  const { data: session, update: updateSession } = useSession();
+  const isAdmin = session?.user?.isAdmin === true;
+  const { t } = useTranslation();
 
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -319,21 +322,23 @@ export default function AccountSettingsPage() {
           )}
         </div>
 
-        {/* Danger Zone */}
-        <div className="bg-[var(--surface)] border border-[var(--danger)]/30 rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--danger)] uppercase tracking-wider mb-2">Danger Zone</h2>
-          <p className="text-[var(--muted)] text-sm mb-4">Permanently delete your account and all portfolio data. This action cannot be undone.</p>
-          <button
-            onClick={() => setDeleteModalOpen(true)}
-            className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--danger)]/10 text-[var(--danger)] border border-[var(--danger)]/30 hover:bg-[var(--danger)]/20 transition-colors"
-          >
-            Delete Account
-          </button>
-        </div>
+        {/* Danger Zone — hidden for admin */}
+        {!isAdmin && (
+          <div className="bg-[var(--surface)] border border-[var(--danger)]/30 rounded-xl p-5">
+            <h2 className="text-xs font-semibold text-[var(--danger)] uppercase tracking-wider mb-2">{t("accountSettings.dangerZone")}</h2>
+            <p className="text-[var(--muted)] text-sm mb-4">{t("accountSettings.dangerDesc")}</p>
+            <button
+              onClick={() => setDeleteModalOpen(true)}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--danger)]/10 text-[var(--danger)] border border-[var(--danger)]/30 hover:bg-[var(--danger)]/20 transition-colors"
+            >
+              {t("accountSettings.deleteAccount")}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Delete Account Confirmation Modal */}
-      {deleteModalOpen && (
+      {!isAdmin && deleteModalOpen && (
         <div className="fixed inset-0 bg-[var(--overlay)] z-50 flex items-center justify-center p-4" onClick={() => setDeleteModalOpen(false)}>
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-semibold text-[var(--foreground)] mb-2">Delete Account</h2>

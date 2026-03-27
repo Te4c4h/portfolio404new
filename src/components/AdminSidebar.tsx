@@ -28,6 +28,8 @@ import {
   FiMonitor,
 } from "react-icons/fi";
 import ThemeToggle from "@/components/ThemeToggle";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
 interface AdminSidebarProps {
   username: string;
@@ -37,21 +39,22 @@ interface AdminSidebarProps {
 }
 
 const portfolioChildren = [
-  { href: "/portfolio/navbar", label: "Navigation", icon: FiNavigation },
-  { href: "/portfolio/hero", label: "Hero", icon: FiStar },
-  { href: "/portfolio/about", label: "About", icon: FiUser },
-  { href: "/portfolio/sections", label: "Categories", icon: FiFolder },
-  { href: "/portfolio/sections-content", label: "Projects", icon: FiBriefcase },
-  { href: "/portfolio/contact", label: "Contact Info", icon: FiMail },
-  { href: "/portfolio/footer", label: "Footer", icon: FiType },
-  { href: "/portfolio/loading-screen", label: "Loading Screen", icon: FiMonitor },
-  { href: "/portfolio/settings", label: "Appearance", icon: FiSettings },
+  { href: "/portfolio/navbar", labelKey: "sidebar.navigation", icon: FiNavigation },
+  { href: "/portfolio/hero", labelKey: "sidebar.hero", icon: FiStar },
+  { href: "/portfolio/about", labelKey: "sidebar.about", icon: FiUser },
+  { href: "/portfolio/sections", labelKey: "sidebar.categories", icon: FiFolder },
+  { href: "/portfolio/sections-content", labelKey: "sidebar.projects", icon: FiBriefcase },
+  { href: "/portfolio/contact", labelKey: "sidebar.contactInfo", icon: FiMail },
+  { href: "/portfolio/footer", labelKey: "sidebar.footer", icon: FiType },
+  { href: "/portfolio/loading-screen", labelKey: "sidebar.loadingScreen", icon: FiMonitor },
+  { href: "/portfolio/settings", labelKey: "sidebar.appearance", icon: FiSettings },
 ];
 
 export default function AdminSidebar({ username, isAdmin, firstName, lastName }: AdminSidebarProps) {
   const pathname = usePathname();
   const basePath = `/u/${username}/admin`;
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
 
   const isPortfolioActive = pathname.startsWith(`${basePath}/portfolio`);
   const [portfolioOpen, setPortfolioOpen] = useState(isPortfolioActive);
@@ -81,7 +84,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--accent)]/30 text-[var(--accent)] hover:bg-[var(--sidebar-active)] transition-colors"
           >
             <FiExternalLink size={13} />
-            View Portfolio
+            {t("sidebar.viewPortfolio")}
           </a>
         )}
         {isAdmin && (
@@ -92,7 +95,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--accent)]/30 text-[var(--accent)] hover:bg-[var(--sidebar-active)] transition-colors"
           >
             <FiExternalLink size={13} />
-            View Home Page
+            {t("sidebar.viewHomePage")}
           </a>
         )}
       </div>
@@ -110,24 +113,8 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
           }`}
         >
           <FiBarChart2 size={18} />
-          Analytics
+          {t("sidebar.analytics")}
         </Link>
-
-        {/* Account Settings — non-admin only */}
-        {!isAdmin && (
-          <Link
-            href={basePath + "/account-settings"}
-            onClick={() => setOpen(false)}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-              isActive("/account-settings")
-                ? "bg-[var(--sidebar-active)] text-[var(--accent)]"
-                : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
-            }`}
-          >
-            <FiSliders size={18} />
-            Account Settings
-          </Link>
-        )}
 
         {/* Portfolio Dropdown */}
         <div>
@@ -140,7 +127,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             }`}
           >
             <FiLayout size={18} />
-            <span className="flex-1 text-left">Portfolio</span>
+            <span className="flex-1 text-left">{t("sidebar.portfolio")}</span>
             <FiChevronDown
               size={14}
               className={`transition-transform duration-200 ${portfolioOpen ? "rotate-180" : ""}`}
@@ -171,7 +158,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
                         }`}
                       >
                         <Icon size={16} />
-                        {child.label}
+                        {t(child.labelKey)}
                       </Link>
                     );
                   })}
@@ -193,7 +180,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             }`}
           >
             <FiFileText size={18} />
-            Resume
+            {t("sidebar.resume")}
           </Link>
         )}
 
@@ -209,7 +196,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             }`}
           >
             <FiCreditCard size={18} />
-            Plan & Billing
+            {t("sidebar.planBilling")}
           </Link>
         )}
 
@@ -227,21 +214,36 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
               }`}
             >
               <FiLayers size={18} />
-              Manage Users
+              {t("sidebar.manageUsers")}
             </Link>
           </>
         )}
       </nav>
 
-      {/* Logout — pinned to bottom */}
+      {/* Bottom — pinned */}
       <div className="px-3 pb-6 space-y-1">
-        <ThemeToggle className="w-full flex items-center justify-center" />
+        <div className="flex items-center justify-center gap-2 py-1">
+          <ThemeToggle />
+          <LanguageSwitcher />
+        </div>
+        <Link
+          href={basePath + "/account-settings"}
+          onClick={() => setOpen(false)}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+            isActive("/account-settings")
+              ? "bg-[var(--sidebar-active)] text-[var(--accent)]"
+              : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
+          }`}
+        >
+          <FiSliders size={18} />
+          {t("sidebar.accountSettings")}
+        </Link>
         <button
           onClick={() => signOut({ callbackUrl: isAdmin ? "/" : `/u/${username}` })}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-colors w-full"
         >
           <FiLogOut size={18} />
-          Logout
+          {t("sidebar.logout")}
         </button>
       </div>
     </div>

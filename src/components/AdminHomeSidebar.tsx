@@ -17,24 +17,29 @@ import {
   FiX,
   FiExternalLink,
   FiArrowLeft,
+  FiSliders,
 } from "react-icons/fi";
+import ThemeToggle from "@/components/ThemeToggle";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
 interface AdminHomeSidebarProps {
   username: string;
 }
 
 const homeLinks = [
-  { href: "/admin/home", label: "Dashboard", icon: FiHome },
-  { href: "/admin/home/sections", label: "Sections", icon: FiLayers },
-  { href: "/admin/home/content", label: "Sections Content", icon: FiGrid },
-  { href: "/admin/home/site", label: "Site Content", icon: FiFileText },
-  { href: "/admin/home/contact", label: "Contact Links", icon: FiLink },
-  { href: "/admin/home/theme", label: "Theme", icon: FiDroplet },
+  { href: "/admin/home", labelKey: "sidebar.dashboard", icon: FiHome },
+  { href: "/admin/home/sections", labelKey: "sidebar.sections", icon: FiLayers },
+  { href: "/admin/home/content", labelKey: "sidebar.sectionsContent", icon: FiGrid },
+  { href: "/admin/home/site", labelKey: "sidebar.siteContent", icon: FiFileText },
+  { href: "/admin/home/contact", labelKey: "sidebar.contactLinks", icon: FiLink },
+  { href: "/admin/home/theme", labelKey: "sidebar.theme", icon: FiDroplet },
 ];
 
 export default function AdminHomeSidebar({ username }: AdminHomeSidebarProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
 
   const isActive = (href: string) => {
     if (href === "/admin/home") return pathname === "/admin/home";
@@ -45,7 +50,7 @@ export default function AdminHomeSidebar({ username }: AdminHomeSidebarProps) {
     <div className="flex flex-col h-full">
       <div className="px-5 py-6">
         <h2 className="text-[var(--accent)] font-bold text-lg tracking-tight">
-          Home Page
+          {t("sidebar.homePage")}
         </h2>
         <a
           href="/"
@@ -54,7 +59,7 @@ export default function AdminHomeSidebar({ username }: AdminHomeSidebarProps) {
           className="flex items-center gap-1.5 text-xs text-[var(--muted)] hover:text-[var(--accent)] transition-colors mt-1"
         >
           <FiExternalLink size={12} />
-          View Home Page
+          {t("sidebar.viewHomePage")}
         </a>
       </div>
 
@@ -74,7 +79,7 @@ export default function AdminHomeSidebar({ username }: AdminHomeSidebarProps) {
               }`}
             >
               <Icon size={18} />
-              {link.label}
+              {t(link.labelKey)}
             </Link>
           );
         })}
@@ -87,7 +92,7 @@ export default function AdminHomeSidebar({ username }: AdminHomeSidebarProps) {
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--foreground)]/5 transition-colors"
         >
           <FiArrowLeft size={18} />
-          My Dashboard
+          {t("sidebar.myDashboard")}
         </Link>
         <Link
           href={`/u/${username}/admin/users`}
@@ -95,17 +100,29 @@ export default function AdminHomeSidebar({ username }: AdminHomeSidebarProps) {
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--foreground)]/5 transition-colors"
         >
           <FiLayers size={18} />
-          Manage Users
+          {t("sidebar.manageUsers")}
         </Link>
       </nav>
 
-      <div className="px-3 pb-6">
+      <div className="px-3 pb-6 space-y-1">
+        <div className="flex items-center justify-center gap-2 py-1">
+          <ThemeToggle />
+          <LanguageSwitcher />
+        </div>
+        <Link
+          href={`/u/${username}/admin/account-settings`}
+          onClick={() => setOpen(false)}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--foreground)]/5 transition-colors"
+        >
+          <FiSliders size={18} />
+          {t("sidebar.accountSettings")}
+        </Link>
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-colors w-full"
         >
           <FiLogOut size={18} />
-          Logout
+          {t("sidebar.logout")}
         </button>
       </div>
     </div>

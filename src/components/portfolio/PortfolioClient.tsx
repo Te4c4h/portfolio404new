@@ -120,8 +120,12 @@ export default function PortfolioClient({
 
   const [modalItem, setModalItem] = useState<ContentItemData | null>(null);
 
-  // Track page view on mount
+  // Track page view on mount (prevent double-fire in React 18 Strict Mode and across fast refreshes)
   useEffect(() => {
+    const trackedKey = `view_${user.username}`;
+    if (sessionStorage.getItem(trackedKey)) return;
+    sessionStorage.setItem(trackedKey, "true");
+
     fetch("/api/analytics/view", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
