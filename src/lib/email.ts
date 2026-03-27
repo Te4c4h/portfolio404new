@@ -1,11 +1,15 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const FROM_EMAIL = "Portfolio 404 <noreply@portfolio404.site>";
 const BASE_URL = process.env.NEXTAUTH_URL || "https://portfolio404.site";
 
 export async function sendVerificationEmail(email: string, token: string) {
+  if (!resend) {
+    console.warn("Resend API key not configured. Email not sent.");
+    return;
+  }
   const url = `${BASE_URL}/verify-email?token=${token}`;
   await resend.emails.send({
     from: FROM_EMAIL,
@@ -29,6 +33,10 @@ export async function sendVerificationEmail(email: string, token: string) {
 }
 
 export async function sendPasswordResetEmail(email: string, token: string) {
+  if (!resend) {
+    console.warn("Resend API key not configured. Email not sent.");
+    return;
+  }
   const url = `${BASE_URL}/reset-password?token=${token}`;
   await resend.emails.send({
     from: FROM_EMAIL,
