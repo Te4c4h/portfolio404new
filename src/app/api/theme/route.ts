@@ -21,7 +21,8 @@ export async function PUT(req: NextRequest) {
   const {
     accentColor, backgroundColor, surfaceColor, textColor,
     dangerColor, cursorColor, bodyFont, headingFont,
-    faviconUrl, webclipUrl, websiteTitle, gridColor,
+    faviconUrl, webclipUrl, logoUrl, coverImage1, coverImage2, coverImage3, coverImage4,
+    websiteTitle, gridColor,
   } = body;
 
   const data = {
@@ -35,6 +36,11 @@ export async function PUT(req: NextRequest) {
     headingFont: headingFont ?? "Syne",
     faviconUrl: faviconUrl ?? "",
     webclipUrl: webclipUrl ?? "",
+    logoUrl: logoUrl ?? "",
+    coverImage1: coverImage1 ?? "",
+    coverImage2: coverImage2 ?? "",
+    coverImage3: coverImage3 ?? "",
+    coverImage4: coverImage4 ?? "",
     websiteTitle: websiteTitle ?? "",
     gridColor: gridColor ?? "rgba(255,255,255,0.03)",
   };
