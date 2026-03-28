@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hash } from "bcryptjs";
-import { getHomeUserId } from "@/lib/home-user";
 
 // This route seeds the database with initial data
 // Should be called once after deployment
@@ -179,7 +178,7 @@ export async function POST() {
           } 
         });
 
-        const aboutSection = await tx.section.create({
+        await tx.section.create({
           data: {
             userId: testUser.id,
             name: "About",
