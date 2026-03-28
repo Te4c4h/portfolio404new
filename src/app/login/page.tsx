@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { FiArrowLeft } from "react-icons/fi";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -224,8 +225,12 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
-      <a href="/" className="fixed top-6 left-6 text-[var(--muted)] text-sm hover:text-[var(--foreground)] transition-colors">
-        &larr; Back to Home
+      <a
+        href="/"
+        className="fixed top-6 left-6 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border bg-[var(--surface)] text-[var(--foreground)] border-[var(--border)] hover:bg-[var(--border)]/20 transition-colors shadow-sm"
+      >
+        <FiArrowLeft size={16} />
+        Back to Home
       </a>
       <div className="w-full max-w-md bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8">
         {/* Toggle */}
@@ -334,7 +339,7 @@ export default function LoginPage() {
                   </button>
                   {resendSuccess && <p className="text-[var(--accent)] text-xs">Verification email sent!</p>}
                   <button
-                    onClick={() => { setUnverifiedEmail(""); }}
+                    onClick={() => signOut({ callbackUrl: "/" })}
                     className="block mx-auto text-[var(--muted)] text-xs hover:text-[var(--foreground)]"
                   >
                     Try again

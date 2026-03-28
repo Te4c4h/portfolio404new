@@ -53,14 +53,14 @@ export default function LanguageSwitcher({ className = "" }: { className?: strin
                 setLanguage(lang);
                 setOpen(false);
               }}
-              className={`flex items-center gap-2 w-full px-3 py-2 text-xs transition-colors ${
+              className={`flex items-center gap-3 w-full px-4 py-3 text-sm transition-colors ${
                 lang === language
                   ? "bg-[var(--accent)]/10 text-[var(--accent)]"
                   : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
               }`}
             >
-              <span className="font-medium">{languageLabels[lang]}</span>
-              <span className="text-[10px] opacity-70">{languageNames[lang]}</span>
+              <span className="font-medium text-sm">{languageLabels[lang]}</span>
+              <span className="text-xs opacity-70">{languageNames[lang]}</span>
             </button>
           ))}
         </div>
