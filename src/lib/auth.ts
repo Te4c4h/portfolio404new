@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { compare } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -75,8 +76,59 @@ export const authOptions: NextAuthOptions = {
           }
           return true;
         }
-        // New Google user — redirect to complete-signup
-        return `/complete-signup?email=${encodeURIComponent(email)}&name=${encodeURIComponent(user.name || "")}`;
+
+        // New Google user — create account directly
+        const name = user.name || "";
+        const nameParts = name.split(" ");
+        const firstName = nameParts[0] || "User";
+        const lastName = nameParts.slice(1).join(" ") || "";
+
+        // Generate unique username from email prefix
+        const baseUsername = email.split("@")[0].replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 15) || "user";
+        let username = baseUsername;
+        let suffix = 1;
+        while (await prisma.user.findUnique({ where: { username } })) {
+          username = `${baseUsername}${suffix}`;
+          suffix++;
+        }
+
+        await prisma.$transaction(async (tx) => {
+          const newUser = await tx.user.create({
+            data: {
+              firstName,
+              lastName,
+              email,
+              username,
+              password: "",
+              emailVerified: true,
+              isPublished: true,
+            },
+          });
+
+          await tx.siteContent.create({
+            data: {
+              userId: newUser.id,
+              siteTitle: `${firstName}'s Portfolio`,
+              logoText: firstName,
+              headline: `Hello, I'm ${firstName}`,
+              subtext: "Welcome to my portfolio",
+              ctaLabel1: "View Work",
+              ctaLabel2: "Contact Me",
+              contactTitle: "Get In Touch",
+              contactSubtitle: "Feel free to reach out",
+              footerText: `© ${new Date().getFullYear()} ${firstName} ${lastName}`,
+            },
+          });
+
+          await tx.theme.create({
+            data: { userId: newUser.id },
+          });
+        });
+
+        // Send welcome email (non-blocking)
+        sendWelcomeEmail(email, firstName, username).catch(console.error);
+
+        return true;
       }
       return true;
     },
