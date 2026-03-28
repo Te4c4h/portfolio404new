@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { FiX, FiPlus } from "react-icons/fi";
 import Toast from "@/components/Toast";
+import ImageUpload from "@/components/ImageUpload";
 
 interface NavLink {
   id: string;
@@ -120,20 +121,15 @@ export default function NavbarPage() {
             <span className="text-xs text-[var(--muted)]">{useLogoImage ? "Use logo image" : "Use brand text"}</span>
           </div>
           {useLogoImage ? (
-            <div>
-              <input className="dash-input" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://your-logo-url.png" />
-              <p className="text-[var(--muted)] text-[10px] mt-1">Recommended: 200&times;80px (PNG or SVG, transparent background)</p>
-              {logoUrl && (
-                <div className="mt-3 p-3 rounded-lg bg-[var(--surface)] border border-[var(--border)] inline-block">
-                  <img
-                    src={logoUrl}
-                    alt="Logo preview"
-                    className="h-8 object-contain"
-                    onError={(e) => { e.currentTarget.style.display = "none"; }}
-                  />
-                </div>
-              )}
-            </div>
+            <ImageUpload
+              label="Logo Image"
+              value={logoUrl}
+              onChange={(url) => setLogoUrl(url)}
+              maxSizeMB={1}
+              maxDimensions={{ width: 400, height: 160 }}
+              acceptedFormats={["PNG", "SVG", "WEBP"]}
+              folder="logos"
+            />
           ) : (
             <div>
               <input className="dash-input" value={logoText} onChange={(e) => setLogoText(e.target.value)} placeholder="Your Name" />
