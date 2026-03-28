@@ -238,7 +238,7 @@ export default function ContentPage() {
   const isDraggable = filter !== "all";
 
   return (
-    <div className="max-w-4xl">
+    <div className="w-full">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-[var(--foreground)]">Sections Content</h1>
         <button onClick={openAdd} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]">

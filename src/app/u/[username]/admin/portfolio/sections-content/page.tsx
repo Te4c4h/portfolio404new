@@ -260,7 +260,7 @@ export default function ContentPage() {
   if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
 
   return (
-    <div className="max-w-4xl">
+    <div className="w-full">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-[var(--foreground)]">Projects</h1>
         {sections.length > 0 && (

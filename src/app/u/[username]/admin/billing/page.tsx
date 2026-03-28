@@ -72,7 +72,7 @@ export default function BillingPage() {
     : null;
 
   return (
-    <div className="max-w-2xl">
+    <div className="w-full">
       <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">Plan & Billing</h1>
 
       {/* Success banner after checkout */}

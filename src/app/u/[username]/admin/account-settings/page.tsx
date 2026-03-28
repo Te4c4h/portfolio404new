@@ -214,7 +214,7 @@ export default function AccountSettingsPage() {
   if (!profile) return <div className="text-[var(--muted)] text-sm">Could not load profile.</div>;
 
   return (
-    <div className="max-w-3xl">
+    <div className="w-full">
       <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">Account Settings</h1>
 
       <div className="space-y-6">

@@ -532,7 +532,7 @@ export default function ResumePage() {
   if (!resume) return <div className="text-[var(--muted)] text-sm">{error || "Could not load resume."}</div>;
 
   return (
-    <div className="max-w-3xl">
+    <div className="w-full">
       <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
         <h1 className="text-2xl font-bold text-[var(--foreground)]">Resume Builder</h1>
         <button
