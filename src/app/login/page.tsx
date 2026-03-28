@@ -1,14 +1,22 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { signIn, signOut } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiArrowLeft } from "react-icons/fi";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
+
+  // If already signed in (e.g. after Google OAuth), redirect to dashboard
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.username) {
+      router.push(`/u/${session.user.username}/admin`);
+    }
+  }, [status, session, router]);
 
   // Sign In state
   const [signInEmail, setSignInEmail] = useState("");
@@ -220,7 +228,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = () => {
-    signIn("google", { callbackUrl: "/login" });
+    signIn("google", { callbackUrl: "/login" }); // redirects back here, then useEffect above sends to dashboard
   };
 
   return (
