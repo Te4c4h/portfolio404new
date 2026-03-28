@@ -19,8 +19,16 @@ function LoginContent() {
     }
   }, [status, session, router]);
 
-  // Detect OAuth errors from query params
+  // Detect OAuth errors and signup completion from query params
   const oauthError = searchParams.get("error");
+  const signupComplete = searchParams.get("signup") === "complete";
+
+  // After Google signup completion, auto-trigger Google sign-in silently (no account picker)
+  useEffect(() => {
+    if (signupComplete && status !== "authenticated" && status !== "loading") {
+      signIn("google", { callbackUrl: "/login", prompt: "none" });
+    }
+  }, [signupComplete, status]);
 
   // Sign In state
   const [signInEmail, setSignInEmail] = useState("");

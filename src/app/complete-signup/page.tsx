@@ -1,10 +1,10 @@
 "use client";
 
 import { Suspense, useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 function CompleteSignupContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
   const name = searchParams.get("name") || "";
@@ -79,8 +79,8 @@ function CompleteSignupContent() {
         setLoading(false);
         return;
       }
-      // Auto-login via Google OAuth — user goes straight to dashboard
-      await signIn("google", { callbackUrl: `/u/${data.user.username}/admin` });
+      // Account created — redirect to login, user signs in with Google (account now exists)
+      router.push("/login?signup=complete");
     } catch {
       setError("Something went wrong");
       setLoading(false);
