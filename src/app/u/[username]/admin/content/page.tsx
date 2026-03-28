@@ -9,6 +9,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { FiMenu, FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
+import ImageUpload from "@/components/ImageUpload";
 
 interface Section {
   id: string;
@@ -413,44 +414,40 @@ export default function ContentPage() {
               {/* Project-specific fields */}
               {form.contentType === "project" && (
                 <>
-                  <div>
-                    <label className="text-xs text-[var(--muted)] mb-1 block">Cover Image URL</label>
-                    <input className="dash-input" value={form.coverImage} onChange={(e) => setForm((f) => ({ ...f, coverImage: e.target.value }))} placeholder="https://..." />
-                    <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">Recommended: 1200x675px (16:9)</p>
-                    {form.coverImage && (
-                      <div className="mt-2 rounded-lg overflow-hidden border border-[var(--border)] bg-black/50">
-                        <img src={form.coverImage} alt="Cover preview" className="w-full h-32 object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
-                      </div>
-                    )}
-                  </div>
+                  <ImageUpload
+                    label="Cover Image"
+                    value={form.coverImage}
+                    onChange={(url) => setForm((f) => ({ ...f, coverImage: url }))}
+                    maxSizeMB={3}
+                    recommendedDimensions={{ width: 1200, height: 675 }}
+                    acceptedFormats={["JPG", "PNG", "WEBP"]}
+                    folder="content"
+                  />
                   <div className="grid grid-cols-3 gap-2">
-                    <div>
-                      <label className="text-xs text-[var(--muted)] mb-1 block">Image 2</label>
-                      <input className="dash-input" value={form.image1} onChange={(e) => setForm((f) => ({ ...f, image1: e.target.value }))} placeholder="URL" />
-                      {form.image1 && (
-                        <div className="mt-1 rounded overflow-hidden border border-[var(--border)] bg-black/50">
-                          <img src={form.image1} alt="Preview" className="w-full h-16 object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <label className="text-xs text-[var(--muted)] mb-1 block">Image 3</label>
-                      <input className="dash-input" value={form.image2} onChange={(e) => setForm((f) => ({ ...f, image2: e.target.value }))} placeholder="URL" />
-                      {form.image2 && (
-                        <div className="mt-1 rounded overflow-hidden border border-[var(--border)] bg-black/50">
-                          <img src={form.image2} alt="Preview" className="w-full h-16 object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <label className="text-xs text-[var(--muted)] mb-1 block">Image 4</label>
-                      <input className="dash-input" value={form.image3} onChange={(e) => setForm((f) => ({ ...f, image3: e.target.value }))} placeholder="URL" />
-                      {form.image3 && (
-                        <div className="mt-1 rounded overflow-hidden border border-[var(--border)] bg-black/50">
-                          <img src={form.image3} alt="Preview" className="w-full h-16 object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
-                        </div>
-                      )}
-                    </div>
+                    <ImageUpload
+                      label="Image 2"
+                      value={form.image1}
+                      onChange={(url) => setForm((f) => ({ ...f, image1: url }))}
+                      maxSizeMB={3}
+                      acceptedFormats={["JPG", "PNG", "WEBP"]}
+                      folder="content"
+                    />
+                    <ImageUpload
+                      label="Image 3"
+                      value={form.image2}
+                      onChange={(url) => setForm((f) => ({ ...f, image2: url }))}
+                      maxSizeMB={3}
+                      acceptedFormats={["JPG", "PNG", "WEBP"]}
+                      folder="content"
+                    />
+                    <ImageUpload
+                      label="Image 4"
+                      value={form.image3}
+                      onChange={(url) => setForm((f) => ({ ...f, image3: url }))}
+                      maxSizeMB={3}
+                      acceptedFormats={["JPG", "PNG", "WEBP"]}
+                      folder="content"
+                    />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>

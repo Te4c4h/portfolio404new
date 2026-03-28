@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Toast from "@/components/Toast";
+import ImageUpload from "@/components/ImageUpload";
 
 interface ThemeData {
   accentColor: string;
@@ -140,19 +141,34 @@ export default function AdminHomeThemePage() {
         {/* Branding */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Branding</h2>
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Logo URL</label>
-              <input className="dash-input" value={theme.logoUrl} onChange={(e) => setTheme((t) => ({ ...t, logoUrl: e.target.value }))} placeholder="https://..." />
-            </div>
-            <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Favicon URL</label>
-              <input className="dash-input" value={theme.faviconUrl} onChange={(e) => setTheme((t) => ({ ...t, faviconUrl: e.target.value }))} placeholder="https://..." />
-            </div>
-            <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Webclip / OG Image URL</label>
-              <input className="dash-input" value={theme.webclipUrl} onChange={(e) => setTheme((t) => ({ ...t, webclipUrl: e.target.value }))} placeholder="https://..." />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ImageUpload
+              label="Logo / Brand Image"
+              value={theme.logoUrl}
+              onChange={(url) => setTheme((t) => ({ ...t, logoUrl: url }))}
+              maxSizeMB={1}
+              maxDimensions={{ width: 400, height: 160 }}
+              acceptedFormats={["PNG", "SVG"]}
+              folder="logos"
+            />
+            <ImageUpload
+              label="Favicon"
+              value={theme.faviconUrl}
+              onChange={(url) => setTheme((t) => ({ ...t, faviconUrl: url }))}
+              maxSizeMB={0.5}
+              maxDimensions={{ width: 64, height: 64 }}
+              acceptedFormats={["ICO", "PNG"]}
+              folder="favicons"
+            />
+            <ImageUpload
+              label="OG Image / Webclip"
+              value={theme.webclipUrl}
+              onChange={(url) => setTheme((t) => ({ ...t, webclipUrl: url }))}
+              maxSizeMB={2}
+              recommendedDimensions={{ width: 1200, height: 630 }}
+              acceptedFormats={["JPG", "PNG"]}
+              folder="og-images"
+            />
           </div>
         </div>
       </div>
