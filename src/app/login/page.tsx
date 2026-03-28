@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiArrowLeft } from "react-icons/fi";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: session, status } = useSession();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
 
@@ -18,10 +19,13 @@ export default function LoginPage() {
     }
   }, [status, session, router]);
 
+  // Detect OAuth errors from query params
+  const oauthError = searchParams.get("error");
+
   // Sign In state
   const [signInEmail, setSignInEmail] = useState("");
   const [signInPassword, setSignInPassword] = useState("");
-  const [signInError, setSignInError] = useState("");
+  const [signInError, setSignInError] = useState(oauthError === "OAuthCallback" ? "Google sign-in failed. Please try again." : "");
   const [signInLoading, setSignInLoading] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState("");
   const [resendingVerification, setResendingVerification] = useState(false);
@@ -607,5 +611,13 @@ export default function LoginPage() {
         </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" /></div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
