@@ -2,10 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function CompleteSignupPage() {
-  const router = useRouter();
   const { data: session, status, update } = useSession();
 
   const email = session?.user?.email || "";
@@ -81,9 +79,9 @@ export default function CompleteSignupPage() {
         setLoading(false);
         return;
       }
-      // Refresh the session so JWT picks up the new DB user
+      // Refresh the session so JWT picks up the new DB user, then hard redirect
       await update();
-      router.push(`/u/${data.user.username}/admin`);
+      window.location.href = `/u/${data.user.username}/admin`;
     } catch {
       setError("Something went wrong");
       setLoading(false);
