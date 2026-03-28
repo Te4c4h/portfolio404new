@@ -28,10 +28,11 @@ export default function ThemeProvider({
 
   useEffect(() => {
     const stored = localStorage.getItem("theme") as Theme | null;
-    if (stored === "light" || stored === "dark") {
-      setTheme(stored);
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    if (stored === "dark") {
       setTheme("dark");
+    } else {
+      // Default to light mode unless explicitly set to dark
+      setTheme("light");
     }
     setMounted(true);
   }, []);

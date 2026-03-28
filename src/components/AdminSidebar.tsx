@@ -81,7 +81,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             href={`/u/${username}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 mt-2 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors duration-200 border bg-[#70E844]/10 text-[#70E844] border-[#70E844]/20 hover:bg-[#70E844]/20"
+            className="inline-flex items-center justify-center gap-2 mt-2 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors duration-200 border bg-transparent text-[#70E844] border-[#70E844]/50 hover:border-[#70E844] hover:bg-[#70E844]/5"
           >
             <FiExternalLink size={16} />
             <span>{t("sidebar.viewPortfolio")}</span>
@@ -92,7 +92,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 mt-2 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors duration-200 border bg-[#70E844]/10 text-[#70E844] border-[#70E844]/20 hover:bg-[#70E844]/20"
+            className="inline-flex items-center justify-center gap-2 mt-2 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors duration-200 border bg-transparent text-[#70E844] border-[#70E844]/50 hover:border-[#70E844] hover:bg-[#70E844]/5"
           >
             <FiExternalLink size={16} />
             <span>{t("sidebar.viewHomePage")}</span>
@@ -260,7 +260,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
       </button>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-72 bg-[var(--surface)] border-r border-[var(--border)]">
+      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-60 bg-[var(--surface)] border-r border-[var(--border)]">
         {sidebar}
       </aside>
 
@@ -280,7 +280,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
-              className="fixed left-0 top-0 h-[100dvh] w-72 bg-[var(--surface)] border-r border-[var(--border)] z-50 lg:hidden"
+              className="fixed left-0 top-0 h-[100dvh] w-60 bg-[var(--surface)] border-r border-[var(--border)] z-50 lg:hidden"
             >
               <button
                 onClick={() => setOpen(false)}

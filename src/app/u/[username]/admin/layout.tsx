@@ -39,7 +39,7 @@ export default function UserDashboardLayout({
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <AdminSidebar username={username} isAdmin={session.user.isAdmin} firstName={session.user.firstName || ""} lastName={session.user.lastName || ""} />
-      <main className="lg:ml-72 min-h-screen p-6 pt-16 lg:pt-6 w-full">
+      <main className="lg:ml-60 min-h-screen p-6 pt-16 lg:pt-6 flex-1">
         {children}
       </main>
     </div>

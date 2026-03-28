@@ -45,7 +45,7 @@ export default function LanguageSwitcher({ className = "" }: { className?: strin
         <span>{languageLabels[language]}</span>
       </button>
       {open && (
-        <div className="absolute bottom-full left-0 mb-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-lg overflow-hidden z-50 min-w-[120px]">
+        <div className="absolute bottom-full left-0 mb-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-lg overflow-hidden z-50 w-full">
           {languages.map((lang) => (
             <button
               key={lang}
