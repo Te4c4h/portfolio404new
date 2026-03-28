@@ -122,6 +122,6 @@ export async function GET() {
     contentCount: sectionData?._count.contentItems || 0,
     mostViewedSection: mostViewedSection?.name || null,
     lastUpdated: sectionData?.siteContent?.updatedAt || null,
-    portfolioUrl: `https://www.portfolio404.site/u/${username}`,
+    portfolioUrl: `${process.env.NEXTAUTH_URL || "https://portfolio404new.vercel.app"}/u/${username}`,
   });
 }

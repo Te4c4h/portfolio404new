@@ -50,6 +50,8 @@ async function getPortfolioData(username: string) {
   return { ...user, resume: resume?.showOnPortfolio ? resume : null };
 }
 
+const baseUrl = process.env.NEXTAUTH_URL || "https://portfolio404new.vercel.app";
+
 export async function generateMetadata({
   params,
 }: {
@@ -65,8 +67,8 @@ export async function generateMetadata({
     data.siteContent?.subtext ||
     (aboutText ? aboutText.split("\n")[0].slice(0, 160) : `Portfolio of ${fullName}`);
   const ogTitle = `${fullName} — Portfolio | Portfolio 404`;
-  const ogImage = data.theme?.webclipUrl || "https://www.portfolio404.site/og-image.png";
-  const ogUrl = `https://www.portfolio404.site/u/${params.username}`;
+  const ogImage = data.theme?.webclipUrl || `${baseUrl}/og-image.png`;
+  const ogUrl = `${baseUrl}/u/${params.username}`;
 
   return {
     title,
@@ -105,7 +107,7 @@ export default async function PortfolioPage({
     "@context": "https://schema.org",
     "@type": "Person",
     name: fullName,
-    url: `https://www.portfolio404.site/u/${data.username}`,
+    url: `${baseUrl}/u/${data.username}`,
     ...(resume?.jobTitle ? { jobTitle: resume.jobTitle } : {}),
     ...(resume?.email ? { email: `mailto:${resume.email}` } : {}),
     ...(resume?.website ? { sameAs: [resume.website] } : {}),

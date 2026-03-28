@@ -4,6 +4,8 @@ import ThemeProvider from "@/components/ThemeProvider";
 import LanguageProvider from "@/lib/i18n/LanguageProvider";
 import "./globals.css";
 
+const baseUrl = process.env.NEXTAUTH_URL || "https://portfolio404new.vercel.app";
+
 export const metadata: Metadata = {
   title: "Portfolio 404 — Build Your Personal Portfolio",
   description:
@@ -12,9 +14,9 @@ export const metadata: Metadata = {
     title: "Portfolio 404 — Build Your Personal Portfolio",
     description:
       "Create a stunning personal portfolio in minutes. Free to start. No coding required.",
-    url: "https://www.portfolio404.site",
+    url: baseUrl,
     siteName: "Portfolio 404",
-    images: [{ url: "https://www.portfolio404.site/og-image.png", width: 1200, height: 630 }],
+    images: [{ url: `${baseUrl}/og-image.png`, width: 1200, height: 630 }],
     type: "website",
   },
   twitter: {
@@ -22,9 +24,9 @@ export const metadata: Metadata = {
     title: "Portfolio 404 — Build Your Personal Portfolio",
     description:
       "Create a stunning personal portfolio in minutes. Free to start. No coding required.",
-    images: ["https://www.portfolio404.site/og-image.png"],
+    images: [`${baseUrl}/og-image.png`],
   },
-  metadataBase: new URL("https://www.portfolio404.site"),
+  metadataBase: new URL(baseUrl),
 };
 
 export default function RootLayout({

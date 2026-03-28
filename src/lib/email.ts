@@ -3,7 +3,7 @@ import { Resend } from "resend";
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const FROM_EMAIL = "Portfolio 404 <noreply@portfolio404.site>";
-const BASE_URL = process.env.NEXTAUTH_URL || "https://portfolio404.site";
+const BASE_URL = process.env.NEXTAUTH_URL || "https://portfolio404new.vercel.app";
 
 export async function sendVerificationEmail(email: string, token: string) {
   if (!resend) {

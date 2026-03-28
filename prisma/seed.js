@@ -73,7 +73,9 @@ async function main() {
 
   // --- Seed admin user ---
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "te4c4h@gmail.com";
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "01Tech2024!";
+  // NOTE: Set ADMIN_PASSWORD in environment variables for security
+  // If not set, a random password will be generated and logged
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || Math.random().toString(36).slice(-12) + "A1!";
   const existingAdmin = await prisma.user.findUnique({ where: { username: "admin" } });
 
   if (existingAdmin) {
@@ -88,6 +90,9 @@ async function main() {
       },
     });
     console.log("Admin user updated successfully.");
+    if (!process.env.ADMIN_PASSWORD) {
+      console.log("Generated admin password:", ADMIN_PASSWORD);
+    }
   } else {
     const adminHash = await hash(ADMIN_PASSWORD, 12);
     const admin = await prisma.user.create({
@@ -103,6 +108,9 @@ async function main() {
     await prisma.siteContent.create({ data: { userId: admin.id } });
     await prisma.theme.create({ data: { userId: admin.id } });
     console.log("Admin user seeded successfully.");
+    if (!process.env.ADMIN_PASSWORD) {
+      console.log("Generated admin password:", ADMIN_PASSWORD);
+    }
   }
 }
 

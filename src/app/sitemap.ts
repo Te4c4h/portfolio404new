@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { isSubscriptionEnabled } from "@/lib/subscription";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://www.portfolio404.site";
+  const baseUrl = process.env.NEXTAUTH_URL || "https://portfolio404new.vercel.app";
 
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
