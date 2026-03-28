@@ -4,7 +4,7 @@ import { hash } from "bcryptjs";
 
 // This route seeds the database with initial data
 // Should be called once after deployment
-export async function POST() {
+async function seedDatabase() {
   try {
     const results = {
       homeUser: null as string | null,
@@ -247,4 +247,12 @@ export async function POST() {
       { status: 500 }
     );
   }
+}
+
+export async function GET() {
+  return seedDatabase();
+}
+
+export async function POST() {
+  return seedDatabase();
 }
