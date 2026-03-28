@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useTranslation, Language, languageLabels } from "@/lib/i18n/LanguageProvider";
+import { useTheme } from "@/components/ThemeProvider";
 import { FiGlobe } from "react-icons/fi";
 
 const languages: Language[] = ["en", "hy", "ru"];
@@ -13,6 +14,7 @@ const languageNames: Record<Language, string> = {
 
 export default function LanguageSwitcher({ className = "" }: { className?: string }) {
   const { language, setLanguage } = useTranslation();
+  const { theme } = useTheme();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -26,15 +28,21 @@ export default function LanguageSwitcher({ className = "" }: { className?: strin
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  const isDark = theme === "dark";
+
   return (
     <div ref={ref} className={`relative ${className}`}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/30 transition-colors"
+        className={`flex items-center justify-center gap-2 px-3 py-2.5 w-full rounded-lg text-sm font-medium transition-colors duration-200 border ${
+          isDark
+            ? "bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/20 hover:bg-[var(--accent)]/20"
+            : "bg-white text-[var(--foreground)] border-[var(--border)] hover:bg-[var(--foreground)]/5 shadow-sm"
+        }`}
         title="Change language"
       >
-        <FiGlobe size={14} />
-        {languageLabels[language]}
+        <FiGlobe size={16} />
+        <span>{languageLabels[language]}</span>
       </button>
       {open && (
         <div className="absolute bottom-full left-0 mb-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-lg overflow-hidden z-50 min-w-[120px]">

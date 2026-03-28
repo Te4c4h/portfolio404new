@@ -81,10 +81,10 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             href={`/u/${username}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--accent)]/30 text-[var(--accent)] hover:bg-[var(--sidebar-active)] transition-colors"
+            className="inline-flex items-center justify-center gap-2 mt-2 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors duration-200 border bg-[#70E844]/10 text-[#70E844] border-[#70E844]/20 hover:bg-[#70E844]/20"
           >
-            <FiExternalLink size={13} />
-            {t("sidebar.viewPortfolio")}
+            <FiExternalLink size={16} />
+            <span>{t("sidebar.viewPortfolio")}</span>
           </a>
         )}
         {isAdmin && (
@@ -92,10 +92,10 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--accent)]/30 text-[var(--accent)] hover:bg-[var(--sidebar-active)] transition-colors"
+            className="inline-flex items-center justify-center gap-2 mt-2 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors duration-200 border bg-[#70E844]/10 text-[#70E844] border-[#70E844]/20 hover:bg-[#70E844]/20"
           >
-            <FiExternalLink size={13} />
-            {t("sidebar.viewHomePage")}
+            <FiExternalLink size={16} />
+            <span>{t("sidebar.viewHomePage")}</span>
           </a>
         )}
       </div>
@@ -184,6 +184,20 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
           </Link>
         )}
 
+        {/* Account Settings */}
+        <Link
+          href={basePath + "/account-settings"}
+          onClick={() => setOpen(false)}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+            isActive("/account-settings")
+              ? "bg-[var(--sidebar-active)] text-[var(--accent)]"
+              : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
+          }`}
+        >
+          <FiSliders size={18} />
+          {t("sidebar.accountSettings")}
+        </Link>
+
         {/* Billing — non-admin only, only when LemonSqueezy is enabled */}
         {!isAdmin && process.env.NEXT_PUBLIC_LEMONSQUEEZY_ENABLED === "true" && (
           <Link
@@ -222,28 +236,14 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
 
       {/* Bottom — pinned */}
       <div className="px-3 pb-6 space-y-2">
-        <Link
-          href={basePath + "/account-settings"}
-          onClick={() => setOpen(false)}
-          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-            isActive("/account-settings")
-              ? "bg-[var(--sidebar-active)] text-[var(--accent)]"
-              : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
-          }`}
-        >
-          <FiSliders size={18} />
-          {t("sidebar.accountSettings")}
-        </Link>
+        <LanguageSwitcher />
         <ThemeToggle />
-        <div className="flex justify-center">
-          <LanguageSwitcher />
-        </div>
         <button
           onClick={() => signOut({ callbackUrl: isAdmin ? "/" : `/u/${username}` })}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-colors w-full"
+          className="flex items-center justify-center gap-2 px-3 py-2.5 w-full rounded-lg text-sm font-medium transition-colors duration-200 border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:text-red-700"
         >
-          <FiLogOut size={18} />
-          {t("sidebar.logout")}
+          <FiLogOut size={16} />
+          <span>{t("sidebar.logout")}</span>
         </button>
       </div>
     </div>
@@ -260,7 +260,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
       </button>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-60 bg-[var(--surface)] border-r border-[var(--border)]">
+      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-72 bg-[var(--surface)] border-r border-[var(--border)]">
         {sidebar}
       </aside>
 
@@ -280,7 +280,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
-              className="fixed left-0 top-0 h-[100dvh] w-60 bg-[var(--surface)] border-r border-[var(--border)] z-50 lg:hidden"
+              className="fixed left-0 top-0 h-[100dvh] w-72 bg-[var(--surface)] border-r border-[var(--border)] z-50 lg:hidden"
             >
               <button
                 onClick={() => setOpen(false)}
