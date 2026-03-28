@@ -27,7 +27,8 @@ export async function middleware(req: NextRequest) {
   }
 
   // New Google user who needs profile completion — redirect to /complete-signup
-  if (token?.needsSetup && pathname !== "/complete-signup") {
+  // Skip API routes so the complete-signup form submission works
+  if (token?.needsSetup && pathname !== "/complete-signup" && !pathname.startsWith("/api/")) {
     return NextResponse.redirect(new URL("/complete-signup", req.url));
   }
 
