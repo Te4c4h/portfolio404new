@@ -135,6 +135,11 @@ model Theme {
   headingFont    String @default("Syne")
   faviconUrl     String @default("")
   webclipUrl     String @default("")
+  logoUrl        String @default("")
+  coverImage1    String @default("")
+  coverImage2    String @default("")
+  coverImage3    String @default("")
+  coverImage4    String @default("")
   websiteTitle   String @default("")
   gridColor      String @default("rgba(255,255,255,0.03)")
 

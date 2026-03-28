@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Toast from "@/components/Toast";
 import dynamic from "next/dynamic";
+import ImageUpload from "@/components/ImageUpload";
 
 const RgbaColorPicker = dynamic(() => import("@/components/RgbaColorPicker"), {
   ssr: false,
@@ -20,6 +21,11 @@ interface ThemeData {
   headingFont: string;
   faviconUrl: string;
   webclipUrl: string;
+  logoUrl: string;
+  coverImage1: string;
+  coverImage2: string;
+  coverImage3: string;
+  coverImage4: string;
   gridColor: string;
 }
 
@@ -27,7 +33,8 @@ const themeDefaults: ThemeData = {
   accentColor: "#70E844", backgroundColor: "#131313", surfaceColor: "#181818",
   textColor: "#fafafa", dangerColor: "#FE454E", cursorColor: "#70E844",
   bodyFont: "Inter", headingFont: "Syne", faviconUrl: "",
-  webclipUrl: "", gridColor: "rgba(255,255,255,0.03)",
+  webclipUrl: "", logoUrl: "", coverImage1: "", coverImage2: "", coverImage3: "", coverImage4: "",
+  gridColor: "rgba(255,255,255,0.03)",
 };
 
 const fonts = [
@@ -75,6 +82,11 @@ export default function SettingsPage() {
         headingFont: themeData.headingFont || themeDefaults.headingFont,
         faviconUrl: themeData.faviconUrl || "",
         webclipUrl: themeData.webclipUrl || "",
+        logoUrl: themeData.logoUrl || "",
+        coverImage1: themeData.coverImage1 || "",
+        coverImage2: themeData.coverImage2 || "",
+        coverImage3: themeData.coverImage3 || "",
+        coverImage4: themeData.coverImage4 || "",
         gridColor: themeData.gridColor || themeDefaults.gridColor,
       });
     }
@@ -183,17 +195,82 @@ export default function SettingsPage() {
         {/* Branding */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Branding</h2>
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Favicon URL</label>
-              <input className="dash-input" value={theme.faviconUrl} onChange={(e) => setTheme((t) => ({ ...t, faviconUrl: e.target.value }))} placeholder="https://..." />
-              <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">Recommended: 32×32px or 64×64px (ICO or PNG)</p>
-            </div>
-            <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">OG Image / Webclip URL</label>
-              <input className="dash-input" value={theme.webclipUrl} onChange={(e) => setTheme((t) => ({ ...t, webclipUrl: e.target.value }))} placeholder="https://..." />
-              <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">Recommended: 1200×630px (JPG or PNG)</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Logo */}
+            <ImageUpload
+              label="Logo / Brand Image"
+              value={theme.logoUrl}
+              onChange={(url) => setTheme((t) => ({ ...t, logoUrl: url }))}
+              maxSizeMB={1}
+              maxDimensions={{ width: 400, height: 160 }}
+              acceptedFormats={["PNG", "SVG"]}
+              folder="logos"
+            />
+
+            {/* Favicon */}
+            <ImageUpload
+              label="Favicon"
+              value={theme.faviconUrl}
+              onChange={(url) => setTheme((t) => ({ ...t, faviconUrl: url }))}
+              maxSizeMB={0.5}
+              maxDimensions={{ width: 64, height: 64 }}
+              acceptedFormats={["ICO", "PNG"]}
+              folder="favicons"
+            />
+
+            {/* OG Image / Webclip */}
+            <ImageUpload
+              label="OG Image / Webclip"
+              value={theme.webclipUrl}
+              onChange={(url) => setTheme((t) => ({ ...t, webclipUrl: url }))}
+              maxSizeMB={2}
+              recommendedDimensions={{ width: 1200, height: 630 }}
+              acceptedFormats={["JPG", "PNG"]}
+              folder="og-images"
+            />
+          </div>
+        </div>
+
+        {/* Cover Images */}
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Cover / Gallery Images</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ImageUpload
+              label="Cover Image 1"
+              value={theme.coverImage1}
+              onChange={(url) => setTheme((t) => ({ ...t, coverImage1: url }))}
+              maxSizeMB={3}
+              recommendedDimensions={{ width: 1200, height: 675 }}
+              acceptedFormats={["JPG", "PNG"]}
+              folder="covers"
+            />
+            <ImageUpload
+              label="Cover Image 2"
+              value={theme.coverImage2}
+              onChange={(url) => setTheme((t) => ({ ...t, coverImage2: url }))}
+              maxSizeMB={3}
+              recommendedDimensions={{ width: 1200, height: 675 }}
+              acceptedFormats={["JPG", "PNG"]}
+              folder="covers"
+            />
+            <ImageUpload
+              label="Cover Image 3"
+              value={theme.coverImage3}
+              onChange={(url) => setTheme((t) => ({ ...t, coverImage3: url }))}
+              maxSizeMB={3}
+              recommendedDimensions={{ width: 1200, height: 675 }}
+              acceptedFormats={["JPG", "PNG"]}
+              folder="covers"
+            />
+            <ImageUpload
+              label="Cover Image 4"
+              value={theme.coverImage4}
+              onChange={(url) => setTheme((t) => ({ ...t, coverImage4: url }))}
+              maxSizeMB={3}
+              recommendedDimensions={{ width: 1200, height: 675 }}
+              acceptedFormats={["JPG", "PNG"]}
+              folder="covers"
+            />
           </div>
         </div>
 
