@@ -1,13 +1,15 @@
 "use client";
 
-import { Suspense, useState, useEffect, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-function CompleteSignupContent() {
+export default function CompleteSignupPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const email = searchParams.get("email") || "";
-  const name = searchParams.get("name") || "";
+  const { data: session, status, update } = useSession();
+
+  const email = session?.user?.email || "";
+  const googleName = session?.user?.googleName || "";
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -17,12 +19,12 @@ function CompleteSignupContent() {
   const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
 
   useEffect(() => {
-    if (name) {
-      const parts = name.split(" ");
+    if (googleName) {
+      const parts = googleName.split(" ");
       setFirstName(parts[0] || "");
       setLastName(parts.slice(1).join(" ") || "");
     }
-  }, [name]);
+  }, [googleName]);
 
   const checkUsername = useCallback(async (value: string) => {
     if (value.length < 3) { setUsernameStatus("idle"); return; }
@@ -79,13 +81,22 @@ function CompleteSignupContent() {
         setLoading(false);
         return;
       }
-      // Account created — redirect to login, user signs in with Google (account now exists)
-      router.push("/login?signup=complete");
+      // Refresh the session so JWT picks up the new DB user
+      await update();
+      router.push(`/u/${data.user.username}/admin`);
     } catch {
       setError("Something went wrong");
       setLoading(false);
     }
   };
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!email) {
     return (
@@ -172,13 +183,5 @@ function CompleteSignupContent() {
         </form>
       </div>
     </div>
-  );
-}
-
-export default function CompleteSignupPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--background)] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" /></div>}>
-      <CompleteSignupContent />
-    </Suspense>
   );
 }

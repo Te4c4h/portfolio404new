@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -62,6 +63,9 @@ export async function POST(req: NextRequest) {
 
       return newUser;
     });
+
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail(email, firstName, username).catch(console.error);
 
     return NextResponse.json(
       { user: { id: user.id, username: user.username, email: user.email } },

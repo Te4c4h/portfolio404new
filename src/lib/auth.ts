@@ -4,7 +4,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { compare } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { sendWelcomeEmail } from "@/lib/email";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -76,58 +75,7 @@ export const authOptions: NextAuthOptions = {
           }
           return true;
         }
-
-        // New Google user — create account directly
-        const name = user.name || "";
-        const nameParts = name.split(" ");
-        const firstName = nameParts[0] || "User";
-        const lastName = nameParts.slice(1).join(" ") || "";
-
-        // Generate unique username from email prefix
-        const baseUsername = email.split("@")[0].replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 15) || "user";
-        let username = baseUsername;
-        let suffix = 1;
-        while (await prisma.user.findUnique({ where: { username } })) {
-          username = `${baseUsername}${suffix}`;
-          suffix++;
-        }
-
-        await prisma.$transaction(async (tx) => {
-          const newUser = await tx.user.create({
-            data: {
-              firstName,
-              lastName,
-              email,
-              username,
-              password: "",
-              emailVerified: true,
-              isPublished: true,
-            },
-          });
-
-          await tx.siteContent.create({
-            data: {
-              userId: newUser.id,
-              siteTitle: `${firstName}'s Portfolio`,
-              logoText: firstName,
-              headline: `Hello, I'm ${firstName}`,
-              subtext: "Welcome to my portfolio",
-              ctaLabel1: "View Work",
-              ctaLabel2: "Contact Me",
-              contactTitle: "Get In Touch",
-              contactSubtitle: "Feel free to reach out",
-              footerText: `© ${new Date().getFullYear()} ${firstName} ${lastName}`,
-            },
-          });
-
-          await tx.theme.create({
-            data: { userId: newUser.id },
-          });
-        });
-
-        // Send welcome email (non-blocking)
-        sendWelcomeEmail(email, firstName, username).catch(console.error);
-
+        // New Google user — allow sign-in, profile completion happens next
         return true;
       }
       return true;
@@ -142,6 +90,12 @@ export const authOptions: NextAuthOptions = {
           token.isAdmin = dbUser.username === "admin";
           token.firstName = dbUser.firstName;
           token.lastName = dbUser.lastName;
+          token.needsSetup = false;
+        } else {
+          // New Google user — no DB record yet, needs profile completion
+          token.email = user.email;
+          token.googleName = user.name || "";
+          token.needsSetup = true;
         }
       } else if (user) {
         token.id = user.id;
@@ -152,18 +106,28 @@ export const authOptions: NextAuthOptions = {
         token.lastName = user.lastName;
       }
 
-      // Re-fetch user data from DB on session update trigger (e.g. after username change)
-      if (trigger === "update" && token.id) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          select: { username: true, firstName: true, lastName: true, email: true },
-        });
+      // Re-fetch user data from DB on session update trigger (e.g. after username change or profile completion)
+      if (trigger === "update") {
+        const dbUser = token.id
+          ? await prisma.user.findUnique({
+              where: { id: token.id as string },
+              select: { id: true, username: true, firstName: true, lastName: true, email: true },
+            })
+          : token.email
+            ? await prisma.user.findUnique({
+                where: { email: token.email as string },
+                select: { id: true, username: true, firstName: true, lastName: true, email: true },
+              })
+            : null;
         if (dbUser) {
+          token.id = dbUser.id;
           token.username = dbUser.username;
           token.firstName = dbUser.firstName;
           token.lastName = dbUser.lastName;
           token.email = dbUser.email;
           token.isAdmin = dbUser.username === "admin";
+          token.needsSetup = false;
+          token.googleName = undefined;
         }
       }
 
@@ -177,6 +141,8 @@ export const authOptions: NextAuthOptions = {
         isAdmin: token.isAdmin,
         firstName: token.firstName,
         lastName: token.lastName,
+        needsSetup: token.needsSetup,
+        googleName: token.googleName,
       };
       return session;
     },

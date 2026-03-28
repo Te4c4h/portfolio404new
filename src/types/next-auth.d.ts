@@ -19,6 +19,8 @@ declare module "next-auth" {
       isAdmin: boolean;
       firstName: string;
       lastName: string;
+      needsSetup?: boolean;
+      googleName?: string;
     };
   }
 }
@@ -31,5 +33,7 @@ declare module "next-auth/jwt" {
     isAdmin: boolean;
     firstName: string;
     lastName: string;
+    needsSetup?: boolean;
+    googleName?: string;
   }
 }

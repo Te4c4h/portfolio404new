@@ -15,13 +15,25 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Public auth pages — allow through
-  if (pathname === "/verify-email" || pathname === "/reset-password" || pathname === "/complete-signup") {
+  if (pathname === "/verify-email" || pathname === "/reset-password") {
     return NextResponse.next();
+  }
+
+  // Allow /complete-signup only for users who need setup
+  if (pathname === "/complete-signup") {
+    if (token?.needsSetup) return NextResponse.next();
+    if (token?.username) return NextResponse.redirect(new URL(`/u/${token.username}/admin`, req.url));
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  // New Google user who needs profile completion — redirect to /complete-signup
+  if (token?.needsSetup && pathname !== "/complete-signup") {
+    return NextResponse.redirect(new URL("/complete-signup", req.url));
   }
 
   // Authenticated user visits /login → redirect to their dashboard
   if (pathname === "/login") {
-    if (token) {
+    if (token && token.username) {
       return NextResponse.redirect(
         new URL(`/u/${token.username}/admin`, req.url)
       );
