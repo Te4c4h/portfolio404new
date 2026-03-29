@@ -4,10 +4,10 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useRouter } from "next/navigation";
 
 interface PayPalButtonProps {
-  userEmail: string;
+  userId: string;
 }
 
-export default function PayPalButton({ userEmail }: PayPalButtonProps) {
+export default function PayPalButton({ userId }: PayPalButtonProps) {
   const router = useRouter();
   const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "";
 
@@ -22,7 +22,7 @@ export default function PayPalButton({ userEmail }: PayPalButtonProps) {
             value: "5.00",
           },
           description: "Portfolio 404 — Lifetime Access",
-          custom_id: userEmail,
+          custom_id: userId,
         },
       ],
     });

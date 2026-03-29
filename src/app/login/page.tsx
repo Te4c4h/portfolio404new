@@ -296,7 +296,7 @@ function LoginContent() {
           <div className="flex-1 h-px bg-[var(--border)]" />
         </div>
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           {showForgotPassword ? (
             <motion.div
               key="forgot"

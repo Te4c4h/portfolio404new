@@ -6,7 +6,10 @@ export async function POST(req: NextRequest) {
   const body = await req.text();
 
   // Step 1: Send back to PayPal for verification
-  const verifyUrl = process.env.PAYPAL_IPN_VERIFY_URL || "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr";
+  const isLive = process.env.PAYPAL_MODE === "live";
+  const verifyUrl = isLive
+    ? "https://ipnpb.paypal.com/cgi-bin/webscr"
+    : "https://ipnpb.sandbox.paypal.com/cgi-bin/webscr";
   let verifyRes: Response;
   try {
     verifyRes = await fetch(verifyUrl, {
@@ -35,9 +38,11 @@ export async function POST(req: NextRequest) {
   const mcGross = params.get("mc_gross");
   const mcCurrency = params.get("mc_currency");
   const payerEmail = params.get("payer_email");
+  const receiverEmail = params.get("receiver_email");
   const txnId = params.get("txn_id");
+  const customField = params.get("custom"); // userId passed in createOrder
 
-  console.log("[IPN] VERIFIED — status:", paymentStatus, "gross:", mcGross, "currency:", mcCurrency, "payer:", payerEmail, "txn:", txnId);
+  console.log("[IPN] VERIFIED — status:", paymentStatus, "gross:", mcGross, "currency:", mcCurrency, "payer:", payerEmail, "custom:", customField, "txn:", txnId);
 
   // Step 3: Validate payment
   if (paymentStatus !== "Completed") {
@@ -55,15 +60,33 @@ export async function POST(req: NextRequest) {
     return new NextResponse("OK", { status: 200 });
   }
 
-  if (!payerEmail || !txnId) {
-    console.warn("[IPN] Missing payer_email or txn_id");
+  // Validate receiver email if configured
+  const expectedEmail = process.env.PAYPAL_RECEIVER_EMAIL;
+  if (expectedEmail && receiverEmail !== expectedEmail) {
+    console.warn("[IPN] Wrong receiver_email — expected:", expectedEmail, "got:", receiverEmail);
     return new NextResponse("OK", { status: 200 });
   }
 
-  // Step 4: Find user by payer email
-  const user = await prisma.user.findUnique({ where: { email: payerEmail } });
+  if (!txnId) {
+    console.warn("[IPN] Missing txn_id");
+    return new NextResponse("OK", { status: 200 });
+  }
+
+  // Step 4: Find user — prefer userId from custom field, fall back to payer_email
+  let user = null;
+  if (customField) {
+    // custom field contains userId
+    user = await prisma.user.findUnique({ where: { id: customField } });
+    if (!user && customField.includes("@")) {
+      // custom field might be email (legacy)
+      user = await prisma.user.findUnique({ where: { email: customField } });
+    }
+  }
+  if (!user && payerEmail) {
+    user = await prisma.user.findUnique({ where: { email: payerEmail } });
+  }
   if (!user) {
-    console.warn("[IPN] No user found for payer_email:", payerEmail);
+    console.warn("[IPN] No user found — custom:", customField, "payer_email:", payerEmail);
     return new NextResponse("OK", { status: 200 });
   }
 

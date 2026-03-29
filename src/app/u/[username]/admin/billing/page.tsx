@@ -94,7 +94,7 @@ export default function BillingPage() {
               </div>
               <p className="text-xs text-[var(--muted)] mb-4">Pay once. Lifetime access. No recurring charges.</p>
               <Suspense fallback={<div className="h-12 rounded-xl bg-[var(--border)] animate-pulse" />}>
-                <PayPalButton userEmail={session?.user?.email ?? ""} />
+                <PayPalButton userId={session?.user?.id ?? ""} />
               </Suspense>
               <p className="text-[var(--muted)] text-[10px] text-center mt-3">
                 Secure payment via PayPal. One-time charge of $5.00 USD.

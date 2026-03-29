@@ -110,7 +110,7 @@ export default function PricingPage() {
               <div className="h-12 rounded-xl bg-[var(--border)] animate-pulse" />
             ) : session && !isPaid ? (
               <div>
-                <PayPalButton userEmail={session.user.email} />
+                <PayPalButton userId={session.user.id ?? ""} />
                 <p className="text-[var(--muted)] text-[10px] text-center mt-3">
                   Secure payment via PayPal. One-time charge of $5.00 USD.
                 </p>
