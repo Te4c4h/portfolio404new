@@ -40,6 +40,14 @@ export default function PayPalButton({ userEmail }: PayPalButtonProps) {
     console.error("[PayPal] Error:", err);
   };
 
+  if (!clientId) {
+    return (
+      <div className="w-full py-3 rounded-xl text-center text-sm text-[var(--muted)] border border-[var(--border)]">
+        Payment not configured. Contact the administrator.
+      </div>
+    );
+  }
+
   return (
     <PayPalScriptProvider
       options={{

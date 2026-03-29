@@ -68,10 +68,6 @@ export async function middleware(req: NextRequest) {
         new URL(`/u/${token.username}/admin`, req.url)
       );
     }
-    // Unpaid users (non-admin, no free access grant) must pay first
-    if (!token.isAdmin && !token.isPaid && !token.isFreeAccess) {
-      return NextResponse.redirect(new URL("/pricing", req.url));
-    }
     return NextResponse.next();
   }
 
