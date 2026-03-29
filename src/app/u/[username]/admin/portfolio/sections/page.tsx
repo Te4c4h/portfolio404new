@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import {
   DndContext,
   closestCenter,
@@ -115,6 +116,8 @@ function SortableRow({
 }
 
 export default function SectionsPage() {
+  const { data: session } = useSession();
+  const isAdmin = !!(session?.user as { isAdmin?: boolean } | undefined)?.isAdmin;
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -247,13 +250,13 @@ export default function SectionsPage() {
         <h1 className="text-2xl font-bold text-[var(--foreground)]">Categories</h1>
         <button
           onClick={openAdd}
-          disabled={sections.length >= 4}
+          disabled={!isAdmin && sections.length >= 4}
           className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-30 disabled:cursor-not-allowed"
         >
           + Add Section
         </button>
       </div>
-      {sections.length >= 4 && (
+      {!isAdmin && sections.length >= 4 && (
         <p className="text-[var(--muted)] text-[10px] mb-4">Maximum 4 sections reached</p>
       )}
 

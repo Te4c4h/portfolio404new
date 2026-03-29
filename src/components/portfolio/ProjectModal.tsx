@@ -64,7 +64,7 @@ export default function ProjectModal({ item, onClose, accent }: ProjectModalProp
             transition={{ duration: 0.2 }}
             onClick={(e) => e.stopPropagation()}
             className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border"
-            style={{ backgroundColor: "var(--surface)", borderColor: "var(--surface)" }}
+            style={{ backgroundColor: item.cardBg || "var(--surface)", borderColor: item.cardBg || "var(--surface)" }}
           >
             {/* Close button */}
             <div className="sticky top-0 z-10 flex justify-end pointer-events-none mb-[-52px]">

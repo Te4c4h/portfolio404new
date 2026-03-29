@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getEffectiveUserId } from "@/lib/api-auth";
+import { getEffectiveUserId, getSessionUser } from "@/lib/api-auth";
 
 export async function GET() {
   const userId = await getEffectiveUserId();
@@ -29,10 +29,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
   }
 
-  // Enforce max 4 sections per user
-  const count = await prisma.section.count({ where: { userId } });
-  if (count >= 4) {
-    return NextResponse.json({ error: "Maximum 4 sections allowed" }, { status: 400 });
+  // Enforce max 4 sections per user (admins are exempt)
+  const sessionUser = await getSessionUser();
+  if (!sessionUser?.isAdmin) {
+    const count = await prisma.section.count({ where: { userId } });
+    if (count >= 4) {
+      return NextResponse.json({ error: "Maximum 4 sections allowed" }, { status: 400 });
+    }
   }
 
   const slug = name

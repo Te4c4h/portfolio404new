@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import { FiX, FiPlus } from "react-icons/fi";
 import Toast from "@/components/Toast";
 import ImageUpload from "@/components/ImageUpload";
@@ -23,6 +24,8 @@ interface Section {
 }
 
 export default function NavbarPage() {
+  const { data: session } = useSession();
+  const isAdmin = !!(session?.user as { isAdmin?: boolean } | undefined)?.isAdmin;
   const [logoText, setLogoText] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
   const [useLogoImage, setUseLogoImage] = useState(false);
@@ -189,8 +192,8 @@ export default function NavbarPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Navigation Links</h2>
             <button
-              onClick={() => { if (navLinks.length < 4) setShowAddRow(true); }}
-              disabled={navLinks.length >= 4}
+              onClick={() => { if (isAdmin || navLinks.length < 4) setShowAddRow(true); }}
+              disabled={!isAdmin && navLinks.length >= 4}
               className="p-1.5 rounded-lg bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <FiPlus size={14} />
@@ -252,7 +255,7 @@ export default function NavbarPage() {
               </div>
             )}
           </div>
-          {navLinks.length >= 4 && (
+          {!isAdmin && navLinks.length >= 4 && (
             <p className="text-[var(--muted)] text-[10px] mt-2">Maximum 4 navigation links reached</p>
           )}
         </div>

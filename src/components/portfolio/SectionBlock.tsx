@@ -16,15 +16,20 @@ interface SectionBlockProps {
 }
 
 export default function SectionBlock({ section, accent, surface, defaultBg, onCardClick }: SectionBlockProps) {
-  const bg = section.backgroundColor && section.backgroundColor !== "#181818"
-    ? section.backgroundColor
-    : defaultBg;
+  const hasCustomBg = section.backgroundColor && section.backgroundColor !== "#181818" && section.backgroundColor !== "";
+  const bg = hasCustomBg ? section.backgroundColor : defaultBg;
 
   return (
     <section
       id={section.slug}
-      className="py-24 px-6"
-      style={{ backgroundColor: bg }}
+      className="py-24 px-6 relative"
+      style={{
+        backgroundColor: bg,
+        ...(!hasCustomBg ? {
+          backgroundImage: "linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px)",
+          backgroundSize: "60px 60px",
+        } : {}),
+      }}
     >
       <div className="max-w-6xl mx-auto">
         <motion.p
