@@ -294,6 +294,12 @@ model Resume {
   location        String   @default("")
   website         String   @default("")
   summary         String   @default("")
+  photoUrl        String   @default("")
+  accentColor     String   @default("")
+  showSummary     Boolean  @default(true)
+  showExperience  Boolean  @default(true)
+  showEducation   Boolean  @default(true)
+  showSkills      Boolean  @default(true)
   showOnPortfolio Boolean  @default(false)
   updatedAt       DateTime @updatedAt
 

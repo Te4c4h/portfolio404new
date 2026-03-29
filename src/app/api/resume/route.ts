@@ -37,33 +37,34 @@ export async function PUT(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { templateId, fullName, jobTitle, email, phone, location, website, summary, showOnPortfolio } = body;
+  const {
+    templateId, fullName, jobTitle, email, phone, location, website, summary,
+    photoUrl, accentColor, showSummary, showExperience, showEducation, showSkills,
+    showOnPortfolio,
+  } = body;
+
+  const fields = {
+    templateId: templateId ?? "classic",
+    fullName: fullName ?? "",
+    jobTitle: jobTitle ?? "",
+    email: email ?? "",
+    phone: phone ?? "",
+    location: location ?? "",
+    website: website ?? "",
+    summary: summary ?? "",
+    photoUrl: photoUrl ?? "",
+    accentColor: accentColor ?? "",
+    showSummary: showSummary ?? true,
+    showExperience: showExperience ?? true,
+    showEducation: showEducation ?? true,
+    showSkills: showSkills ?? true,
+    showOnPortfolio: showOnPortfolio ?? false,
+  };
 
   const resume = await prisma.resume.upsert({
     where: { userId: user.id },
-    update: {
-      templateId: templateId ?? "classic",
-      fullName: fullName ?? "",
-      jobTitle: jobTitle ?? "",
-      email: email ?? "",
-      phone: phone ?? "",
-      location: location ?? "",
-      website: website ?? "",
-      summary: summary ?? "",
-      showOnPortfolio: showOnPortfolio ?? false,
-    },
-    create: {
-      userId: user.id,
-      templateId: templateId ?? "classic",
-      fullName: fullName ?? "",
-      jobTitle: jobTitle ?? "",
-      email: email ?? "",
-      phone: phone ?? "",
-      location: location ?? "",
-      website: website ?? "",
-      summary: summary ?? "",
-      showOnPortfolio: showOnPortfolio ?? false,
-    },
+    update: fields,
+    create: { userId: user.id, ...fields },
   });
 
   return NextResponse.json(resume);
