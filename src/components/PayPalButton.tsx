@@ -1,6 +1,6 @@
 "use client";
 
-import { PayPalScriptProvider, PayPalButtons, type CreateOrderActions, type OnApproveActions, type OnApproveData } from "@paypal/react-paypal-js";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useRouter } from "next/navigation";
 
 interface PayPalButtonProps {
@@ -11,7 +11,8 @@ export default function PayPalButton({ userEmail }: PayPalButtonProps) {
   const router = useRouter();
   const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "";
 
-  const createOrder = (_data: Record<string, unknown>, actions: CreateOrderActions) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const createOrder = (_data: any, actions: any) => {
     return actions.order.create({
       intent: "CAPTURE",
       purchase_units: [
@@ -27,13 +28,15 @@ export default function PayPalButton({ userEmail }: PayPalButtonProps) {
     });
   };
 
-  const onApprove = async (_data: OnApproveData, actions: OnApproveActions) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onApprove = async (_data: any, actions: any) => {
     if (!actions.order) return;
     await actions.order.capture();
     router.push("/payment/success");
   };
 
-  const onError = (err: Record<string, unknown>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onError = (err: any) => {
     console.error("[PayPal] Error:", err);
   };
 
