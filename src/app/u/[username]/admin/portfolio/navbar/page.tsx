@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { FiX, FiPlus } from "react-icons/fi";
+import { FiX, FiPlus, FiCheck } from "react-icons/fi";
 import Toast from "@/components/Toast";
 import ImageUpload from "@/components/ImageUpload";
 import { ColorPickerField, TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
@@ -25,7 +25,7 @@ interface Section {
 
 export default function NavbarPage() {
   const { data: session } = useSession();
-  const isAdmin = !!(session?.user as { isAdmin?: boolean } | undefined)?.isAdmin;
+  const isAdmin = session?.user?.isAdmin === true;
   const [logoText, setLogoText] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
   const [useLogoImage, setUseLogoImage] = useState(false);
@@ -38,6 +38,7 @@ export default function NavbarPage() {
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingLinkId, setSavingLinkId] = useState<string | null>(null);
   const [toast, setToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("Navbar saved!");
   const [newLink, setNewLink] = useState({ label: "", href: "", labelColor: "", labelFont: "", labelWeight: "" });
@@ -106,16 +107,30 @@ export default function NavbarPage() {
       const link = await r.json();
       setNavLinks((prev) => [...prev, link]);
       setNewLink({ label: "", href: "", labelColor: "", labelFont: "", labelWeight: "" });
+      setShowAddRow(false);
     }
   };
 
-  const updateNavLinkHref = async (id: string, href: string) => {
-    await fetch(`/api/nav-links/${id}`, {
+  const updateNavLink = (id: string, patch: Partial<NavLink>) => {
+    setNavLinks((prev) => prev.map((l) => l.id === id ? { ...l, ...patch } : l));
+  };
+
+  const saveNavLink = async (link: NavLink) => {
+    setSavingLinkId(link.id);
+    await fetch(`/api/nav-links/${link.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ href }),
+      body: JSON.stringify({
+        label: link.label,
+        href: link.href,
+        labelColor: link.labelColor,
+        labelFont: link.labelFont,
+        labelWeight: link.labelWeight,
+      }),
     });
-    setNavLinks((prev) => prev.map((l) => l.id === id ? { ...l, href } : l));
+    setSavingLinkId(null);
+    setToastMsg("Link saved!");
+    setToast(true);
   };
 
   const deleteNavLink = async (id: string) => {
@@ -135,7 +150,7 @@ export default function NavbarPage() {
       </div>
 
       <div className="space-y-8">
-        {/* N-1: Sticky Navbar Background */}
+        {/* Sticky Navbar Background */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Sticky Navbar</h2>
           <ColorPickerField label="Sticky Navbar Background Color" value={navScrollBg} onChange={setNavScrollBg} />
@@ -173,7 +188,6 @@ export default function NavbarPage() {
             <div>
               <input className="dash-input" maxLength={30} value={logoText} onChange={(e) => setLogoText(e.target.value)} placeholder="Your Name" />
               <CharLimitHint max={30} current={logoText.length} />
-              {/* N-3: Brand text styling */}
               <TextStyleGroup
                 colorLabel="Text Color"
                 colorValue={logoTextColor}
@@ -192,7 +206,7 @@ export default function NavbarPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Navigation Links</h2>
             <button
-              onClick={() => { if (isAdmin || navLinks.length < 4) setShowAddRow(true); }}
+              onClick={() => setShowAddRow(true)}
               disabled={!isAdmin && navLinks.length >= 4}
               className="p-1.5 rounded-lg bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-30 disabled:cursor-not-allowed"
             >
@@ -202,49 +216,85 @@ export default function NavbarPage() {
           {navLinks.length === 0 && !showAddRow && (
             <p className="text-[var(--muted)] text-xs text-center py-4">No navigation links yet. Click + to add one.</p>
           )}
-          <div className="space-y-2">
+          <div className="space-y-3">
             {navLinks.map((link) => (
-              <div key={link.id} className="flex items-center gap-2">
-                <input className="dash-input flex-1" value={link.label} readOnly />
-                <select
-                  className="dash-input flex-1"
-                  value={link.href}
-                  onChange={(e) => updateNavLinkHref(link.id, e.target.value)}
-                >
-                  {navTargetOptions.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
-                <button onClick={() => deleteNavLink(link.id)} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)]">
-                  <FiX size={14} />
-                </button>
+              <div key={link.id} className="border border-[var(--border)] rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    className="dash-input flex-1"
+                    maxLength={30}
+                    value={link.label}
+                    onChange={(e) => updateNavLink(link.id, { label: e.target.value })}
+                    placeholder="Label"
+                  />
+                  <select
+                    className="dash-input flex-1"
+                    value={link.href}
+                    onChange={(e) => updateNavLink(link.id, { href: e.target.value })}
+                  >
+                    {navTargetOptions.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={() => saveNavLink(link)}
+                    disabled={savingLinkId === link.id}
+                    className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--accent)] disabled:opacity-40"
+                    title="Save link"
+                  >
+                    <FiCheck size={14} />
+                  </button>
+                  <button onClick={() => deleteNavLink(link.id)} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)]">
+                    <FiX size={14} />
+                  </button>
+                </div>
+                <TextStyleGroup
+                  colorLabel="Label Color"
+                  colorValue={link.labelColor || ""}
+                  onColorChange={(v) => updateNavLink(link.id, { labelColor: v })}
+                  fontValue={link.labelFont || ""}
+                  onFontChange={(v) => updateNavLink(link.id, { labelFont: v })}
+                  weightValue={link.labelWeight || ""}
+                  onWeightChange={(v) => updateNavLink(link.id, { labelWeight: v })}
+                />
               </div>
             ))}
             {showAddRow && (
-              <div className="space-y-2">
+              <div className="border border-dashed border-[var(--border)] rounded-lg p-3 space-y-2">
                 <div className="flex items-center gap-2">
-                  <input className="dash-input flex-1" maxLength={30} value={newLink.label} onChange={(e) => setNewLink((l) => ({ ...l, label: e.target.value }))} placeholder="Label" />
-                  <select className="dash-input flex-1" value={newLink.href} onChange={(e) => setNewLink((l) => ({ ...l, href: e.target.value }))}>
+                  <input
+                    className="dash-input flex-1"
+                    maxLength={30}
+                    value={newLink.label}
+                    onChange={(e) => setNewLink((l) => ({ ...l, label: e.target.value }))}
+                    placeholder="Label"
+                  />
+                  <select
+                    className="dash-input flex-1"
+                    value={newLink.href}
+                    onChange={(e) => setNewLink((l) => ({ ...l, href: e.target.value }))}
+                  >
                     <option value="">Select target</option>
                     {navTargetOptions.map((o) => (
                       <option key={o.value} value={o.value}>{o.label}</option>
                     ))}
                   </select>
-                  {/* N-2: Replace "+" with "Add" button */}
                   <button
-                    onClick={async () => { await addNavLink(); if (newLink.label.trim() && newLink.href) setShowAddRow(false); }}
+                    onClick={addNavLink}
                     className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]"
                   >
                     Add
                   </button>
-                  <button onClick={() => { setShowAddRow(false); setNewLink({ label: "", href: "", labelColor: "", labelFont: "", labelWeight: "" }); }} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)]">
+                  <button
+                    onClick={() => { setShowAddRow(false); setNewLink({ label: "", href: "", labelColor: "", labelFont: "", labelWeight: "" }); }}
+                    className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)]"
+                  >
                     <FiX size={14} />
                   </button>
                 </div>
                 <CharLimitHint max={30} current={newLink.label.length} />
-                {/* N-4: Nav link label styling */}
                 <TextStyleGroup
-                  colorLabel="Label Text Color"
+                  colorLabel="Label Color"
                   colorValue={newLink.labelColor}
                   onColorChange={(v) => setNewLink((l) => ({ ...l, labelColor: v }))}
                   fontValue={newLink.labelFont}

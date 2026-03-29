@@ -117,7 +117,7 @@ function SortableRow({
 
 export default function SectionsPage() {
   const { data: session } = useSession();
-  const isAdmin = !!(session?.user as { isAdmin?: boolean } | undefined)?.isAdmin;
+  const isAdmin = session?.user?.isAdmin === true;
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
