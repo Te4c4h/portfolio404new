@@ -54,6 +54,7 @@ interface FormData {
   codeContent: string;
   codeLanguage: string;
   modelUrl: string;
+  cardBg: string;
   titleColor: string;
   titleFont: string;
   titleWeight: string;
@@ -79,6 +80,7 @@ const emptyForm: FormData = {
   coverImage: "", image1: "", image2: "", image3: "",
   liveUrl: "", repoUrl: "", videoUrl: "", codeContent: "",
   codeLanguage: "", modelUrl: "",
+  cardBg: "",
   titleColor: "", titleFont: "", titleWeight: "",
   descColor: "", descFont: "", descWeight: "",
   tagBg: "", tagColor: "", tagFont: "", tagWeight: "",
@@ -211,6 +213,7 @@ export default function ContentPage() {
       repoUrl: item.repoUrl, videoUrl: item.videoUrl || "",
       codeContent: item.codeContent || "", codeLanguage: item.codeLanguage || "",
       modelUrl: item.modelUrl || "",
+      cardBg: (item as never as Record<string, string>).cardBg || "",
       titleColor: (item as never as Record<string, string>).titleColor || "",
       titleFont: (item as never as Record<string, string>).titleFont || "",
       titleWeight: (item as never as Record<string, string>).titleWeight || "",
@@ -387,6 +390,17 @@ export default function ContentPage() {
                   </select>
                 </div>
               </div>
+              {/* Card Background Color */}
+              <div>
+                <label className="text-xs text-[var(--muted)] mb-1 block">
+                  Card Background Color
+                  {form.cardBg && <button onClick={() => setForm((f) => ({ ...f, cardBg: "" }))} className="ml-2 text-[var(--accent)] text-xs hover:underline">Clear</button>}
+                </label>
+                <div className="flex items-center gap-2">
+                  <input type="color" value={form.cardBg || "#1a1a2e"} onChange={(e) => setForm((f) => ({ ...f, cardBg: e.target.value }))} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
+                  <input className="dash-input" value={form.cardBg} onChange={(e) => setForm((f) => ({ ...f, cardBg: e.target.value }))} placeholder="Default" />
+                </div>
+              </div>
               <div>
                 <label className="text-xs text-[var(--muted)] mb-1 block">Title *</label>
                 <input className="dash-input" maxLength={60} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Content title" />
@@ -409,8 +423,14 @@ export default function ContentPage() {
               </div>
               <div>
                 <label className="text-xs text-[var(--muted)] mb-1 block">Tags</label>
-                <input className="dash-input" value={form.tags} onChange={(e) => setForm((f) => ({ ...f, tags: e.target.value }))} placeholder="React, Next.js, TypeScript" />
-                <p className="text-[var(--muted)] text-[10px] mt-0.5">Comma-separated, max 6 tags</p>
+                <input className="dash-input" value={form.tags} onChange={(e) => {
+                  const val = e.target.value;
+                  const count = val.split(",").filter((s) => s.trim()).length;
+                  if (count <= 6 || val.length < form.tags.length) setForm((f) => ({ ...f, tags: val }));
+                }} placeholder="React, Next.js, TypeScript" />
+                <p className={`text-[10px] mt-0.5 ${form.tags.split(",").filter((s) => s.trim()).length >= 6 ? "text-[var(--danger)]" : "text-[var(--muted)]"}`}>
+                  Comma-separated ({form.tags.split(",").filter((s) => s.trim()).length}/6 max){form.tags.split(",").filter((s) => s.trim()).length >= 6 ? " — limit reached" : ""}
+                </p>
                 <TextStyleGroup
                   colorLabel="Tag Text Color" colorValue={form.tagColor} onColorChange={(v) => setForm((f) => ({ ...f, tagColor: v }))}
                   fontValue={form.tagFont} onFontChange={(v) => setForm((f) => ({ ...f, tagFont: v }))}

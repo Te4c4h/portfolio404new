@@ -30,11 +30,13 @@ export default function NavbarPage() {
   const [logoTextColor, setLogoTextColor] = useState("");
   const [logoTextFont, setLogoTextFont] = useState("");
   const [logoTextWeight, setLogoTextWeight] = useState("");
+  const [hamburgerColor, setHamburgerColor] = useState("");
   const [navLinks, setNavLinks] = useState<NavLink[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("Navbar saved!");
   const [newLink, setNewLink] = useState({ label: "", href: "", labelColor: "", labelFont: "", labelWeight: "" });
   const [showAddRow, setShowAddRow] = useState(false);
 
@@ -53,6 +55,7 @@ export default function NavbarPage() {
       setLogoTextColor(siteData.logoTextColor || "");
       setLogoTextFont(siteData.logoTextFont || "");
       setLogoTextWeight(siteData.logoTextWeight || "");
+      setHamburgerColor(siteData.hamburgerColor || "");
     }
     setNavLinks(await navRes.json());
     setSections(await secRes.json());
@@ -66,9 +69,10 @@ export default function NavbarPage() {
     await fetch("/api/site", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ logoText, logoUrl, useLogoImage, navScrollBg, logoTextColor, logoTextFont, logoTextWeight }),
+      body: JSON.stringify({ logoText, logoUrl, useLogoImage, navScrollBg, logoTextColor, logoTextFont, logoTextWeight, hamburgerColor }),
     });
     setSaving(false);
+    setToastMsg("Navbar saved!");
     setToast(true);
   };
 
@@ -80,7 +84,16 @@ export default function NavbarPage() {
   ];
 
   const addNavLink = async () => {
-    if (!newLink.label.trim() || !newLink.href) return;
+    if (!newLink.label.trim()) {
+      setToastMsg("Please enter a label for the link.");
+      setToast(true);
+      return;
+    }
+    if (!newLink.href) {
+      setToastMsg("Please select a target for the link.");
+      setToast(true);
+      return;
+    }
     const r = await fetch("/api/nav-links", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -124,6 +137,10 @@ export default function NavbarPage() {
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Sticky Navbar</h2>
           <ColorPickerField label="Sticky Navbar Background Color" value={navScrollBg} onChange={setNavScrollBg} />
           <p className="text-[var(--muted)] text-[10px] mt-1">Background color when navbar sticks to the top on scroll.</p>
+          <div className="mt-4">
+            <ColorPickerField label="Hamburger Menu Color (Mobile)" value={hamburgerColor} onChange={setHamburgerColor} />
+            <p className="text-[var(--muted)] text-[10px] mt-1">Color of the hamburger icon on mobile devices.</p>
+          </div>
         </div>
 
         {/* Logo / Brand Text */}
@@ -203,10 +220,7 @@ export default function NavbarPage() {
             {showAddRow && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className="flex-1">
-                    <input className="dash-input w-full" maxLength={30} value={newLink.label} onChange={(e) => setNewLink((l) => ({ ...l, label: e.target.value }))} placeholder="Label" />
-                    <CharLimitHint max={30} current={newLink.label.length} />
-                  </div>
+                  <input className="dash-input flex-1" maxLength={30} value={newLink.label} onChange={(e) => setNewLink((l) => ({ ...l, label: e.target.value }))} placeholder="Label" />
                   <select className="dash-input flex-1" value={newLink.href} onChange={(e) => setNewLink((l) => ({ ...l, href: e.target.value }))}>
                     <option value="">Select target</option>
                     {navTargetOptions.map((o) => (
@@ -215,7 +229,7 @@ export default function NavbarPage() {
                   </select>
                   {/* N-2: Replace "+" with "Add" button */}
                   <button
-                    onClick={async () => { await addNavLink(); setShowAddRow(false); }}
+                    onClick={async () => { await addNavLink(); if (newLink.label.trim() && newLink.href) setShowAddRow(false); }}
                     className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]"
                   >
                     Add
@@ -224,6 +238,7 @@ export default function NavbarPage() {
                     <FiX size={14} />
                   </button>
                 </div>
+                <CharLimitHint max={30} current={newLink.label.length} />
                 {/* N-4: Nav link label styling */}
                 <TextStyleGroup
                   colorLabel="Label Text Color"
@@ -243,7 +258,7 @@ export default function NavbarPage() {
         </div>
       </div>
 
-      <Toast message="Navbar saved!" show={toast} onClose={() => setToast(false)} />
+      <Toast message={toastMsg} show={toast} onClose={() => setToast(false)} />
     </div>
   );
 }

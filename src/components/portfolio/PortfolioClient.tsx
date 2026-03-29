@@ -48,6 +48,8 @@ export interface SiteContentData {
   useLogoImage: boolean;
   // N-1
   navScrollBg?: string;
+  // Hamburger menu color
+  hamburgerColor?: string;
   // N-3
   logoTextColor?: string;
   logoTextFont?: string;
@@ -68,6 +70,11 @@ export interface SiteContentData {
   ctaTextColor2?: string;
   ctaFont2?: string;
   ctaWeight2?: string;
+  // About heading
+  aboutHeading?: string;
+  aboutHeadingColor?: string;
+  aboutHeadingFont?: string;
+  aboutHeadingWeight?: string;
   // A-1
   aboutTextColor?: string;
   aboutTextFont?: string;
@@ -134,6 +141,7 @@ export interface ContentItemData {
   codeContent: string;
   codeLanguage: string;
   modelUrl: string;
+  cardBg?: string;
   titleColor?: string;
   titleFont?: string;
   titleWeight?: string;
@@ -244,7 +252,7 @@ export default function PortfolioClient({
         ...[
           siteContent?.logoTextFont, siteContent?.headlineFont, siteContent?.subtextFont,
           siteContent?.ctaFont1, siteContent?.ctaFont2,
-          siteContent?.aboutTextFont, siteContent?.skillTagFont,
+          siteContent?.aboutHeadingFont, siteContent?.aboutTextFont, siteContent?.skillTagFont,
           siteContent?.contactTitleFont, siteContent?.contactSubFont,
           siteContent?.footerTextFont,
           siteContent?.loadingHeadingFont, siteContent?.loadingSubFont,
@@ -308,6 +316,7 @@ export default function PortfolioClient({
             logoTextColor={siteContent?.logoTextColor}
             logoTextFont={siteContent?.logoTextFont}
             logoTextWeight={siteContent?.logoTextWeight}
+            hamburgerColor={siteContent?.hamburgerColor}
           />
           <Hero
             headline={siteContent?.headline || ""}
@@ -339,6 +348,10 @@ export default function PortfolioClient({
               skills={siteContent?.skills || ""}
               accent={theme.accentColor}
               surface={theme.surfaceColor}
+              aboutHeading={siteContent?.aboutHeading}
+              aboutHeadingColor={siteContent?.aboutHeadingColor}
+              aboutHeadingFont={siteContent?.aboutHeadingFont}
+              aboutHeadingWeight={siteContent?.aboutHeadingWeight}
               aboutTextColor={siteContent?.aboutTextColor}
               aboutTextFont={siteContent?.aboutTextFont}
               aboutTextWeight={siteContent?.aboutTextWeight}

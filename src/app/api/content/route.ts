@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const { title, description, sectionId, tags, coverImage, image1, image2, image3, liveUrl, repoUrl, contentType, videoUrl, codeContent, codeLanguage, modelUrl,
+    cardBg,
     titleColor, titleFont, titleWeight,
     descColor, descFont, descWeight,
     tagBg, tagColor, tagFont, tagWeight,
@@ -70,6 +71,7 @@ export async function POST(req: NextRequest) {
     codeLanguage: codeLanguage || "",
     modelUrl: modelUrl || "",
     order: (maxOrder?.order ?? -1) + 1,
+    ...(cardBg !== undefined && { cardBg }),
     ...(titleColor !== undefined && { titleColor }),
     ...(titleFont !== undefined && { titleFont }),
     ...(titleWeight !== undefined && { titleWeight }),

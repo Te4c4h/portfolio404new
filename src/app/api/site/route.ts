@@ -29,6 +29,8 @@ export async function PUT(req: NextRequest) {
     "logoUrl", "useLogoImage",
     // N-1: Sticky navbar bg
     "navScrollBg",
+    // Hamburger menu icon color
+    "hamburgerColor",
     // N-3: Brand text styling
     "logoTextColor", "logoTextFont", "logoTextWeight",
     // H-1: Headline & subtext styling
@@ -37,6 +39,8 @@ export async function PUT(req: NextRequest) {
     // H-2: CTA button styling
     "ctaBg1", "ctaTextColor1", "ctaFont1", "ctaWeight1",
     "ctaBg2", "ctaTextColor2", "ctaFont2", "ctaWeight2",
+    // About section heading
+    "aboutHeading", "aboutHeadingColor", "aboutHeadingFont", "aboutHeadingWeight",
     // A-1: About text styling
     "aboutTextColor", "aboutTextFont", "aboutTextWeight",
     // A-2: Skills tag styling

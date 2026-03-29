@@ -172,7 +172,7 @@ export default function HeroPage() {
             </label>
             <div className="flex items-center gap-2">
               <input type="color" value={ctaTextColor1 || "#ffffff"} onChange={(e) => setCtaTextColor1(e.target.value)} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
-              <input className="dash-input" value={ctaTextColor1} onChange={(e) => setCtaTextColor1(e.target.value)} placeholder="Inherit from theme" />
+              <input className="dash-input" value={ctaTextColor1} onChange={(e) => setCtaTextColor1(e.target.value)} placeholder="Default" />
             </div>
           </div>
         </div>
@@ -205,7 +205,7 @@ export default function HeroPage() {
             </label>
             <div className="flex items-center gap-2">
               <input type="color" value={ctaTextColor2 || "#ffffff"} onChange={(e) => setCtaTextColor2(e.target.value)} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
-              <input className="dash-input" value={ctaTextColor2} onChange={(e) => setCtaTextColor2(e.target.value)} placeholder="Inherit from theme" />
+              <input className="dash-input" value={ctaTextColor2} onChange={(e) => setCtaTextColor2(e.target.value)} placeholder="Default" />
             </div>
           </div>
         </div>

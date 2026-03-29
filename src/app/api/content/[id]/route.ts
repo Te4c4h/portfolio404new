@@ -16,6 +16,7 @@ export async function PUT(
 
   const body = await req.json();
   const { title, description, tags, coverImage, image1, image2, image3, liveUrl, repoUrl, sectionId, contentType, videoUrl, codeContent, codeLanguage, modelUrl,
+    cardBg,
     titleColor, titleFont, titleWeight,
     descColor, descFont, descWeight,
     tagBg, tagColor, tagFont, tagWeight,
@@ -39,6 +40,7 @@ export async function PUT(
   if (codeContent !== undefined) data.codeContent = codeContent;
   if (codeLanguage !== undefined) data.codeLanguage = codeLanguage;
   if (modelUrl !== undefined) data.modelUrl = modelUrl;
+  if (cardBg !== undefined) data.cardBg = cardBg;
   if (titleColor !== undefined) data.titleColor = titleColor;
   if (titleFont !== undefined) data.titleFont = titleFont;
   if (titleWeight !== undefined) data.titleWeight = titleWeight;

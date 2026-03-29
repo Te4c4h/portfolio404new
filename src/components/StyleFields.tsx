@@ -41,7 +41,7 @@ export function ColorPickerField({ label, value, onChange }: ColorPickerFieldPro
           className="dash-input"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Inherit from theme"
+          placeholder="Default"
         />
       </div>
     </div>
@@ -59,7 +59,7 @@ export function FontSelector({ label = "Font", value, onChange }: FontSelectorPr
     <div>
       <label className="text-xs text-[var(--muted)] mb-1 block">{label}</label>
       <select className="dash-input" value={value} onChange={(e) => onChange(e.target.value)}>
-        <option value="">Inherit from theme</option>
+        <option value="">Default</option>
         {fonts.map((f) => <option key={f} value={f}>{f}</option>)}
       </select>
     </div>

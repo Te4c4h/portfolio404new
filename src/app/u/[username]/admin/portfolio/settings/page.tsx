@@ -225,48 +225,6 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Cover Images */}
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Cover / Gallery Images</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ImageUpload
-              label="Cover Image 1"
-              value={theme.coverImage1}
-              onChange={(url) => setTheme((t) => ({ ...t, coverImage1: url }))}
-              maxSizeMB={3}
-              recommendedDimensions={{ width: 1200, height: 675 }}
-              acceptedFormats={["JPG", "PNG"]}
-              folder="covers"
-            />
-            <ImageUpload
-              label="Cover Image 2"
-              value={theme.coverImage2}
-              onChange={(url) => setTheme((t) => ({ ...t, coverImage2: url }))}
-              maxSizeMB={3}
-              recommendedDimensions={{ width: 1200, height: 675 }}
-              acceptedFormats={["JPG", "PNG"]}
-              folder="covers"
-            />
-            <ImageUpload
-              label="Cover Image 3"
-              value={theme.coverImage3}
-              onChange={(url) => setTheme((t) => ({ ...t, coverImage3: url }))}
-              maxSizeMB={3}
-              recommendedDimensions={{ width: 1200, height: 675 }}
-              acceptedFormats={["JPG", "PNG"]}
-              folder="covers"
-            />
-            <ImageUpload
-              label="Cover Image 4"
-              value={theme.coverImage4}
-              onChange={(url) => setTheme((t) => ({ ...t, coverImage4: url }))}
-              maxSizeMB={3}
-              recommendedDimensions={{ width: 1200, height: 675 }}
-              acceptedFormats={["JPG", "PNG"]}
-              folder="covers"
-            />
-          </div>
-        </div>
       </div>
 
       <Toast message="Settings saved!" show={toast} onClose={() => setToast(false)} />

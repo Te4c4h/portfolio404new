@@ -15,9 +15,10 @@ interface NavbarProps {
   logoTextColor?: string;
   logoTextFont?: string;
   logoTextWeight?: string;
+  hamburgerColor?: string;
 }
 
-export default function Navbar({ logoUrl, logoText, navLinks, accent, navScrollBg, logoTextColor, logoTextFont, logoTextWeight }: NavbarProps) {
+export default function Navbar({ logoUrl, logoText, navLinks, accent, navScrollBg, logoTextColor, logoTextFont, logoTextWeight, hamburgerColor }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -102,7 +103,7 @@ export default function Navbar({ logoUrl, logoText, navLinks, accent, navScrollB
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden p-2"
-          style={{ color: "var(--text)" }}
+          style={{ color: hamburgerColor || "var(--text)" }}
         >
           {menuOpen ? <FiX size={22} /> : <FiMenu size={22} />}
         </button>

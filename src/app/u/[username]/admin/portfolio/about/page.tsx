@@ -11,6 +11,12 @@ export default function AboutPage() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(false);
 
+  // About section heading
+  const [aboutHeading, setAboutHeading] = useState("");
+  const [aboutHeadingColor, setAboutHeadingColor] = useState("");
+  const [aboutHeadingFont, setAboutHeadingFont] = useState("");
+  const [aboutHeadingWeight, setAboutHeadingWeight] = useState("");
+
   // A-1: About text styling
   const [aboutTextColor, setAboutTextColor] = useState("");
   const [aboutTextFont, setAboutTextFont] = useState("");
@@ -28,6 +34,10 @@ export default function AboutPage() {
     if (d) {
       setAboutText(d.aboutText || "");
       setSkills(d.skills || "");
+      setAboutHeading(d.aboutHeading || "");
+      setAboutHeadingColor(d.aboutHeadingColor || "");
+      setAboutHeadingFont(d.aboutHeadingFont || "");
+      setAboutHeadingWeight(d.aboutHeadingWeight || "");
       setAboutTextColor(d.aboutTextColor || "");
       setAboutTextFont(d.aboutTextFont || "");
       setAboutTextWeight(d.aboutTextWeight || "");
@@ -48,6 +58,7 @@ export default function AboutPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         aboutText, skills,
+        aboutHeading, aboutHeadingColor, aboutHeadingFont, aboutHeadingWeight,
         aboutTextColor, aboutTextFont, aboutTextWeight,
         skillTagBg, skillTagColor, skillTagFont, skillTagWeight,
       }),
@@ -70,8 +81,21 @@ export default function AboutPage() {
       </div>
 
       <div className="space-y-8">
+        {/* Section Heading */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">About Section</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Section Heading</h2>
+          <input className="dash-input" maxLength={40} value={aboutHeading} onChange={(e) => setAboutHeading(e.target.value)} placeholder="About (default)" />
+          <CharLimitHint max={40} current={aboutHeading.length} />
+          <TextStyleGroup
+            colorLabel="Heading Color" colorValue={aboutHeadingColor} onColorChange={setAboutHeadingColor}
+            fontValue={aboutHeadingFont} onFontChange={setAboutHeadingFont}
+            weightValue={aboutHeadingWeight} onWeightChange={setAboutHeadingWeight}
+          />
+        </div>
+
+        {/* About Text */}
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">About Text</h2>
           <textarea className="dash-input min-h-[120px]" maxLength={800} value={aboutText} onChange={(e) => setAboutText(e.target.value)} placeholder="Tell visitors about yourself..." />
           <CharLimitHint max={800} current={aboutText.length} />
           <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">Supports multiple paragraphs. Use line breaks to separate.</p>
@@ -84,14 +108,18 @@ export default function AboutPage() {
 
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Skills</h2>
-          <input className="dash-input" value={skills} onChange={(e) => setSkills(e.target.value)} placeholder="React, TypeScript, Product Strategy" />
-          <p className={`text-[10px] mt-0.5 ${skillCount > 12 ? "text-[var(--danger)]" : "text-[var(--muted)]"}`}>
-            Comma-separated tags ({skillCount}/12 max)
+          <input className="dash-input" value={skills} onChange={(e) => {
+            const val = e.target.value;
+            const count = val.split(",").filter((s) => s.trim()).length;
+            if (count <= 12 || val.length < skills.length) setSkills(val);
+          }} placeholder="React, TypeScript, Product Strategy" />
+          <p className={`text-[10px] mt-0.5 ${skillCount >= 12 ? "text-[var(--danger)]" : "text-[var(--muted)]"}`}>
+            Comma-separated tags ({skillCount}/12 max){skillCount >= 12 ? " — limit reached" : ""}
           </p>
           {/* A-2: Tag appearance preview */}
           {skills && (
             <div className="flex flex-wrap gap-1.5 mt-3">
-              {skills.split(",").map((s) => s.trim()).filter(Boolean).map((tag) => (
+              {skills.split(",").map((s) => s.trim()).filter(Boolean).slice(0, 12).map((tag) => (
                 <span
                   key={tag}
                   className="px-2 py-0.5 rounded text-[11px]"
@@ -119,7 +147,7 @@ export default function AboutPage() {
             </label>
             <div className="flex items-center gap-2">
               <input type="color" value={skillTagBg || "#1a3a10"} onChange={(e) => setSkillTagBg(e.target.value)} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
-              <input className="dash-input" value={skillTagBg} onChange={(e) => setSkillTagBg(e.target.value)} placeholder="Inherit from theme" />
+              <input className="dash-input" value={skillTagBg} onChange={(e) => setSkillTagBg(e.target.value)} placeholder="Default" />
             </div>
           </div>
         </div>

@@ -19,13 +19,13 @@ function getEmbedUrl(url: string): string | null {
 }
 
 export default function VideoCard({ item, accent, surface }: VideoCardProps) {
-  const tags = item.tags.split(",").map((t) => t.trim()).filter(Boolean);
+  const tags = item.tags.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 6);
   const embedUrl = getEmbedUrl(item.videoUrl);
 
   return (
     <div
       className="group rounded-xl overflow-hidden border transition-all duration-300 h-full flex flex-col"
-      style={{ backgroundColor: surface, borderColor: surface }}
+      style={{ backgroundColor: item.cardBg || surface, borderColor: item.cardBg || surface }}
     >
       <div className="relative overflow-hidden aspect-video bg-black flex-shrink-0">
         {embedUrl ? (

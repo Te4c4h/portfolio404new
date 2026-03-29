@@ -12,7 +12,7 @@ interface ProjectCardProps {
 }
 
 export default function ProjectCard({ item, accent, surface, onClick }: ProjectCardProps) {
-  const tags = item.tags.split(",").map((t) => t.trim()).filter(Boolean);
+  const tags = item.tags.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 6);
 
   return (
     <div
@@ -20,11 +20,11 @@ export default function ProjectCard({ item, accent, surface, onClick }: ProjectC
       data-clickable
       className="group rounded-xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer h-full flex flex-col"
       style={{
-        backgroundColor: surface,
-        borderColor: surface,
+        backgroundColor: item.cardBg || surface,
+        borderColor: item.cardBg || surface,
       }}
       onMouseEnter={(e) => (e.currentTarget.style.borderColor = accent)}
-      onMouseLeave={(e) => (e.currentTarget.style.borderColor = surface)}
+      onMouseLeave={(e) => (e.currentTarget.style.borderColor = item.cardBg || surface)}
     >
       {/* Cover image */}
       <div className="relative overflow-hidden aspect-video bg-black/20">

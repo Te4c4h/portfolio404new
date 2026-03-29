@@ -10,7 +10,7 @@ interface ModelCardProps {
 }
 
 export default function ModelCard({ item, accent, surface }: ModelCardProps) {
-  const tags = item.tags.split(",").map((t) => t.trim()).filter(Boolean);
+  const tags = item.tags.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 6);
 
   useEffect(() => {
     // Load model-viewer web component from CDN
@@ -27,7 +27,7 @@ export default function ModelCard({ item, accent, surface }: ModelCardProps) {
   return (
     <div
       className="group rounded-xl overflow-hidden border transition-all duration-300 h-full flex flex-col"
-      style={{ backgroundColor: surface, borderColor: surface }}
+      style={{ backgroundColor: item.cardBg || surface, borderColor: item.cardBg || surface }}
     >
       <div className="relative aspect-video bg-black/20 flex-shrink-0">
         {/* @ts-expect-error model-viewer is a web component */}

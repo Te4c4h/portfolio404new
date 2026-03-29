@@ -10,7 +10,7 @@ interface CodeCardProps {
 }
 
 export default function CodeCard({ item, accent, surface }: CodeCardProps) {
-  const tags = item.tags.split(",").map((t) => t.trim()).filter(Boolean);
+  const tags = item.tags.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 6);
   const codeRef = useRef<HTMLPreElement>(null);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function CodeCard({ item, accent, surface }: CodeCardProps) {
   return (
     <div
       className="group rounded-xl overflow-hidden border transition-all duration-300 h-full flex flex-col"
-      style={{ backgroundColor: surface, borderColor: surface }}
+      style={{ backgroundColor: item.cardBg || surface, borderColor: item.cardBg || surface }}
     >
       <div className="relative flex-shrink-0">
         <div className="flex items-center justify-between px-4 py-2 border-b" style={{ borderColor: `${accent}20` }}>

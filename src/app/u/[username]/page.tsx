@@ -73,6 +73,7 @@ export async function generateMetadata({
   return {
     title,
     description,
+    ...(data.theme?.faviconUrl ? { icons: { icon: data.theme.faviconUrl } } : {}),
     alternates: {
       canonical: ogUrl,
     },

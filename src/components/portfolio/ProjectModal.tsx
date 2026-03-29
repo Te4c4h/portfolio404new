@@ -45,7 +45,7 @@ export default function ProjectModal({ item, onClose, accent }: ProjectModalProp
     }
   }, [item, handleKey]);
 
-  const tags = item ? item.tags.split(",").map((t) => t.trim()).filter(Boolean) : [];
+  const tags = item ? item.tags.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 6) : [];
 
   return (
     <AnimatePresence>

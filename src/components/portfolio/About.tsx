@@ -7,6 +7,10 @@ interface AboutProps {
   skills: string;
   accent: string;
   surface: string;
+  aboutHeading?: string;
+  aboutHeadingColor?: string;
+  aboutHeadingFont?: string;
+  aboutHeadingWeight?: string;
   aboutTextColor?: string;
   aboutTextFont?: string;
   aboutTextWeight?: string;
@@ -16,9 +20,9 @@ interface AboutProps {
   skillTagWeight?: string;
 }
 
-export default function About({ aboutText, skills, accent, surface, aboutTextColor, aboutTextFont, aboutTextWeight, skillTagBg, skillTagColor, skillTagFont, skillTagWeight }: AboutProps) {
+export default function About({ aboutText, skills, accent, surface, aboutHeading, aboutHeadingColor, aboutHeadingFont, aboutHeadingWeight, aboutTextColor, aboutTextFont, aboutTextWeight, skillTagBg, skillTagColor, skillTagFont, skillTagWeight }: AboutProps) {
   const paragraphs = aboutText.split("\n").filter(Boolean);
-  const skillsList = skills.split(",").map((s) => s.trim()).filter(Boolean);
+  const skillsList = skills.split(",").map((s) => s.trim()).filter(Boolean).slice(0, 12);
 
   return (
     <section id="about" className="py-24 px-6">
@@ -29,9 +33,13 @@ export default function About({ aboutText, skills, accent, surface, aboutTextCol
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
           className="text-xs uppercase tracking-[0.2em] font-semibold mb-8"
-          style={{ color: accent }}
+          style={{
+            color: aboutHeadingColor || accent,
+            fontFamily: aboutHeadingFont ? aboutHeadingFont + ", sans-serif" : undefined,
+            fontWeight: aboutHeadingWeight || undefined,
+          }}
         >
-          About
+          {aboutHeading || "About"}
         </motion.h2>
 
         {paragraphs.map((p, i) => (

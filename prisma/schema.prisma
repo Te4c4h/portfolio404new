@@ -87,6 +87,9 @@ model ContentItem {
   modelUrl      String  @default("")
   order         Int     @default(0)
 
+  // Card background color
+  cardBg          String @default("")
+
   // P-1: Title styling
   titleColor      String @default("")
   titleFont       String @default("")
@@ -144,6 +147,9 @@ model SiteContent {
   // N-1: Sticky navbar background
   navScrollBg       String @default("")
 
+  // Hamburger menu icon color (mobile)
+  hamburgerColor    String @default("")
+
   // N-3: Brand text styling
   logoTextColor     String @default("")
   logoTextFont      String @default("")
@@ -170,6 +176,12 @@ model SiteContent {
   ctaTextColor2     String @default("")
   ctaFont2          String @default("")
   ctaWeight2        String @default("")
+
+  // About section heading
+  aboutHeading      String @default("")
+  aboutHeadingColor String @default("")
+  aboutHeadingFont  String @default("")
+  aboutHeadingWeight String @default("")
 
   // A-1: About text styling
   aboutTextColor    String @default("")
