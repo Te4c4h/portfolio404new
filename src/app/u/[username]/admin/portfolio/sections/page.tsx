@@ -19,6 +19,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { FiMenu, FiEdit2, FiTrash2 } from "react-icons/fi";
 import Toast from "@/components/Toast";
+import { TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
 
 interface Section {
   id: string;
@@ -28,6 +29,15 @@ interface Section {
   subtitle: string;
   backgroundColor: string;
   order: number;
+  nameColor: string;
+  nameFont: string;
+  nameWeight: string;
+  labelColor: string;
+  labelFont: string;
+  labelWeight: string;
+  subtitleColor: string;
+  subtitleFont: string;
+  subtitleWeight: string;
 }
 
 interface ModalData {
@@ -36,9 +46,23 @@ interface ModalData {
   label: string;
   subtitle: string;
   backgroundColor: string;
+  nameColor: string;
+  nameFont: string;
+  nameWeight: string;
+  labelColor: string;
+  labelFont: string;
+  labelWeight: string;
+  subtitleColor: string;
+  subtitleFont: string;
+  subtitleWeight: string;
 }
 
-const emptyModal: ModalData = { name: "", slug: "", label: "", subtitle: "", backgroundColor: "" };
+const emptyModal: ModalData = {
+  name: "", slug: "", label: "", subtitle: "", backgroundColor: "",
+  nameColor: "", nameFont: "", nameWeight: "",
+  labelColor: "", labelFont: "", labelWeight: "",
+  subtitleColor: "", subtitleFont: "", subtitleWeight: "",
+};
 
 function SortableRow({
   section,
@@ -127,7 +151,12 @@ export default function SectionsPage() {
 
   const openEdit = (s: Section) => {
     setEditingId(s.id);
-    setForm({ name: s.name, slug: s.slug, label: s.label, subtitle: s.subtitle, backgroundColor: s.backgroundColor });
+    setForm({
+      name: s.name, slug: s.slug, label: s.label, subtitle: s.subtitle, backgroundColor: s.backgroundColor,
+      nameColor: s.nameColor || "", nameFont: s.nameFont || "", nameWeight: s.nameWeight || "",
+      labelColor: s.labelColor || "", labelFont: s.labelFont || "", labelWeight: s.labelWeight || "",
+      subtitleColor: s.subtitleColor || "", subtitleFont: s.subtitleFont || "", subtitleWeight: s.subtitleWeight || "",
+    });
     setSlugManual(true);
     setError("");
     setModalOpen(true);
@@ -144,6 +173,15 @@ export default function SectionsPage() {
       label: form.label || form.name,
       subtitle: form.subtitle,
       backgroundColor: form.backgroundColor,
+      nameColor: form.nameColor,
+      nameFont: form.nameFont,
+      nameWeight: form.nameWeight,
+      labelColor: form.labelColor,
+      labelFont: form.labelFont,
+      labelWeight: form.labelWeight,
+      subtitleColor: form.subtitleColor,
+      subtitleFont: form.subtitleFont,
+      subtitleWeight: form.subtitleWeight,
     };
 
     const url = editingId ? `/api/sections/${editingId}` : "/api/sections";
@@ -236,7 +274,7 @@ export default function SectionsPage() {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 bg-[var(--overlay)] z-50 flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">
               {editingId ? "Edit Section" : "Add Section"}
             </h2>
@@ -258,6 +296,12 @@ export default function SectionsPage() {
                   }}
                   placeholder="e.g. Projects"
                 />
+                <CharLimitHint max={40} current={form.name.length} />
+                <TextStyleGroup
+                  colorLabel="Name Color" colorValue={form.nameColor} onColorChange={(v) => setForm((f) => ({ ...f, nameColor: v }))}
+                  fontValue={form.nameFont} onFontChange={(v) => setForm((f) => ({ ...f, nameFont: v }))}
+                  weightValue={form.nameWeight} onWeightChange={(v) => setForm((f) => ({ ...f, nameWeight: v }))}
+                />
               </div>
               <div>
                 <label className="text-xs text-[var(--muted)] mb-1 block">Slug *</label>
@@ -274,10 +318,22 @@ export default function SectionsPage() {
               <div>
                 <label className="text-xs text-[var(--muted)] mb-1 block">Section Label</label>
                 <input className="dash-input" maxLength={30} value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} placeholder="Display label" />
+                <CharLimitHint max={30} current={form.label.length} />
+                <TextStyleGroup
+                  colorLabel="Label Color" colorValue={form.labelColor} onColorChange={(v) => setForm((f) => ({ ...f, labelColor: v }))}
+                  fontValue={form.labelFont} onFontChange={(v) => setForm((f) => ({ ...f, labelFont: v }))}
+                  weightValue={form.labelWeight} onWeightChange={(v) => setForm((f) => ({ ...f, labelWeight: v }))}
+                />
               </div>
               <div>
                 <label className="text-xs text-[var(--muted)] mb-1 block">Section Subtitle</label>
                 <input className="dash-input" maxLength={100} value={form.subtitle} onChange={(e) => setForm((f) => ({ ...f, subtitle: e.target.value }))} placeholder="Optional subtitle" />
+                <CharLimitHint max={100} current={form.subtitle.length} />
+                <TextStyleGroup
+                  colorLabel="Subtitle Color" colorValue={form.subtitleColor} onColorChange={(v) => setForm((f) => ({ ...f, subtitleColor: v }))}
+                  fontValue={form.subtitleFont} onFontChange={(v) => setForm((f) => ({ ...f, subtitleFont: v }))}
+                  weightValue={form.subtitleWeight} onWeightChange={(v) => setForm((f) => ({ ...f, subtitleWeight: v }))}
+                />
               </div>
               <div>
                 <label className="text-xs text-[var(--muted)] mb-1 block">

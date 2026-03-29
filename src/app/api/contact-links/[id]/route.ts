@@ -15,13 +15,15 @@ export async function PUT(
   }
 
   const body = await req.json();
-  const { platform, url } = body;
+  const { platform, url, iconBgColor, iconColor } = body;
 
   const updated = await prisma.contactLink.update({
     where: { id: params.id },
     data: {
       ...(platform !== undefined && { platform }),
       ...(url !== undefined && { url }),
+      ...(iconBgColor !== undefined && { iconBgColor }),
+      ...(iconColor !== undefined && { iconColor }),
     },
   });
 

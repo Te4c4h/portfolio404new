@@ -11,6 +11,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { FiMenu, FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
 import Toast from "@/components/Toast";
 import ImageUpload from "@/components/ImageUpload";
+import { TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
 
 interface Section {
   id: string;
@@ -53,6 +54,24 @@ interface FormData {
   codeContent: string;
   codeLanguage: string;
   modelUrl: string;
+  titleColor: string;
+  titleFont: string;
+  titleWeight: string;
+  descColor: string;
+  descFont: string;
+  descWeight: string;
+  tagBg: string;
+  tagColor: string;
+  tagFont: string;
+  tagWeight: string;
+  liveBtnBg: string;
+  liveBtnColor: string;
+  liveBtnFont: string;
+  liveBtnWeight: string;
+  repoBtnBg: string;
+  repoBtnColor: string;
+  repoBtnFont: string;
+  repoBtnWeight: string;
 }
 
 const emptyForm: FormData = {
@@ -60,6 +79,11 @@ const emptyForm: FormData = {
   coverImage: "", image1: "", image2: "", image3: "",
   liveUrl: "", repoUrl: "", videoUrl: "", codeContent: "",
   codeLanguage: "", modelUrl: "",
+  titleColor: "", titleFont: "", titleWeight: "",
+  descColor: "", descFont: "", descWeight: "",
+  tagBg: "", tagColor: "", tagFont: "", tagWeight: "",
+  liveBtnBg: "", liveBtnColor: "", liveBtnFont: "", liveBtnWeight: "",
+  repoBtnBg: "", repoBtnColor: "", repoBtnFont: "", repoBtnWeight: "",
 };
 
 const contentTypes = [
@@ -187,6 +211,24 @@ export default function ContentPage() {
       repoUrl: item.repoUrl, videoUrl: item.videoUrl || "",
       codeContent: item.codeContent || "", codeLanguage: item.codeLanguage || "",
       modelUrl: item.modelUrl || "",
+      titleColor: (item as never as Record<string, string>).titleColor || "",
+      titleFont: (item as never as Record<string, string>).titleFont || "",
+      titleWeight: (item as never as Record<string, string>).titleWeight || "",
+      descColor: (item as never as Record<string, string>).descColor || "",
+      descFont: (item as never as Record<string, string>).descFont || "",
+      descWeight: (item as never as Record<string, string>).descWeight || "",
+      tagBg: (item as never as Record<string, string>).tagBg || "",
+      tagColor: (item as never as Record<string, string>).tagColor || "",
+      tagFont: (item as never as Record<string, string>).tagFont || "",
+      tagWeight: (item as never as Record<string, string>).tagWeight || "",
+      liveBtnBg: (item as never as Record<string, string>).liveBtnBg || "",
+      liveBtnColor: (item as never as Record<string, string>).liveBtnColor || "",
+      liveBtnFont: (item as never as Record<string, string>).liveBtnFont || "",
+      liveBtnWeight: (item as never as Record<string, string>).liveBtnWeight || "",
+      repoBtnBg: (item as never as Record<string, string>).repoBtnBg || "",
+      repoBtnColor: (item as never as Record<string, string>).repoBtnColor || "",
+      repoBtnFont: (item as never as Record<string, string>).repoBtnFont || "",
+      repoBtnWeight: (item as never as Record<string, string>).repoBtnWeight || "",
     });
     setError("");
     setModalOpen(true);
@@ -347,15 +389,33 @@ export default function ContentPage() {
               </div>
               <div>
                 <label className="text-xs text-[var(--muted)] mb-1 block">Title *</label>
-                <input className="dash-input" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Content title" />
+                <input className="dash-input" maxLength={60} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Content title" />
+                <CharLimitHint max={60} current={form.title.length} />
+                <TextStyleGroup
+                  colorLabel="Title Color" colorValue={form.titleColor} onColorChange={(v) => setForm((f) => ({ ...f, titleColor: v }))}
+                  fontValue={form.titleFont} onFontChange={(v) => setForm((f) => ({ ...f, titleFont: v }))}
+                  weightValue={form.titleWeight} onWeightChange={(v) => setForm((f) => ({ ...f, titleWeight: v }))}
+                />
               </div>
               <div>
                 <label className="text-xs text-[var(--muted)] mb-1 block">Description{form.contentType === "project" ? " *" : ""}</label>
-                <textarea className="dash-input min-h-[80px]" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" />
+                <textarea className="dash-input min-h-[80px]" maxLength={300} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" />
+                <CharLimitHint max={300} current={form.description.length} />
+                <TextStyleGroup
+                  colorLabel="Description Color" colorValue={form.descColor} onColorChange={(v) => setForm((f) => ({ ...f, descColor: v }))}
+                  fontValue={form.descFont} onFontChange={(v) => setForm((f) => ({ ...f, descFont: v }))}
+                  weightValue={form.descWeight} onWeightChange={(v) => setForm((f) => ({ ...f, descWeight: v }))}
+                />
               </div>
               <div>
                 <label className="text-xs text-[var(--muted)] mb-1 block">Tags</label>
                 <input className="dash-input" value={form.tags} onChange={(e) => setForm((f) => ({ ...f, tags: e.target.value }))} placeholder="React, Next.js, TypeScript" />
+                <p className="text-[var(--muted)] text-[10px] mt-0.5">Comma-separated, max 6 tags</p>
+                <TextStyleGroup
+                  colorLabel="Tag Text Color" colorValue={form.tagColor} onColorChange={(v) => setForm((f) => ({ ...f, tagColor: v }))}
+                  fontValue={form.tagFont} onFontChange={(v) => setForm((f) => ({ ...f, tagFont: v }))}
+                  weightValue={form.tagWeight} onWeightChange={(v) => setForm((f) => ({ ...f, tagWeight: v }))}
+                />
               </div>
 
               {/* Video fields */}
@@ -447,6 +507,28 @@ export default function ContentPage() {
                       <input className="dash-input" value={form.repoUrl} onChange={(e) => setForm((f) => ({ ...f, repoUrl: e.target.value }))} placeholder="https://..." />
                     </div>
                   </div>
+                  {/* P-2: Live Button Styling */}
+                  {form.liveUrl && (
+                    <div className="border-t border-[var(--border)] pt-3 mt-3">
+                      <p className="text-xs text-[var(--muted)] font-semibold mb-2">Live Button Styling</p>
+                      <TextStyleGroup
+                        colorLabel="Background" colorValue={form.liveBtnBg} onColorChange={(v) => setForm((f) => ({ ...f, liveBtnBg: v }))}
+                        fontValue={form.liveBtnFont} onFontChange={(v) => setForm((f) => ({ ...f, liveBtnFont: v }))}
+                        weightValue={form.liveBtnWeight} onWeightChange={(v) => setForm((f) => ({ ...f, liveBtnWeight: v }))}
+                      />
+                    </div>
+                  )}
+                  {/* P-2: Repo Button Styling */}
+                  {form.repoUrl && (
+                    <div className="border-t border-[var(--border)] pt-3 mt-3">
+                      <p className="text-xs text-[var(--muted)] font-semibold mb-2">Repo Button Styling</p>
+                      <TextStyleGroup
+                        colorLabel="Background" colorValue={form.repoBtnBg} onColorChange={(v) => setForm((f) => ({ ...f, repoBtnBg: v }))}
+                        fontValue={form.repoBtnFont} onFontChange={(v) => setForm((f) => ({ ...f, repoBtnFont: v }))}
+                        weightValue={form.repoBtnWeight} onWeightChange={(v) => setForm((f) => ({ ...f, repoBtnWeight: v }))}
+                      />
+                    </div>
+                  )}
                 </>
               )}
             </div>

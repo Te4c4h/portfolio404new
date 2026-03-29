@@ -2,11 +2,26 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Toast from "@/components/Toast";
+import { TextStyleGroup, CharLimitHint, ColorPickerField } from "@/components/StyleFields";
 
 export default function LoadingScreenPage() {
   const [loadingHeading, setLoadingHeading] = useState("");
   const [loadingSubtitle, setLoadingSubtitle] = useState("");
   const [enabled, setEnabled] = useState(true);
+
+  // L-1: Heading & subtitle styling
+  const [loadingHeadingColor, setLoadingHeadingColor] = useState("");
+  const [loadingHeadingFont, setLoadingHeadingFont] = useState("");
+  const [loadingHeadingWeight, setLoadingHeadingWeight] = useState("");
+  const [loadingSubColor, setLoadingSubColor] = useState("");
+  const [loadingSubFont, setLoadingSubFont] = useState("");
+  const [loadingSubWeight, setLoadingSubWeight] = useState("");
+
+  // L-2: Background color
+  const [loadingBgColor, setLoadingBgColor] = useState("");
+
+  // L-3: Duration
+  const [loadingDuration, setLoadingDuration] = useState(2.5);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -19,6 +34,14 @@ export default function LoadingScreenPage() {
       setLoadingHeading(data.loadingHeading || "");
       setLoadingSubtitle(data.loadingSubtitle || "");
       setEnabled(data.loadingScreenEnabled ?? true);
+      setLoadingHeadingColor(data.loadingHeadingColor || "");
+      setLoadingHeadingFont(data.loadingHeadingFont || "");
+      setLoadingHeadingWeight(data.loadingHeadingWeight || "");
+      setLoadingSubColor(data.loadingSubColor || "");
+      setLoadingSubFont(data.loadingSubFont || "");
+      setLoadingSubWeight(data.loadingSubWeight || "");
+      setLoadingBgColor(data.loadingBgColor || "");
+      setLoadingDuration(data.loadingDuration ?? 2.5);
     }
     setLoading(false);
   }, []);
@@ -30,7 +53,12 @@ export default function LoadingScreenPage() {
     await fetch("/api/site", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ loadingHeading, loadingSubtitle, loadingScreenEnabled: enabled }),
+      body: JSON.stringify({
+        loadingHeading, loadingSubtitle, loadingScreenEnabled: enabled,
+        loadingHeadingColor, loadingHeadingFont, loadingHeadingWeight,
+        loadingSubColor, loadingSubFont, loadingSubWeight,
+        loadingBgColor, loadingDuration,
+      }),
     });
     setSaving(false);
     setToast(true);
@@ -69,15 +97,55 @@ export default function LoadingScreenPage() {
         {/* Fields */}
         <div className={`bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 transition-opacity ${!enabled ? "opacity-50 pointer-events-none" : ""}`}>
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Loading Screen Content</h2>
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div>
               <label className="text-xs text-[var(--muted)] mb-1 block">Loading Heading</label>
-              <input className="dash-input" value={loadingHeading} onChange={(e) => setLoadingHeading(e.target.value)} placeholder="Your Name" />
+              <input className="dash-input" maxLength={40} value={loadingHeading} onChange={(e) => setLoadingHeading(e.target.value)} placeholder="Your Name" />
+              <CharLimitHint max={40} current={loadingHeading.length} />
+              <TextStyleGroup
+                colorLabel="Heading Color" colorValue={loadingHeadingColor} onColorChange={setLoadingHeadingColor}
+                fontValue={loadingHeadingFont} onFontChange={setLoadingHeadingFont}
+                weightValue={loadingHeadingWeight} onWeightChange={setLoadingHeadingWeight}
+              />
             </div>
             <div>
               <label className="text-xs text-[var(--muted)] mb-1 block">Loading Subtitle</label>
-              <input className="dash-input" value={loadingSubtitle} onChange={(e) => setLoadingSubtitle(e.target.value)} placeholder="Portfolio" />
+              <input className="dash-input" maxLength={60} value={loadingSubtitle} onChange={(e) => setLoadingSubtitle(e.target.value)} placeholder="Portfolio" />
+              <CharLimitHint max={60} current={loadingSubtitle.length} />
+              <TextStyleGroup
+                colorLabel="Subtitle Color" colorValue={loadingSubColor} onColorChange={setLoadingSubColor}
+                fontValue={loadingSubFont} onFontChange={setLoadingSubFont}
+                weightValue={loadingSubWeight} onWeightChange={setLoadingSubWeight}
+              />
             </div>
+          </div>
+        </div>
+
+        {/* L-2: Background Color */}
+        <div className={`bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 transition-opacity ${!enabled ? "opacity-50 pointer-events-none" : ""}`}>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Background</h2>
+          <ColorPickerField label="Loading Screen Background Color" value={loadingBgColor} onChange={setLoadingBgColor} />
+          <p className="text-[var(--muted)] text-[10px] mt-1">Leave empty to use the global background color.</p>
+        </div>
+
+        {/* L-3: Duration */}
+        <div className={`bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 transition-opacity ${!enabled ? "opacity-50 pointer-events-none" : ""}`}>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Duration</h2>
+          <div>
+            <label className="text-xs text-[var(--muted)] mb-1 block">Display Duration (seconds)</label>
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min={1}
+                max={6}
+                step={0.5}
+                value={loadingDuration}
+                onChange={(e) => setLoadingDuration(parseFloat(e.target.value))}
+                className="flex-1 accent-[var(--accent)]"
+              />
+              <span className="text-sm font-medium text-[var(--foreground)] w-10 text-right">{loadingDuration}s</span>
+            </div>
+            <p className="text-[var(--muted)] text-[10px] mt-1">How long the loading screen is shown before revealing the portfolio.</p>
           </div>
         </div>
       </div>

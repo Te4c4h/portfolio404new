@@ -15,7 +15,13 @@ export async function PUT(
   }
 
   const body = await req.json();
-  const { title, description, tags, coverImage, image1, image2, image3, liveUrl, repoUrl, sectionId, contentType, videoUrl, codeContent, codeLanguage, modelUrl } = body;
+  const { title, description, tags, coverImage, image1, image2, image3, liveUrl, repoUrl, sectionId, contentType, videoUrl, codeContent, codeLanguage, modelUrl,
+    titleColor, titleFont, titleWeight,
+    descColor, descFont, descWeight,
+    tagBg, tagColor, tagFont, tagWeight,
+    liveBtnBg, liveBtnColor, liveBtnFont, liveBtnWeight,
+    repoBtnBg, repoBtnColor, repoBtnFont, repoBtnWeight,
+  } = body;
 
   const data: Record<string, string> = {};
   if (title !== undefined) data.title = title;
@@ -33,6 +39,24 @@ export async function PUT(
   if (codeContent !== undefined) data.codeContent = codeContent;
   if (codeLanguage !== undefined) data.codeLanguage = codeLanguage;
   if (modelUrl !== undefined) data.modelUrl = modelUrl;
+  if (titleColor !== undefined) data.titleColor = titleColor;
+  if (titleFont !== undefined) data.titleFont = titleFont;
+  if (titleWeight !== undefined) data.titleWeight = titleWeight;
+  if (descColor !== undefined) data.descColor = descColor;
+  if (descFont !== undefined) data.descFont = descFont;
+  if (descWeight !== undefined) data.descWeight = descWeight;
+  if (tagBg !== undefined) data.tagBg = tagBg;
+  if (tagColor !== undefined) data.tagColor = tagColor;
+  if (tagFont !== undefined) data.tagFont = tagFont;
+  if (tagWeight !== undefined) data.tagWeight = tagWeight;
+  if (liveBtnBg !== undefined) data.liveBtnBg = liveBtnBg;
+  if (liveBtnColor !== undefined) data.liveBtnColor = liveBtnColor;
+  if (liveBtnFont !== undefined) data.liveBtnFont = liveBtnFont;
+  if (liveBtnWeight !== undefined) data.liveBtnWeight = liveBtnWeight;
+  if (repoBtnBg !== undefined) data.repoBtnBg = repoBtnBg;
+  if (repoBtnColor !== undefined) data.repoBtnColor = repoBtnColor;
+  if (repoBtnFont !== undefined) data.repoBtnFont = repoBtnFont;
+  if (repoBtnWeight !== undefined) data.repoBtnWeight = repoBtnWeight;
 
   const updated = await prisma.contentItem.update({
     where: { id: params.id },

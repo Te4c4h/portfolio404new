@@ -46,6 +46,21 @@ model Section {
   backgroundColor String   @default("#181818")
   order           Int      @default(0)
 
+  // C-1: Section name styling
+  nameColor       String @default("")
+  nameFont        String @default("")
+  nameWeight      String @default("")
+
+  // C-1: Section label styling
+  labelColor      String @default("")
+  labelFont       String @default("")
+  labelWeight     String @default("")
+
+  // C-1: Section subtitle styling
+  subtitleColor   String @default("")
+  subtitleFont    String @default("")
+  subtitleWeight  String @default("")
+
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   contentItems ContentItem[]
 
@@ -72,6 +87,34 @@ model ContentItem {
   modelUrl      String  @default("")
   order         Int     @default(0)
 
+  // P-1: Title styling
+  titleColor      String @default("")
+  titleFont       String @default("")
+  titleWeight     String @default("")
+
+  // P-1: Description styling
+  descColor       String @default("")
+  descFont        String @default("")
+  descWeight      String @default("")
+
+  // P-1: Tag styling
+  tagBg           String @default("")
+  tagColor        String @default("")
+  tagFont         String @default("")
+  tagWeight       String @default("")
+
+  // P-2: Live URL button styling
+  liveBtnBg       String @default("")
+  liveBtnColor    String @default("")
+  liveBtnFont     String @default("")
+  liveBtnWeight   String @default("")
+
+  // P-2: Repo URL button styling
+  repoBtnBg       String @default("")
+  repoBtnColor    String @default("")
+  repoBtnFont     String @default("")
+  repoBtnWeight   String @default("")
+
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 }
@@ -97,6 +140,79 @@ model SiteContent {
   loadingScreenEnabled  Boolean  @default(true)
   logoUrl         String   @default("")
   useLogoImage    Boolean  @default(false)
+
+  // N-1: Sticky navbar background
+  navScrollBg       String @default("")
+
+  // N-3: Brand text styling
+  logoTextColor     String @default("")
+  logoTextFont      String @default("")
+  logoTextWeight    String @default("")
+
+  // H-1: Headline styling
+  headlineColor     String @default("")
+  headlineFont      String @default("")
+  headlineWeight    String @default("")
+
+  // H-1: Subtext styling
+  subtextColor      String @default("")
+  subtextFont       String @default("")
+  subtextWeight     String @default("")
+
+  // H-2: Primary CTA styling
+  ctaBg1            String @default("")
+  ctaTextColor1     String @default("")
+  ctaFont1          String @default("")
+  ctaWeight1        String @default("")
+
+  // H-2: Secondary CTA styling
+  ctaBg2            String @default("")
+  ctaTextColor2     String @default("")
+  ctaFont2          String @default("")
+  ctaWeight2        String @default("")
+
+  // A-1: About text styling
+  aboutTextColor    String @default("")
+  aboutTextFont     String @default("")
+  aboutTextWeight   String @default("")
+
+  // A-2: Skills tag styling
+  skillTagBg        String @default("")
+  skillTagColor     String @default("")
+  skillTagFont      String @default("")
+  skillTagWeight    String @default("")
+
+  // CT-1: Contact title styling
+  contactTitleColor    String @default("")
+  contactTitleFont     String @default("")
+  contactTitleWeight   String @default("")
+
+  // CT-1: Contact subtitle styling
+  contactSubColor      String @default("")
+  contactSubFont       String @default("")
+  contactSubWeight     String @default("")
+
+  // F-1: Footer text styling
+  footerTextColor   String @default("")
+  footerTextFont    String @default("")
+  footerTextWeight  String @default("")
+
+  // L-1: Loading heading styling
+  loadingHeadingColor  String @default("")
+  loadingHeadingFont   String @default("")
+  loadingHeadingWeight String @default("")
+
+  // L-1: Loading subtitle styling
+  loadingSubColor      String @default("")
+  loadingSubFont       String @default("")
+  loadingSubWeight     String @default("")
+
+  // L-2: Loading screen background
+  loadingBgColor       String @default("")
+
+  // L-3: Loading screen duration (seconds)
+  loadingDuration      Float  @default(2.5)
+
   updatedAt       DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -109,6 +225,11 @@ model NavLink {
   href   String
   order  Int    @default(0)
 
+  // N-4: Link label styling
+  labelColor  String @default("")
+  labelFont   String @default("")
+  labelWeight String @default("")
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -118,6 +239,10 @@ model ContactLink {
   platform String
   url      String
   order    Int    @default(0)
+
+  // CT-2: Icon & background color
+  iconBgColor   String @default("")
+  iconColor     String @default("")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

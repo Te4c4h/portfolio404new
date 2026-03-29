@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Toast from "@/components/Toast";
+import { TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
 
 export default function AboutPage() {
   const [aboutText, setAboutText] = useState("");
@@ -10,12 +11,30 @@ export default function AboutPage() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(false);
 
+  // A-1: About text styling
+  const [aboutTextColor, setAboutTextColor] = useState("");
+  const [aboutTextFont, setAboutTextFont] = useState("");
+  const [aboutTextWeight, setAboutTextWeight] = useState("");
+
+  // A-2: Skills tag styling
+  const [skillTagBg, setSkillTagBg] = useState("");
+  const [skillTagColor, setSkillTagColor] = useState("");
+  const [skillTagFont, setSkillTagFont] = useState("");
+  const [skillTagWeight, setSkillTagWeight] = useState("");
+
   const load = useCallback(async () => {
     const r = await fetch("/api/site");
     const d = await r.json();
     if (d) {
       setAboutText(d.aboutText || "");
       setSkills(d.skills || "");
+      setAboutTextColor(d.aboutTextColor || "");
+      setAboutTextFont(d.aboutTextFont || "");
+      setAboutTextWeight(d.aboutTextWeight || "");
+      setSkillTagBg(d.skillTagBg || "");
+      setSkillTagColor(d.skillTagColor || "");
+      setSkillTagFont(d.skillTagFont || "");
+      setSkillTagWeight(d.skillTagWeight || "");
     }
     setLoading(false);
   }, []);
@@ -27,11 +46,17 @@ export default function AboutPage() {
     await fetch("/api/site", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ aboutText, skills }),
+      body: JSON.stringify({
+        aboutText, skills,
+        aboutTextColor, aboutTextFont, aboutTextWeight,
+        skillTagBg, skillTagColor, skillTagFont, skillTagWeight,
+      }),
     });
     setSaving(false);
     setToast(true);
   };
+
+  const skillCount = skills ? skills.split(",").filter((s) => s.trim()).length : 0;
 
   if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
 
@@ -47,13 +72,56 @@ export default function AboutPage() {
       <div className="space-y-8">
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">About Section</h2>
-          <textarea className="dash-input min-h-[120px]" value={aboutText} onChange={(e) => setAboutText(e.target.value)} placeholder="Tell visitors about yourself..." />
-          <p className="text-[var(--muted-foreground)] text-[10px] mt-1">Supports multiple paragraphs. Use line breaks to separate.</p>
+          <textarea className="dash-input min-h-[120px]" maxLength={800} value={aboutText} onChange={(e) => setAboutText(e.target.value)} placeholder="Tell visitors about yourself..." />
+          <CharLimitHint max={800} current={aboutText.length} />
+          <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">Supports multiple paragraphs. Use line breaks to separate.</p>
+          <TextStyleGroup
+            colorLabel="Text Color" colorValue={aboutTextColor} onColorChange={setAboutTextColor}
+            fontValue={aboutTextFont} onFontChange={setAboutTextFont}
+            weightValue={aboutTextWeight} onWeightChange={setAboutTextWeight}
+          />
         </div>
 
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Skills</h2>
           <input className="dash-input" value={skills} onChange={(e) => setSkills(e.target.value)} placeholder="React, TypeScript, Product Strategy" />
+          <p className={`text-[10px] mt-0.5 ${skillCount > 12 ? "text-[var(--danger)]" : "text-[var(--muted)]"}`}>
+            Comma-separated tags ({skillCount}/12 max)
+          </p>
+          {/* A-2: Tag appearance preview */}
+          {skills && (
+            <div className="flex flex-wrap gap-1.5 mt-3">
+              {skills.split(",").map((s) => s.trim()).filter(Boolean).map((tag) => (
+                <span
+                  key={tag}
+                  className="px-2 py-0.5 rounded text-[11px]"
+                  style={{
+                    backgroundColor: skillTagBg || "var(--accent-15, rgba(112,232,68,0.15))",
+                    color: skillTagColor || "var(--accent)",
+                    fontFamily: skillTagFont || undefined,
+                    fontWeight: skillTagWeight || undefined,
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+          <TextStyleGroup
+            colorLabel="Tag Text Color" colorValue={skillTagColor} onColorChange={setSkillTagColor}
+            fontValue={skillTagFont} onFontChange={setSkillTagFont}
+            weightValue={skillTagWeight} onWeightChange={setSkillTagWeight}
+          />
+          <div className="mt-3">
+            <label className="text-xs text-[var(--muted)] mb-1 block">
+              Tag Background Color
+              {skillTagBg && <button onClick={() => setSkillTagBg("")} className="ml-2 text-[var(--accent)] text-xs hover:underline">Clear</button>}
+            </label>
+            <div className="flex items-center gap-2">
+              <input type="color" value={skillTagBg || "#1a3a10"} onChange={(e) => setSkillTagBg(e.target.value)} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
+              <input className="dash-input" value={skillTagBg} onChange={(e) => setSkillTagBg(e.target.value)} placeholder="Inherit from theme" />
+            </div>
+          </div>
         </div>
       </div>
 

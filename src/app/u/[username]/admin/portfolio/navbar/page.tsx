@@ -4,12 +4,16 @@ import { useEffect, useState, useCallback } from "react";
 import { FiX, FiPlus } from "react-icons/fi";
 import Toast from "@/components/Toast";
 import ImageUpload from "@/components/ImageUpload";
+import { ColorPickerField, TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
 
 interface NavLink {
   id: string;
   label: string;
   href: string;
   order: number;
+  labelColor: string;
+  labelFont: string;
+  labelWeight: string;
 }
 
 interface Section {
@@ -22,12 +26,16 @@ export default function NavbarPage() {
   const [logoText, setLogoText] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
   const [useLogoImage, setUseLogoImage] = useState(false);
+  const [navScrollBg, setNavScrollBg] = useState("");
+  const [logoTextColor, setLogoTextColor] = useState("");
+  const [logoTextFont, setLogoTextFont] = useState("");
+  const [logoTextWeight, setLogoTextWeight] = useState("");
   const [navLinks, setNavLinks] = useState<NavLink[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(false);
-  const [newLink, setNewLink] = useState({ label: "", href: "" });
+  const [newLink, setNewLink] = useState({ label: "", href: "", labelColor: "", labelFont: "", labelWeight: "" });
   const [showAddRow, setShowAddRow] = useState(false);
 
   const load = useCallback(async () => {
@@ -41,6 +49,10 @@ export default function NavbarPage() {
       setLogoText(siteData.logoText || "");
       setLogoUrl(siteData.logoUrl || "");
       setUseLogoImage(siteData.useLogoImage || false);
+      setNavScrollBg(siteData.navScrollBg || "");
+      setLogoTextColor(siteData.logoTextColor || "");
+      setLogoTextFont(siteData.logoTextFont || "");
+      setLogoTextWeight(siteData.logoTextWeight || "");
     }
     setNavLinks(await navRes.json());
     setSections(await secRes.json());
@@ -54,7 +66,7 @@ export default function NavbarPage() {
     await fetch("/api/site", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ logoText, logoUrl, useLogoImage }),
+      body: JSON.stringify({ logoText, logoUrl, useLogoImage, navScrollBg, logoTextColor, logoTextFont, logoTextWeight }),
     });
     setSaving(false);
     setToast(true);
@@ -77,7 +89,7 @@ export default function NavbarPage() {
     if (r.ok) {
       const link = await r.json();
       setNavLinks((prev) => [...prev, link]);
-      setNewLink({ label: "", href: "" });
+      setNewLink({ label: "", href: "", labelColor: "", labelFont: "", labelWeight: "" });
     }
   };
 
@@ -107,6 +119,13 @@ export default function NavbarPage() {
       </div>
 
       <div className="space-y-8">
+        {/* N-1: Sticky Navbar Background */}
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Sticky Navbar</h2>
+          <ColorPickerField label="Sticky Navbar Background Color" value={navScrollBg} onChange={setNavScrollBg} />
+          <p className="text-[var(--muted)] text-[10px] mt-1">Background color when navbar sticks to the top on scroll.</p>
+        </div>
+
         {/* Logo / Brand Text */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Logo / Brand Text</h2>
@@ -132,8 +151,18 @@ export default function NavbarPage() {
             />
           ) : (
             <div>
-              <input className="dash-input" value={logoText} onChange={(e) => setLogoText(e.target.value)} placeholder="Your Name" />
-              <p className="text-[var(--muted)] text-[10px] mt-1">Displayed as text in the navbar</p>
+              <input className="dash-input" maxLength={30} value={logoText} onChange={(e) => setLogoText(e.target.value)} placeholder="Your Name" />
+              <CharLimitHint max={30} current={logoText.length} />
+              {/* N-3: Brand text styling */}
+              <TextStyleGroup
+                colorLabel="Text Color"
+                colorValue={logoTextColor}
+                onColorChange={setLogoTextColor}
+                fontValue={logoTextFont}
+                onFontChange={setLogoTextFont}
+                weightValue={logoTextWeight}
+                onWeightChange={setLogoTextWeight}
+              />
             </div>
           )}
         </div>
@@ -172,23 +201,39 @@ export default function NavbarPage() {
               </div>
             ))}
             {showAddRow && (
-              <div className="flex items-center gap-2">
-                <input className="dash-input flex-1" value={newLink.label} onChange={(e) => setNewLink((l) => ({ ...l, label: e.target.value }))} placeholder="Label" />
-                <select className="dash-input flex-1" value={newLink.href} onChange={(e) => setNewLink((l) => ({ ...l, href: e.target.value }))}>
-                  <option value="">Select target</option>
-                  {navTargetOptions.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
-                <button
-                  onClick={async () => { await addNavLink(); setShowAddRow(false); }}
-                  className="p-1.5 rounded-lg bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]"
-                >
-                  <FiPlus size={14} />
-                </button>
-                <button onClick={() => { setShowAddRow(false); setNewLink({ label: "", href: "" }); }} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)]">
-                  <FiX size={14} />
-                </button>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <input className="dash-input w-full" maxLength={30} value={newLink.label} onChange={(e) => setNewLink((l) => ({ ...l, label: e.target.value }))} placeholder="Label" />
+                    <CharLimitHint max={30} current={newLink.label.length} />
+                  </div>
+                  <select className="dash-input flex-1" value={newLink.href} onChange={(e) => setNewLink((l) => ({ ...l, href: e.target.value }))}>
+                    <option value="">Select target</option>
+                    {navTargetOptions.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                  {/* N-2: Replace "+" with "Add" button */}
+                  <button
+                    onClick={async () => { await addNavLink(); setShowAddRow(false); }}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]"
+                  >
+                    Add
+                  </button>
+                  <button onClick={() => { setShowAddRow(false); setNewLink({ label: "", href: "", labelColor: "", labelFont: "", labelWeight: "" }); }} className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)]">
+                    <FiX size={14} />
+                  </button>
+                </div>
+                {/* N-4: Nav link label styling */}
+                <TextStyleGroup
+                  colorLabel="Label Text Color"
+                  colorValue={newLink.labelColor}
+                  onColorChange={(v) => setNewLink((l) => ({ ...l, labelColor: v }))}
+                  fontValue={newLink.labelFont}
+                  onFontChange={(v) => setNewLink((l) => ({ ...l, labelFont: v }))}
+                  weightValue={newLink.labelWeight}
+                  onWeightChange={(v) => setNewLink((l) => ({ ...l, labelWeight: v }))}
+                />
               </div>
             )}
           </div>

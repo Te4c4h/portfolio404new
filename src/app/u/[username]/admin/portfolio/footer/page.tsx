@@ -2,9 +2,13 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Toast from "@/components/Toast";
+import { TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
 
 export default function FooterPage() {
   const [footerText, setFooterText] = useState("");
+  const [footerTextColor, setFooterTextColor] = useState("");
+  const [footerTextFont, setFooterTextFont] = useState("");
+  const [footerTextWeight, setFooterTextWeight] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(false);
@@ -12,7 +16,12 @@ export default function FooterPage() {
   const load = useCallback(async () => {
     const r = await fetch("/api/site");
     const d = await r.json();
-    if (d) setFooterText(d.footerText || "");
+    if (d) {
+      setFooterText(d.footerText || "");
+      setFooterTextColor(d.footerTextColor || "");
+      setFooterTextFont(d.footerTextFont || "");
+      setFooterTextWeight(d.footerTextWeight || "");
+    }
     setLoading(false);
   }, []);
 
@@ -23,7 +32,7 @@ export default function FooterPage() {
     await fetch("/api/site", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ footerText }),
+      body: JSON.stringify({ footerText, footerTextColor, footerTextFont, footerTextWeight }),
     });
     setSaving(false);
     setToast(true);
@@ -42,12 +51,15 @@ export default function FooterPage() {
 
       <div className="space-y-8">
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Footer</h2>
-          <div>
-            <label className="text-xs text-[var(--muted)] mb-1 block">Footer Copyright Text</label>
-            <input className="dash-input" value={footerText} onChange={(e) => setFooterText(e.target.value)} placeholder="e.g. © 2026 Your Name" />
-            <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">Leave empty to use default: © [year] [your name]</p>
-          </div>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Footer Text</h2>
+          <input className="dash-input" maxLength={80} value={footerText} onChange={(e) => setFooterText(e.target.value)} placeholder="e.g. 2026 Your Name" />
+          <CharLimitHint max={80} current={footerText.length} />
+          <p className="text-[var(--muted)] text-[10px] mt-0.5">Displayed at the bottom of your portfolio</p>
+          <TextStyleGroup
+            colorLabel="Text Color" colorValue={footerTextColor} onColorChange={setFooterTextColor}
+            fontValue={footerTextFont} onFontChange={setFooterTextFont}
+            weightValue={footerTextWeight} onWeightChange={setFooterTextWeight}
+          />
         </div>
       </div>
 

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Toast from "@/components/Toast";
 import dynamic from "next/dynamic";
 import ImageUpload from "@/components/ImageUpload";
+import { CharLimitHint } from "@/components/StyleFields";
 
 const RgbaColorPicker = dynamic(() => import("@/components/RgbaColorPicker"), {
   ssr: false,
@@ -134,13 +135,16 @@ export default function SettingsPage() {
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Website Title</h2>
           <div>
             <label className="text-xs text-[var(--muted)] mb-1 block">Site Title</label>
-            <input className="dash-input" value={siteTitle} onChange={(e) => setSiteTitle(e.target.value)} placeholder="My Portfolio" />
+            <input className="dash-input" maxLength={60} value={siteTitle} onChange={(e) => setSiteTitle(e.target.value)} placeholder="My Portfolio" />
+            <CharLimitHint max={60} current={siteTitle.length} />
+            <p className="text-[var(--muted)] text-[10px] mt-0.5">Shown in the browser tab and search results.</p>
           </div>
         </div>
 
         {/* Colors */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Colors</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-2">Global Color Palette</h2>
+          <p className="text-[var(--muted)] text-[10px] mb-4">These are the default colors used across your entire portfolio. Individual sections can override them.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {colorFields.map(({ key, label }) => (
               <div key={key}>
@@ -175,7 +179,8 @@ export default function SettingsPage() {
 
         {/* Fonts */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Fonts</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-2">Global Default Fonts</h2>
+          <p className="text-[var(--muted)] text-[10px] mb-4">These fonts apply site-wide. Individual elements can override them in their settings pages.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-[var(--muted)] mb-1 block">Body Font</label>
@@ -196,17 +201,6 @@ export default function SettingsPage() {
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Branding</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Logo */}
-            <ImageUpload
-              label="Logo / Brand Image"
-              value={theme.logoUrl}
-              onChange={(url) => setTheme((t) => ({ ...t, logoUrl: url }))}
-              maxSizeMB={1}
-              maxDimensions={{ width: 400, height: 160 }}
-              acceptedFormats={["PNG", "SVG"]}
-              folder="logos"
-            />
-
             {/* Favicon */}
             <ImageUpload
               label="Favicon"
@@ -273,68 +267,6 @@ export default function SettingsPage() {
             />
           </div>
         </div>
-
-        {/* Live Preview */}
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Live Preview</h2>
-          <div
-            className="rounded-lg overflow-hidden border border-[var(--border)] p-6 relative"
-            style={{ backgroundColor: theme.backgroundColor, color: theme.textColor, fontFamily: `${theme.bodyFont}, sans-serif` }}
-          >
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                backgroundImage: `linear-gradient(${theme.gridColor} 1px, transparent 1px), linear-gradient(90deg, ${theme.gridColor} 1px, transparent 1px)`,
-                backgroundSize: "40px 40px",
-              }}
-            />
-            <div className="relative z-[1]">
-              <div className="flex items-center justify-between mb-6">
-                <span className="text-sm font-semibold" style={{ color: theme.textColor }}>Logo</span>
-                <div className="flex gap-3 text-xs" style={{ color: `${theme.textColor}80` }}>
-                  <span>About</span>
-                  <span>Work</span>
-                  <span>Contact</span>
-                </div>
-              </div>
-              <h1 className="text-xl font-bold mb-2" style={{ fontFamily: `${theme.headingFont}, sans-serif`, color: theme.textColor }}>
-                Hello, I&apos;m a Developer
-              </h1>
-              <p className="text-xs mb-4" style={{ color: `${theme.textColor}99` }}>
-                Building amazing things on the web.
-              </p>
-              <div className="flex gap-2 mb-6">
-                <span className="px-3 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: theme.accentColor, color: theme.backgroundColor }}>
-                  View Work
-                </span>
-                <span className="px-3 py-1 rounded-lg text-xs font-medium border" style={{ borderColor: `${theme.accentColor}40`, color: theme.textColor }}>
-                  Contact
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-lg p-3" style={{ backgroundColor: theme.surfaceColor }}>
-                  <div className="w-full h-12 rounded mb-2" style={{ backgroundColor: `${theme.accentColor}15` }} />
-                  <div className="flex gap-1 mb-1">
-                    <span className="px-1.5 py-0.5 rounded text-[9px]" style={{ backgroundColor: `${theme.accentColor}15`, color: theme.accentColor }}>React</span>
-                    <span className="px-1.5 py-0.5 rounded text-[9px]" style={{ backgroundColor: `${theme.accentColor}15`, color: theme.accentColor }}>Next.js</span>
-                  </div>
-                  <p className="text-[var(--accent)] font-medium" style={{ color: theme.textColor }}>Project One</p>
-                </div>
-                <div className="rounded-lg p-3" style={{ backgroundColor: theme.surfaceColor }}>
-                  <div className="w-full h-12 rounded mb-2" style={{ backgroundColor: `${theme.accentColor}15` }} />
-                  <div className="flex gap-1 mb-1">
-                    <span className="px-1.5 py-0.5 rounded text-[9px]" style={{ backgroundColor: `${theme.accentColor}15`, color: theme.accentColor }}>TypeScript</span>
-                  </div>
-                  <p className="text-[var(--accent)] font-medium" style={{ color: theme.textColor }}>Project Two</p>
-                </div>
-              </div>
-              <div className="mt-4 pt-3 border-t text-center" style={{ borderColor: `${theme.textColor}15` }}>
-                <p className="text-[var(--accent)]" style={{ color: theme.dangerColor }}>danger color sample</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
       <Toast message="Settings saved!" show={toast} onClose={() => setToast(false)} />

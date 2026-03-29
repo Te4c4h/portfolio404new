@@ -15,7 +15,11 @@ export async function PUT(
   }
 
   const body = await req.json();
-  const { name, label, subtitle, backgroundColor } = body;
+  const { name, label, subtitle, backgroundColor,
+    nameColor, nameFont, nameWeight,
+    labelColor, labelFont, labelWeight,
+    subtitleColor, subtitleFont, subtitleWeight,
+  } = body;
 
   const data: Record<string, string> = {};
   if (name !== undefined) {
@@ -28,6 +32,15 @@ export async function PUT(
   if (label !== undefined) data.label = label;
   if (subtitle !== undefined) data.subtitle = subtitle;
   if (backgroundColor !== undefined) data.backgroundColor = backgroundColor;
+  if (nameColor !== undefined) data.nameColor = nameColor;
+  if (nameFont !== undefined) data.nameFont = nameFont;
+  if (nameWeight !== undefined) data.nameWeight = nameWeight;
+  if (labelColor !== undefined) data.labelColor = labelColor;
+  if (labelFont !== undefined) data.labelFont = labelFont;
+  if (labelWeight !== undefined) data.labelWeight = labelWeight;
+  if (subtitleColor !== undefined) data.subtitleColor = subtitleColor;
+  if (subtitleFont !== undefined) data.subtitleFont = subtitleFont;
+  if (subtitleWeight !== undefined) data.subtitleWeight = subtitleWeight;
 
   const updated = await prisma.section.update({
     where: { id: params.id },

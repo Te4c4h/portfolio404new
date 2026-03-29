@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { platform, url } = body;
+  const { platform, url, iconBgColor, iconColor } = body;
 
   if (!platform) return NextResponse.json({ error: "Platform is required" }, { status: 400 });
   if (!url) return NextResponse.json({ error: "URL is required" }, { status: 400 });
@@ -36,6 +36,8 @@ export async function POST(req: NextRequest) {
       platform,
       url,
       order: (maxOrder?.order ?? -1) + 1,
+      ...(iconBgColor !== undefined && { iconBgColor }),
+      ...(iconColor !== undefined && { iconColor }),
     },
   });
 

@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import Toast from "@/components/Toast";
+import { TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
 
 interface Section {
   id: string;
@@ -24,6 +25,24 @@ export default function HeroPage() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(false);
 
+  // H-1: Headline & subtext styling
+  const [headlineColor, setHeadlineColor] = useState("");
+  const [headlineFont, setHeadlineFont] = useState("");
+  const [headlineWeight, setHeadlineWeight] = useState("");
+  const [subtextColor, setSubtextColor] = useState("");
+  const [subtextFont, setSubtextFont] = useState("");
+  const [subtextWeight, setSubtextWeight] = useState("");
+
+  // H-2: CTA styling
+  const [ctaBg1, setCtaBg1] = useState("");
+  const [ctaTextColor1, setCtaTextColor1] = useState("");
+  const [ctaFont1, setCtaFont1] = useState("");
+  const [ctaWeight1, setCtaWeight1] = useState("");
+  const [ctaBg2, setCtaBg2] = useState("");
+  const [ctaTextColor2, setCtaTextColor2] = useState("");
+  const [ctaFont2, setCtaFont2] = useState("");
+  const [ctaWeight2, setCtaWeight2] = useState("");
+
   const load = useCallback(async () => {
     const [siteRes, secRes] = await Promise.all([
       fetch("/api/site"),
@@ -37,6 +56,20 @@ export default function HeroPage() {
       setCtaTarget1(d.ctaTarget1 || "");
       setCtaLabel2(d.ctaLabel2 || "");
       setCtaTarget2(d.ctaTarget2 || "");
+      setHeadlineColor(d.headlineColor || "");
+      setHeadlineFont(d.headlineFont || "");
+      setHeadlineWeight(d.headlineWeight || "");
+      setSubtextColor(d.subtextColor || "");
+      setSubtextFont(d.subtextFont || "");
+      setSubtextWeight(d.subtextWeight || "");
+      setCtaBg1(d.ctaBg1 || "");
+      setCtaTextColor1(d.ctaTextColor1 || "");
+      setCtaFont1(d.ctaFont1 || "");
+      setCtaWeight1(d.ctaWeight1 || "");
+      setCtaBg2(d.ctaBg2 || "");
+      setCtaTextColor2(d.ctaTextColor2 || "");
+      setCtaFont2(d.ctaFont2 || "");
+      setCtaWeight2(d.ctaWeight2 || "");
     }
     setSections(await secRes.json());
     setLoading(false);
@@ -49,7 +82,13 @@ export default function HeroPage() {
     await fetch("/api/site", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ headline, subtext, ctaLabel1, ctaTarget1, ctaLabel2, ctaTarget2 }),
+      body: JSON.stringify({
+        headline, subtext, ctaLabel1, ctaTarget1, ctaLabel2, ctaTarget2,
+        headlineColor, headlineFont, headlineWeight,
+        subtextColor, subtextFont, subtextWeight,
+        ctaBg1, ctaTextColor1, ctaFont1, ctaWeight1,
+        ctaBg2, ctaTextColor2, ctaFont2, ctaWeight2,
+      }),
     });
     setSaving(false);
     setToast(true);
@@ -81,41 +120,92 @@ export default function HeroPage() {
         {/* Hero Section */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Hero Section</h2>
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div>
               <label className="text-xs text-[var(--muted)] mb-1 block">Headline</label>
-              <input className="dash-input" value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder="Welcome to my portfolio" />
+              <input className="dash-input" maxLength={60} value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder="Welcome to my portfolio" />
+              <CharLimitHint max={60} current={headline.length} />
+              <TextStyleGroup
+                colorLabel="Text Color" colorValue={headlineColor} onColorChange={setHeadlineColor}
+                fontValue={headlineFont} onFontChange={setHeadlineFont}
+                weightValue={headlineWeight} onWeightChange={setHeadlineWeight}
+              />
             </div>
             <div>
               <label className="text-xs text-[var(--muted)] mb-1 block">Subtext</label>
-              <input className="dash-input" value={subtext} onChange={(e) => setSubtext(e.target.value)} placeholder="A short description" />
+              <input className="dash-input" maxLength={150} value={subtext} onChange={(e) => setSubtext(e.target.value)} placeholder="A short description" />
+              <CharLimitHint max={150} current={subtext.length} />
+              <TextStyleGroup
+                colorLabel="Text Color" colorValue={subtextColor} onColorChange={setSubtextColor}
+                fontValue={subtextFont} onFontChange={setSubtextFont}
+                weightValue={subtextWeight} onWeightChange={setSubtextWeight}
+              />
             </div>
           </div>
         </div>
 
-        {/* Hero Buttons */}
+        {/* Primary CTA */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Hero Buttons</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Primary CTA Button</h2>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Primary CTA Label</label>
-              <input className="dash-input" value={ctaLabel1} onChange={(e) => setCtaLabel1(e.target.value)} placeholder="View Projects" />
+              <label className="text-xs text-[var(--muted)] mb-1 block">Label</label>
+              <input className="dash-input" maxLength={25} value={ctaLabel1} onChange={(e) => setCtaLabel1(e.target.value)} placeholder="View Projects" />
+              <CharLimitHint max={25} current={ctaLabel1.length} />
             </div>
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Primary CTA Target</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Target</label>
               <select className="dash-input" value={ctaTarget1} onChange={(e) => setCtaTarget1(e.target.value)}>
                 {ctaOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
+          </div>
+          <TextStyleGroup
+            colorLabel="Button Background Color" colorValue={ctaBg1} onColorChange={setCtaBg1}
+            fontValue={ctaFont1} onFontChange={setCtaFont1}
+            weightValue={ctaWeight1} onWeightChange={setCtaWeight1}
+          />
+          <div className="mt-3">
+            <label className="text-xs text-[var(--muted)] mb-1 block">
+              Button Text Color
+              {ctaTextColor1 && <button onClick={() => setCtaTextColor1("")} className="ml-2 text-[var(--accent)] text-xs hover:underline">Clear</button>}
+            </label>
+            <div className="flex items-center gap-2">
+              <input type="color" value={ctaTextColor1 || "#ffffff"} onChange={(e) => setCtaTextColor1(e.target.value)} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
+              <input className="dash-input" value={ctaTextColor1} onChange={(e) => setCtaTextColor1(e.target.value)} placeholder="Inherit from theme" />
+            </div>
+          </div>
+        </div>
+
+        {/* Secondary CTA */}
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Secondary CTA Button</h2>
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Secondary CTA Label</label>
-              <input className="dash-input" value={ctaLabel2} onChange={(e) => setCtaLabel2(e.target.value)} placeholder="Contact Me" />
+              <label className="text-xs text-[var(--muted)] mb-1 block">Label</label>
+              <input className="dash-input" maxLength={25} value={ctaLabel2} onChange={(e) => setCtaLabel2(e.target.value)} placeholder="Contact Me" />
+              <CharLimitHint max={25} current={ctaLabel2.length} />
             </div>
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Secondary CTA Target</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">Target</label>
               <select className="dash-input" value={ctaTarget2} onChange={(e) => setCtaTarget2(e.target.value)}>
                 {ctaOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
+            </div>
+          </div>
+          <TextStyleGroup
+            colorLabel="Button Background Color" colorValue={ctaBg2} onColorChange={setCtaBg2}
+            fontValue={ctaFont2} onFontChange={setCtaFont2}
+            weightValue={ctaWeight2} onWeightChange={setCtaWeight2}
+          />
+          <div className="mt-3">
+            <label className="text-xs text-[var(--muted)] mb-1 block">
+              Button Text Color
+              {ctaTextColor2 && <button onClick={() => setCtaTextColor2("")} className="ml-2 text-[var(--accent)] text-xs hover:underline">Clear</button>}
+            </label>
+            <div className="flex items-center gap-2">
+              <input type="color" value={ctaTextColor2 || "#ffffff"} onChange={(e) => setCtaTextColor2(e.target.value)} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
+              <input className="dash-input" value={ctaTextColor2} onChange={(e) => setCtaTextColor2(e.target.value)} placeholder="Inherit from theme" />
             </div>
           </div>
         </div>

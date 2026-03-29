@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { label, href } = body;
+  const { label, href, labelColor, labelFont, labelWeight } = body;
 
   if (!label || !href) {
     return NextResponse.json({ error: "Label and href are required" }, { status: 400 });
@@ -37,6 +37,9 @@ export async function POST(req: NextRequest) {
       label,
       href,
       order: (maxOrder?.order ?? -1) + 1,
+      ...(labelColor !== undefined && { labelColor }),
+      ...(labelFont !== undefined && { labelFont }),
+      ...(labelWeight !== undefined && { labelWeight }),
     },
   });
 

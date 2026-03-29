@@ -13,6 +13,7 @@ import {
   FiMail, FiGithub, FiLinkedin, FiInstagram, FiFacebook, FiYoutube, FiGlobe,
 } from "react-icons/fi";
 import Toast from "@/components/Toast";
+import { TextStyleGroup, CharLimitHint, ColorPickerField } from "@/components/StyleFields";
 
 interface ContactLink {
   id: string;
@@ -24,9 +25,11 @@ interface ContactLink {
 interface FormData {
   platform: string;
   url: string;
+  iconBgColor: string;
+  iconColor: string;
 }
 
-const emptyForm: FormData = { platform: "Email", url: "" };
+const emptyForm: FormData = { platform: "Email", url: "", iconBgColor: "", iconColor: "" };
 
 const platforms = [
   "Email", "Phone", "GitHub", "LinkedIn", "Telegram", "WhatsApp", "Instagram",
@@ -86,6 +89,13 @@ function SortableRow({
 export default function ContactPage() {
   const [contactTitle, setContactTitle] = useState("");
   const [contactSubtitle, setContactSubtitle] = useState("");
+  // CT-1: Contact title/subtitle styling
+  const [contactTitleColor, setContactTitleColor] = useState("");
+  const [contactTitleFont, setContactTitleFont] = useState("");
+  const [contactTitleWeight, setContactTitleWeight] = useState("");
+  const [contactSubColor, setContactSubColor] = useState("");
+  const [contactSubFont, setContactSubFont] = useState("");
+  const [contactSubWeight, setContactSubWeight] = useState("");
   const [links, setLinks] = useState<ContactLink[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -107,6 +117,12 @@ export default function ContactPage() {
     if (d) {
       setContactTitle(d.contactTitle || "");
       setContactSubtitle(d.contactSubtitle || "");
+      setContactTitleColor(d.contactTitleColor || "");
+      setContactTitleFont(d.contactTitleFont || "");
+      setContactTitleWeight(d.contactTitleWeight || "");
+      setContactSubColor(d.contactSubColor || "");
+      setContactSubFont(d.contactSubFont || "");
+      setContactSubWeight(d.contactSubWeight || "");
     }
     setLinks(await linksRes.json());
     setLoading(false);
@@ -119,7 +135,11 @@ export default function ContactPage() {
     await fetch("/api/site", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contactTitle, contactSubtitle }),
+      body: JSON.stringify({
+        contactTitle, contactSubtitle,
+        contactTitleColor, contactTitleFont, contactTitleWeight,
+        contactSubColor, contactSubFont, contactSubWeight,
+      }),
     });
     setSaving(false);
     setToast(true);
@@ -130,7 +150,11 @@ export default function ContactPage() {
     let displayUrl = l.url;
     if (l.platform === "Email" && displayUrl.startsWith("mailto:")) displayUrl = displayUrl.slice(7);
     if (l.platform === "Phone" && displayUrl.startsWith("tel:")) displayUrl = displayUrl.slice(4);
-    setEditingId(l.id); setForm({ platform: l.platform, url: displayUrl }); setError(""); setModalOpen(true);
+    setEditingId(l.id); setForm({
+      platform: l.platform, url: displayUrl,
+      iconBgColor: (l as never as Record<string, string>).iconBgColor || "",
+      iconColor: (l as never as Record<string, string>).iconColor || "",
+    }); setError(""); setModalOpen(true);
   };
 
   const handleLinkSave = async () => {
@@ -180,14 +204,26 @@ export default function ContactPage() {
         {/* Contact Section Text */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Contact Section</h2>
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div>
               <label className="text-xs text-[var(--muted)] mb-1 block">Contact Title</label>
-              <input className="dash-input" maxLength={30} value={contactTitle} onChange={(e) => setContactTitle(e.target.value)} placeholder="Get in Touch" />
+              <input className="dash-input" maxLength={40} value={contactTitle} onChange={(e) => setContactTitle(e.target.value)} placeholder="Get in Touch" />
+              <CharLimitHint max={40} current={contactTitle.length} />
+              <TextStyleGroup
+                colorLabel="Title Color" colorValue={contactTitleColor} onColorChange={setContactTitleColor}
+                fontValue={contactTitleFont} onFontChange={setContactTitleFont}
+                weightValue={contactTitleWeight} onWeightChange={setContactTitleWeight}
+              />
             </div>
             <div>
               <label className="text-xs text-[var(--muted)] mb-1 block">Contact Subtitle</label>
-              <input className="dash-input" value={contactSubtitle} onChange={(e) => setContactSubtitle(e.target.value)} placeholder="I'd love to hear from you" />
+              <input className="dash-input" maxLength={100} value={contactSubtitle} onChange={(e) => setContactSubtitle(e.target.value)} placeholder="I'd love to hear from you" />
+              <CharLimitHint max={100} current={contactSubtitle.length} />
+              <TextStyleGroup
+                colorLabel="Subtitle Color" colorValue={contactSubColor} onColorChange={setContactSubColor}
+                fontValue={contactSubFont} onFontChange={setContactSubFont}
+                weightValue={contactSubWeight} onWeightChange={setContactSubWeight}
+              />
             </div>
           </div>
         </div>
@@ -231,6 +267,9 @@ export default function ContactPage() {
                 <input className="dash-input" value={form.url} onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))} placeholder={urlHints[form.platform] || defaultHint} />
                 <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">{urlHints[form.platform] || defaultHint}</p>
               </div>
+              {/* CT-2: Icon & background color */}
+              <ColorPickerField label="Icon Background Color" value={form.iconBgColor} onChange={(v) => setForm((f) => ({ ...f, iconBgColor: v }))} />
+              <ColorPickerField label="Icon Color" value={form.iconColor} onChange={(v) => setForm((f) => ({ ...f, iconColor: v }))} />
             </div>
             {error && <p className="text-[var(--danger)] text-xs mt-3">{error}</p>}
             <div className="flex justify-end gap-2 mt-5">

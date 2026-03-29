@@ -24,7 +24,13 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { title, description, sectionId, tags, coverImage, image1, image2, image3, liveUrl, repoUrl, contentType, videoUrl, codeContent, codeLanguage, modelUrl } = body;
+  const { title, description, sectionId, tags, coverImage, image1, image2, image3, liveUrl, repoUrl, contentType, videoUrl, codeContent, codeLanguage, modelUrl,
+    titleColor, titleFont, titleWeight,
+    descColor, descFont, descWeight,
+    tagBg, tagColor, tagFont, tagWeight,
+    liveBtnBg, liveBtnColor, liveBtnFont, liveBtnWeight,
+    repoBtnBg, repoBtnColor, repoBtnFont, repoBtnWeight,
+  } = body;
 
   if (!title) return NextResponse.json({ error: "Title is required" }, { status: 400 });
   if (!sectionId) return NextResponse.json({ error: "Section is required" }, { status: 400 });
@@ -64,6 +70,24 @@ export async function POST(req: NextRequest) {
     codeLanguage: codeLanguage || "",
     modelUrl: modelUrl || "",
     order: (maxOrder?.order ?? -1) + 1,
+    ...(titleColor !== undefined && { titleColor }),
+    ...(titleFont !== undefined && { titleFont }),
+    ...(titleWeight !== undefined && { titleWeight }),
+    ...(descColor !== undefined && { descColor }),
+    ...(descFont !== undefined && { descFont }),
+    ...(descWeight !== undefined && { descWeight }),
+    ...(tagBg !== undefined && { tagBg }),
+    ...(tagColor !== undefined && { tagColor }),
+    ...(tagFont !== undefined && { tagFont }),
+    ...(tagWeight !== undefined && { tagWeight }),
+    ...(liveBtnBg !== undefined && { liveBtnBg }),
+    ...(liveBtnColor !== undefined && { liveBtnColor }),
+    ...(liveBtnFont !== undefined && { liveBtnFont }),
+    ...(liveBtnWeight !== undefined && { liveBtnWeight }),
+    ...(repoBtnBg !== undefined && { repoBtnBg }),
+    ...(repoBtnColor !== undefined && { repoBtnColor }),
+    ...(repoBtnFont !== undefined && { repoBtnFont }),
+    ...(repoBtnWeight !== undefined && { repoBtnWeight }),
   };
 
   const item = await prisma.contentItem.create({ data: data as Parameters<typeof prisma.contentItem.create>[0]["data"] });

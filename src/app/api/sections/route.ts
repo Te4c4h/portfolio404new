@@ -19,7 +19,11 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { name, label, subtitle, backgroundColor } = body;
+  const { name, label, subtitle, backgroundColor,
+    nameColor, nameFont, nameWeight,
+    labelColor, labelFont, labelWeight,
+    subtitleColor, subtitleFont, subtitleWeight,
+  } = body;
 
   if (!name) {
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
@@ -58,6 +62,15 @@ export async function POST(req: NextRequest) {
       subtitle: subtitle || "",
       backgroundColor: backgroundColor || "#181818",
       order: (maxOrder?.order ?? -1) + 1,
+      ...(nameColor !== undefined && { nameColor }),
+      ...(nameFont !== undefined && { nameFont }),
+      ...(nameWeight !== undefined && { nameWeight }),
+      ...(labelColor !== undefined && { labelColor }),
+      ...(labelFont !== undefined && { labelFont }),
+      ...(labelWeight !== undefined && { labelWeight }),
+      ...(subtitleColor !== undefined && { subtitleColor }),
+      ...(subtitleFont !== undefined && { subtitleFont }),
+      ...(subtitleWeight !== undefined && { subtitleWeight }),
     },
   });
 

@@ -15,13 +15,16 @@ export async function PUT(
   }
 
   const body = await req.json();
-  const { label, href } = body;
+  const { label, href, labelColor, labelFont, labelWeight } = body;
 
   const updated = await prisma.navLink.update({
     where: { id: params.id },
     data: {
       ...(label !== undefined && { label }),
       ...(href !== undefined && { href }),
+      ...(labelColor !== undefined && { labelColor }),
+      ...(labelFont !== undefined && { labelFont }),
+      ...(labelWeight !== undefined && { labelWeight }),
     },
   });
 
