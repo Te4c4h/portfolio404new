@@ -8,6 +8,7 @@ declare module "next-auth" {
     email: string;
     isAdmin: boolean;
     isPaid: boolean;
+    isFreeAccess: boolean;
     firstName: string;
     lastName: string;
   }
@@ -19,6 +20,7 @@ declare module "next-auth" {
       email: string;
       isAdmin: boolean;
       isPaid: boolean;
+      isFreeAccess: boolean;
       firstName: string;
       lastName: string;
       needsSetup?: boolean;
@@ -34,6 +36,7 @@ declare module "next-auth/jwt" {
     email: string;
     isAdmin: boolean;
     isPaid: boolean;
+    isFreeAccess: boolean;
     firstName: string;
     lastName: string;
     needsSetup?: boolean;

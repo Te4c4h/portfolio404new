@@ -20,6 +20,7 @@ async function getPortfolioData(username: string) {
       lastName: true,
       isBlocked: true,
       isPublished: true,
+      isPaid: true,
       subscriptionStatus: true,
       isFreeAccess: true,
       theme: true,
@@ -36,6 +37,8 @@ async function getPortfolioData(username: string) {
   });
 
   if (!user || user.isBlocked || !user.isPublished) return null;
+  // Block public access until payment or free access granted
+  if (!user.isPaid && !user.isFreeAccess) return null;
 
   // Fetch resume if showOnPortfolio is enabled
   const resume = await prisma.resume.findUnique({

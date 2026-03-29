@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import PricingSection from "@/components/PricingSection";
 
 export default function DefaultLandingPage() {
   return (
@@ -94,6 +95,8 @@ export default function DefaultLandingPage() {
           </div>
         </div>
       </section>
+
+      <PricingSection />
 
       {/* CTA Section */}
       <section className="py-20 px-4 border-t border-white/5">

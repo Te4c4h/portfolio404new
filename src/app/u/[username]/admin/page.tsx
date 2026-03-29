@@ -20,13 +20,6 @@ interface AnalyticsData {
   portfolioUrl: string;
 }
 
-interface SubStatus {
-  subscriptionStatus: string;
-  currentPeriodEnd: string | null;
-  isFreeAccess: boolean;
-  hasAccess: boolean;
-}
-
 function MiniLineChart({ data, accent }: { data: { date: string; views: number }[]; accent: string }) {
   if (!data.length) return null;
   const max = Math.max(...data.map((d) => d.views), 1);
@@ -79,11 +72,11 @@ export default function AnalyticsPage() {
   const isAdmin = session?.user?.isAdmin;
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [sub, setSub] = useState<SubStatus | null>(null);
-  const [checkingOut, setCheckingOut] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const lsEnabled = process.env.NEXT_PUBLIC_LEMONSQUEEZY_ENABLED === "true";
+  const isPaid = session?.user?.isPaid === true;
+  const isFreeAccess = session?.user?.isFreeAccess === true;
+  const hasAccess = isPaid || isFreeAccess || isAdmin;
 
   useEffect(() => {
     fetch("/api/analytics/stats")
@@ -92,26 +85,6 @@ export default function AnalyticsPage() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
-
-  useEffect(() => {
-    if (!isAdmin && lsEnabled) {
-      fetch("/api/subscription")
-        .then((r) => r.json())
-        .then(setSub)
-        .catch(() => {});
-    }
-  }, [isAdmin, lsEnabled]);
-
-  const handleSubscribe = async () => {
-    setCheckingOut(true);
-    try {
-      const r = await fetch("/api/subscription/checkout", { method: "POST" });
-      const data = await r.json();
-      if (data.url) window.location.href = data.url;
-    } catch {
-      setCheckingOut(false);
-    }
-  };
 
   const copyUrl = () => {
     if (!analytics) return;
@@ -124,27 +97,26 @@ export default function AnalyticsPage() {
     <div className="w-full">
       <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">Analytics</h1>
 
-      {/* Upgrade Banner */}
-      {lsEnabled && !isAdmin && sub && !sub.hasAccess && (
+      {/* Upgrade Banner — shown for unpaid non-admin users */}
+      {!hasAccess && (
         <div className="mb-6 bg-gradient-to-r from-[var(--accent)]/10 to-[var(--accent)]/5 border border-[var(--accent)]/20 rounded-xl p-5">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="flex-1">
               <h2 className="text-[var(--accent)] font-semibold text-sm flex items-center gap-2">
                 <FiZap size={16} />
-                Upgrade to Portfolio 404 Pro
+                Activate Portfolio 404 Pro
               </h2>
               <p className="text-[var(--muted)] text-xs mt-1">
-                Subscribe for <strong className="text-[var(--foreground)]">$1/month</strong> to publish and share your portfolio with the world.
+                One-time payment of <strong className="text-[var(--foreground)]">$5</strong> — publish your portfolio and unlock all features forever.
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <button
-                onClick={handleSubscribe}
-                disabled={checkingOut}
-                className="px-5 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-50"
+              <Link
+                href={`/u/${session?.user?.username}/admin/billing`}
+                className="px-5 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors"
               >
-                {checkingOut ? "Redirecting..." : "Subscribe — $1/mo"}
-              </button>
+                Activate Plan — $5
+              </Link>
               <Link href="/pricing" className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
                 Learn more
               </Link>

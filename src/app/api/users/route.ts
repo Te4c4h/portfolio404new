@@ -20,6 +20,7 @@ export async function GET() {
       registeredAt: true,
       subscriptionStatus: true,
       isFreeAccess: true,
+      isPaid: true,
     },
     orderBy: { registeredAt: "desc" },
   });

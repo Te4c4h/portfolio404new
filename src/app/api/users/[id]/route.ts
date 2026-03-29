@@ -25,6 +25,7 @@ export async function PUT(
       registeredAt: true,
       subscriptionStatus: true,
       isFreeAccess: true,
+      isPaid: true,
     },
   });
 
@@ -54,6 +55,37 @@ export async function PATCH(
       registeredAt: true,
       subscriptionStatus: true,
       isFreeAccess: true,
+      isPaid: true,
+    },
+  });
+
+  return NextResponse.json(updated);
+}
+
+export async function POST(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const user = await prisma.user.findUnique({ where: { id: params.id } });
+  if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+  const updated = await prisma.user.update({
+    where: { id: params.id },
+    data: { isPaid: !user.isPaid },
+    select: {
+      id: true,
+      username: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      isBlocked: true,
+      registeredAt: true,
+      subscriptionStatus: true,
+      isFreeAccess: true,
+      isPaid: true,
     },
   });
 

@@ -2,12 +2,13 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FiCheckCircle, FiArrowRight, FiLoader } from "react-icons/fi";
 
 function PaymentSuccessContent() {
   const { data: session, update } = useSession();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [checking, setChecking] = useState(true);
 
@@ -17,7 +18,6 @@ function PaymentSuccessContent() {
   useEffect(() => {
     if (!username) return;
 
-    // Poll the server up to 10x (5s intervals) to confirm isPaid is set
     let attempts = 0;
     const maxAttempts = 10;
 
@@ -26,9 +26,12 @@ function PaymentSuccessContent() {
         const res = await fetch("/api/user/payment-status");
         const data = await res.json();
         if (data.isPaid) {
-          // Refresh session so middleware and client have up-to-date isPaid
           await update();
           setChecking(false);
+          // Auto-redirect to dashboard after short delay
+          setTimeout(() => {
+            router.replace(`/u/${username}/admin`);
+          }, 2000);
           return;
         }
       } catch {
@@ -38,13 +41,12 @@ function PaymentSuccessContent() {
       if (attempts < maxAttempts) {
         setTimeout(poll, 3000);
       } else {
-        // IPN may be delayed — show success anyway, user can go to dashboard
         setChecking(false);
       }
     };
 
     poll();
-  }, [username, update]);
+  }, [username, update, router]);
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex items-center justify-center px-6">

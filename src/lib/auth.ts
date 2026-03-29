@@ -56,6 +56,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           isAdmin,
           isPaid: user.isPaid,
+          isFreeAccess: user.isFreeAccess,
           firstName: user.firstName,
           lastName: user.lastName,
         };
@@ -90,6 +91,7 @@ export const authOptions: NextAuthOptions = {
           token.email = dbUser.email;
           token.isAdmin = dbUser.username === "admin";
           token.isPaid = dbUser.isPaid;
+          token.isFreeAccess = dbUser.isFreeAccess;
           token.firstName = dbUser.firstName;
           token.lastName = dbUser.lastName;
           token.needsSetup = false;
@@ -105,6 +107,7 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.isAdmin = user.isAdmin;
         token.isPaid = user.isPaid;
+        token.isFreeAccess = user.isFreeAccess;
         token.firstName = user.firstName;
         token.lastName = user.lastName;
       }
@@ -114,12 +117,12 @@ export const authOptions: NextAuthOptions = {
         const dbUser = token.id
           ? await prisma.user.findUnique({
               where: { id: token.id as string },
-              select: { id: true, username: true, firstName: true, lastName: true, email: true, isPaid: true },
+              select: { id: true, username: true, firstName: true, lastName: true, email: true, isPaid: true, isFreeAccess: true },
             })
           : token.email
             ? await prisma.user.findUnique({
                 where: { email: token.email as string },
-                select: { id: true, username: true, firstName: true, lastName: true, email: true, isPaid: true },
+                select: { id: true, username: true, firstName: true, lastName: true, email: true, isPaid: true, isFreeAccess: true },
               })
             : null;
         if (dbUser) {
@@ -130,6 +133,7 @@ export const authOptions: NextAuthOptions = {
           token.email = dbUser.email;
           token.isAdmin = dbUser.username === "admin";
           token.isPaid = dbUser.isPaid;
+          token.isFreeAccess = dbUser.isFreeAccess;
           token.needsSetup = false;
           token.googleName = undefined;
         }
@@ -144,6 +148,7 @@ export const authOptions: NextAuthOptions = {
         email: token.email,
         isAdmin: token.isAdmin,
         isPaid: token.isPaid,
+        isFreeAccess: token.isFreeAccess,
         firstName: token.firstName,
         lastName: token.lastName,
         needsSetup: token.needsSetup,

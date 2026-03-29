@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import { FiPlus, FiTrash2, FiSave, FiDownload, FiEye, FiEyeOff } from "react-icons/fi";
 import Toast from "@/components/Toast";
 import ImageUpload from "@/components/ImageUpload";
@@ -64,6 +65,8 @@ const templates = [
 ];
 
 export default function ResumePage() {
+  const { data: session } = useSession();
+  const hasAccess = session?.user?.isPaid || session?.user?.isFreeAccess || session?.user?.isAdmin;
   const [resume, setResume] = useState<ResumeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -634,20 +637,33 @@ export default function ResumePage() {
       {/* Download Resume */}
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 mb-6">
         <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-3">Download Resume</h2>
-        <div className="flex flex-wrap gap-2">
-          <button onClick={downloadPDF} disabled={downloading === "pdf"} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--border)] text-[var(--foreground)] hover:opacity-80 disabled:opacity-50 transition-colors">
-            <FiDownload size={14} />
-            {downloading === "pdf" ? "Generating..." : "Download PDF"}
-          </button>
-          <button onClick={downloadDOCX} disabled={downloading === "docx"} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--border)] text-[var(--foreground)] hover:opacity-80 disabled:opacity-50 transition-colors">
-            <FiDownload size={14} />
-            {downloading === "docx" ? "Generating..." : "Download DOCX"}
-          </button>
-          <button onClick={downloadJSON} disabled={downloading === "json"} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--border)] text-[var(--foreground)] hover:opacity-80 disabled:opacity-50 transition-colors">
-            <FiDownload size={14} />
-            {downloading === "json" ? "Generating..." : "Export JSON"}
-          </button>
-        </div>
+        {!hasAccess ? (
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-[var(--accent)]/5 border border-[var(--accent)]/15">
+            <FiDownload size={16} className="text-[var(--muted)] flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm text-[var(--foreground)] font-medium">Unlock Resume Downloads</p>
+              <p className="text-xs text-[var(--muted)] mt-0.5">Activate your plan to download PDF, DOCX, and JSON exports.</p>
+            </div>
+            <a href="/pricing" className="px-4 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors whitespace-nowrap">
+              Get Access
+            </a>
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            <button onClick={downloadPDF} disabled={downloading === "pdf"} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--border)] text-[var(--foreground)] hover:opacity-80 disabled:opacity-50 transition-colors">
+              <FiDownload size={14} />
+              {downloading === "pdf" ? "Generating..." : "Download PDF"}
+            </button>
+            <button onClick={downloadDOCX} disabled={downloading === "docx"} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--border)] text-[var(--foreground)] hover:opacity-80 disabled:opacity-50 transition-colors">
+              <FiDownload size={14} />
+              {downloading === "docx" ? "Generating..." : "Download DOCX"}
+            </button>
+            <button onClick={downloadJSON} disabled={downloading === "json"} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--border)] text-[var(--foreground)] hover:opacity-80 disabled:opacity-50 transition-colors">
+              <FiDownload size={14} />
+              {downloading === "json" ? "Generating..." : "Export JSON"}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="space-y-6">

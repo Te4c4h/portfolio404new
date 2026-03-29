@@ -198,8 +198,8 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
           {t("sidebar.accountSettings")}
         </Link>
 
-        {/* Billing — non-admin only, only when LemonSqueezy is enabled */}
-        {!isAdmin && process.env.NEXT_PUBLIC_LEMONSQUEEZY_ENABLED === "true" && (
+        {/* Billing — non-admin only */}
+        {!isAdmin && (
           <Link
             href={basePath + "/billing"}
             onClick={() => setOpen(false)}
@@ -214,7 +214,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
           </Link>
         )}
 
-        {/* Admin: Manage Users */}
+        {/* Admin: Manage Users + Pricing */}
         {isAdmin && (
           <>
             <div className="my-3 border-t border-[var(--border)]" />
@@ -229,6 +229,18 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             >
               <FiLayers size={18} />
               {t("sidebar.manageUsers")}
+            </Link>
+            <Link
+              href={`${basePath}/pricing`}
+              onClick={() => setOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                pathname.startsWith(`${basePath}/pricing`)
+                  ? "bg-[var(--sidebar-active)] text-[var(--accent)]"
+                  : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
+              }`}
+            >
+              <FiCreditCard size={18} />
+              Pricing
             </Link>
           </>
         )}

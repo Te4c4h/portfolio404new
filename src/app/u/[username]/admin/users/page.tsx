@@ -14,6 +14,7 @@ interface User {
   registeredAt: string;
   subscriptionStatus: string;
   isFreeAccess: boolean;
+  isPaid: boolean;
 }
 
 export default function ManageUsersPage() {
@@ -51,6 +52,14 @@ export default function ManageUsersPage() {
     }
   };
 
+  const togglePaid = async (id: string) => {
+    const r = await fetch(`/api/users/${id}`, { method: "POST" });
+    if (r.ok) {
+      const updated = await r.json();
+      setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
+    }
+  };
+
   const deleteUser = async (id: string) => {
     await fetch(`/api/users/${id}`, { method: "DELETE" });
     setUsers((prev) => prev.filter((u) => u.id !== id));
@@ -82,6 +91,7 @@ export default function ManageUsersPage() {
               <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Registered</th>
               <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Status</th>
               <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Plan</th>
+              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Paid</th>
               <th className="text-right px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
@@ -113,16 +123,19 @@ export default function ManageUsersPage() {
                   <div className="flex items-center gap-1.5">
                     {user.isFreeAccess ? (
                       <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)]">Free Access</span>
-                    ) : user.subscriptionStatus === "active" ? (
-                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)]">Pro</span>
-                    ) : user.subscriptionStatus === "cancelled" ? (
-                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--warning)]/15 text-[var(--warning)]">Cancelled</span>
-                    ) : user.subscriptionStatus === "past_due" ? (
-                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--danger)]/15 text-[var(--danger)]">Past Due</span>
                     ) : (
-                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--muted)]/15 text-[var(--muted)]">Free</span>
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--muted)]/15 text-[var(--muted)]">—</span>
                     )}
                   </div>
+                </td>
+                <td className="px-4 py-3">
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                    user.isPaid
+                      ? "bg-[var(--accent)]/15 text-[var(--accent)]"
+                      : "bg-[var(--muted)]/15 text-[var(--muted)]"
+                  }`}>
+                    {user.isPaid ? "Paid" : "Free"}
+                  </span>
                 </td>
                 <td className="px-4 py-3 text-right">
                   {deletingId === user.id ? (
@@ -133,6 +146,16 @@ export default function ManageUsersPage() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => togglePaid(user.id)}
+                        className={`px-3 py-1 rounded text-xs transition-colors ${
+                          user.isPaid
+                            ? "bg-[var(--warning)]/15 text-[var(--warning)] hover:bg-[var(--warning)]/25"
+                            : "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
+                        }`}
+                      >
+                        {user.isPaid ? "Revoke Paid" : "Mark Paid"}
+                      </button>
                       <button
                         onClick={() => toggleFreeAccess(user.id)}
                         className={`px-3 py-1 rounded text-xs transition-colors ${
@@ -183,7 +206,7 @@ export default function ManageUsersPage() {
                   @{user.username}
                 </Link>
               </div>
-              <div className="flex items-center gap-1.5 flex-shrink-0">
+              <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap">
                 <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                   user.isBlocked
                     ? "bg-[var(--danger)]/15 text-[var(--danger)]"
@@ -191,16 +214,11 @@ export default function ManageUsersPage() {
                 }`}>
                   {user.isBlocked ? "Blocked" : "Active"}
                 </span>
-                {user.isFreeAccess ? (
+                {user.isPaid && (
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)]">Paid</span>
+                )}
+                {user.isFreeAccess && (
                   <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)]">Free Access</span>
-                ) : user.subscriptionStatus === "active" ? (
-                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)]">Pro</span>
-                ) : user.subscriptionStatus === "cancelled" ? (
-                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--warning)]/15 text-[var(--warning)]">Cancelled</span>
-                ) : user.subscriptionStatus === "past_due" ? (
-                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--danger)]/15 text-[var(--danger)]">Past Due</span>
-                ) : (
-                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--muted)]/15 text-[var(--muted)]">Free</span>
                 )}
               </div>
             </div>
@@ -220,6 +238,16 @@ export default function ManageUsersPage() {
               </div>
             ) : (
               <div className="flex items-center gap-2 pt-1 flex-wrap">
+                <button
+                  onClick={() => togglePaid(user.id)}
+                  className={`px-3 py-1.5 rounded text-xs transition-colors ${
+                    user.isPaid
+                      ? "bg-[var(--warning)]/15 text-[var(--warning)] hover:bg-[var(--warning)]/25"
+                      : "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
+                  }`}
+                >
+                  {user.isPaid ? "Revoke Paid" : "Mark Paid"}
+                </button>
                 <button
                   onClick={() => toggleFreeAccess(user.id)}
                   className={`px-3 py-1.5 rounded text-xs transition-colors ${
