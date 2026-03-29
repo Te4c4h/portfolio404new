@@ -26,14 +26,13 @@ export default function PricingPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const user = session?.user as (typeof session.user & { isPaid?: boolean }) | undefined;
-  const isPaid = user?.isPaid === true;
+  const isPaid = session?.user?.isPaid === true;
 
   useEffect(() => {
-    if (status === "authenticated" && isPaid) {
-      router.replace(`/u/${user?.username}/admin`);
+    if (status === "authenticated" && isPaid && session?.user?.username) {
+      router.replace(`/u/${session.user.username}/admin`);
     }
-  }, [status, isPaid, user?.username, router]);
+  }, [status, isPaid, session?.user?.username, router]);
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
