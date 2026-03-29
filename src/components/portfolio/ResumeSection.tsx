@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 interface Experience {
   id: string;
@@ -66,9 +67,11 @@ function ClassicTemplate({ resume, accent, surface }: ResumeSectionProps) {
       <div className="p-6 sm:p-8" style={{ backgroundColor: `${a}10` }}>
         <div className="flex flex-col sm:flex-row sm:items-start gap-5">
           {resume.photoUrl && (
-            <img
+            <Image
               src={resume.photoUrl}
               alt={resume.fullName}
+              width={80}
+              height={80}
               className="w-20 h-20 rounded-full object-cover shrink-0 border-2"
               style={{ borderColor: `${a}40` }}
             />
@@ -174,7 +177,7 @@ function ModernTemplate({ resume, accent, surface }: ResumeSectionProps) {
       {/* Sidebar */}
       <div className="p-6 space-y-6" style={{ backgroundColor: `${a}10` }}>
         {resume.photoUrl && (
-          <img src={resume.photoUrl} alt={resume.fullName} className="w-20 h-20 rounded-full object-cover border-2" style={{ borderColor: `${a}50` }} />
+          <Image src={resume.photoUrl} alt={resume.fullName} width={80} height={80} className="w-20 h-20 rounded-full object-cover border-2" style={{ borderColor: `${a}50` }} />
         )}
         <div>
           <h2 className="text-lg font-bold mb-1" style={{ fontFamily: "var(--font-heading)", color: "var(--text)" }}>{resume.fullName}</h2>
@@ -263,7 +266,7 @@ function MinimalTemplate({ resume, accent }: ResumeSectionProps) {
     <div className="max-w-2xl mx-auto">
       <div className="flex items-start gap-5 mb-7">
         {resume.photoUrl && (
-          <img src={resume.photoUrl} alt={resume.fullName} className="w-16 h-16 rounded-full object-cover shrink-0 border" style={{ borderColor: `${a}40` }} />
+          <Image src={resume.photoUrl} alt={resume.fullName} width={64} height={64} className="w-16 h-16 rounded-full object-cover shrink-0 border" style={{ borderColor: `${a}40` }} />
         )}
         <div>
           <h2 className="text-2xl font-bold mb-0.5" style={{ fontFamily: "var(--font-heading)", color: "var(--text)" }}>{resume.fullName}</h2>

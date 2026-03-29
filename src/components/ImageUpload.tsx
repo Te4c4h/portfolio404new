@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import NextImage from "next/image";
 import { FiX, FiLoader, FiImage } from "react-icons/fi";
 
 interface ImageUploadProps {
@@ -101,6 +102,7 @@ export default function ImageUpload({
     } finally {
       setIsUploading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folder, onChange]);
 
   const handleDrop = useCallback(
@@ -152,9 +154,11 @@ export default function ImageUpload({
       
       {preview ? (
         <div className="relative inline-block">
-          <img
+          <NextImage
             src={preview}
             alt={label}
+            width={128}
+            height={128}
             className="w-32 h-32 object-contain border border-[var(--border)] rounded-lg bg-[var(--background)]"
           />
           <button

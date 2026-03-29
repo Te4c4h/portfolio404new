@@ -9,6 +9,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { FiMenu, FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
+import Image from "next/image";
 import ImageUpload from "@/components/ImageUpload";
 
 interface Section {
@@ -93,7 +94,7 @@ function SortableRow({
         <FiMenu size={16} />
       </button>
       {item.coverImage ? (
-        <img src={item.coverImage} alt="" className="w-12 h-12 rounded object-cover bg-[var(--border)] flex-shrink-0" />
+        <Image src={item.coverImage} alt="" width={48} height={48} className="w-12 h-12 rounded object-cover bg-[var(--border)] flex-shrink-0" />
       ) : (
         <div className="w-12 h-12 rounded bg-[var(--border)] flex-shrink-0" />
       )}
@@ -295,7 +296,7 @@ export default function ContentPage() {
           {filtered.map((item) => (
             <div key={item.id} className="flex items-center gap-3 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-4 py-3">
               {item.coverImage ? (
-                <img src={item.coverImage} alt="" className="w-12 h-12 rounded object-cover bg-[var(--border)] flex-shrink-0" />
+                <Image src={item.coverImage} alt="" width={48} height={48} className="w-12 h-12 rounded object-cover bg-[var(--border)] flex-shrink-0" />
               ) : (
                 <div className="w-12 h-12 rounded bg-[var(--border)] flex-shrink-0" />
               )}

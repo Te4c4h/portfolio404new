@@ -9,6 +9,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { FiMenu, FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
+import Image from "next/image";
 import Toast from "@/components/Toast";
 import ImageUpload from "@/components/ImageUpload";
 import { TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
@@ -120,7 +121,7 @@ function SortableRow({
         <FiMenu size={16} />
       </button>
       {item.coverImage ? (
-        <img src={item.coverImage} alt="" className="w-12 h-12 rounded object-cover bg-[var(--border)] flex-shrink-0" />
+        <Image src={item.coverImage} alt="" width={48} height={48} className="w-12 h-12 rounded object-cover bg-[var(--border)] flex-shrink-0" />
       ) : (
         <div className="w-12 h-12 rounded bg-[var(--border)] flex-shrink-0" />
       )}
