@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FiCheckCircle, FiArrowRight, FiLoader } from "react-icons/fi";
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const { data: session, update } = useSession();
   const searchParams = useSearchParams();
   const [checking, setChecking] = useState(true);
@@ -101,5 +101,17 @@ export default function PaymentSuccessPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+        <FiLoader size={32} className="text-[var(--accent)] animate-spin" />
+      </div>
+    }>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }
