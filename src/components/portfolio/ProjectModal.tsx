@@ -126,7 +126,11 @@ export default function ProjectModal({ item, onClose, accent }: ProjectModalProp
             <div className="p-6">
               <h2
                 className="text-xl font-bold mb-2"
-                style={{ fontFamily: "var(--font-heading)", color: "var(--text)" }}
+                style={{
+                  fontFamily: item.titleFont ? item.titleFont + ", sans-serif" : "var(--font-heading)",
+                  color: item.titleColor || "var(--text)",
+                  fontWeight: item.titleWeight || undefined,
+                }}
               >
                 {item.title}
               </h2>
@@ -137,7 +141,12 @@ export default function ProjectModal({ item, onClose, accent }: ProjectModalProp
                     <span
                       key={tag}
                       className="px-2.5 py-0.5 rounded-full text-xs font-medium"
-                      style={{ backgroundColor: `${accent}15`, color: accent }}
+                      style={{
+                        backgroundColor: item.tagBg || `${accent}15`,
+                        color: item.tagColor || accent,
+                        fontFamily: item.tagFont ? item.tagFont + ", sans-serif" : undefined,
+                        fontWeight: item.tagWeight || undefined,
+                      }}
                     >
                       {tag}
                     </span>
@@ -148,7 +157,12 @@ export default function ProjectModal({ item, onClose, accent }: ProjectModalProp
               {item.description && (
                 <p
                   className="text-sm leading-relaxed whitespace-pre-line mb-6"
-                  style={{ color: "var(--text)", opacity: 0.8 }}
+                  style={{
+                    color: item.descColor || "var(--text)",
+                    opacity: item.descColor ? 1 : 0.8,
+                    fontFamily: item.descFont ? item.descFont + ", sans-serif" : undefined,
+                    fontWeight: item.descWeight || undefined,
+                  }}
                 >
                   {item.description}
                 </p>
@@ -161,7 +175,12 @@ export default function ProjectModal({ item, onClose, accent }: ProjectModalProp
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:scale-105"
-                    style={{ backgroundColor: accent, color: "var(--bg)" }}
+                    style={{
+                      backgroundColor: item.liveBtnBg || accent,
+                      color: item.liveBtnColor || "var(--bg)",
+                      fontFamily: item.liveBtnFont ? item.liveBtnFont + ", sans-serif" : undefined,
+                      fontWeight: item.liveBtnWeight || undefined,
+                    }}
                   >
                     <FiExternalLink size={14} /> View
                   </a>
@@ -172,7 +191,13 @@ export default function ProjectModal({ item, onClose, accent }: ProjectModalProp
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-semibold border transition-all hover:scale-105"
-                    style={{ borderColor: `${accent}40`, color: "var(--text)" }}
+                    style={{
+                      borderColor: item.repoBtnBg ? item.repoBtnBg : `${accent}40`,
+                      color: item.repoBtnColor || "var(--text)",
+                      backgroundColor: item.repoBtnBg || undefined,
+                      fontFamily: item.repoBtnFont ? item.repoBtnFont + ", sans-serif" : undefined,
+                      fontWeight: item.repoBtnWeight || undefined,
+                    }}
                   >
                     <FiGithub size={14} /> Source
                   </a>

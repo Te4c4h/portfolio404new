@@ -12,10 +12,28 @@ interface HeroProps {
   ctaTarget2: string;
   accent: string;
   bg: string;
+  headlineColor?: string;
+  headlineFont?: string;
+  headlineWeight?: string;
+  subtextColor?: string;
+  subtextFont?: string;
+  subtextWeight?: string;
+  ctaBg1?: string;
+  ctaTextColor1?: string;
+  ctaFont1?: string;
+  ctaWeight1?: string;
+  ctaBg2?: string;
+  ctaTextColor2?: string;
+  ctaFont2?: string;
+  ctaWeight2?: string;
 }
 
 export default function Hero({
   headline, subtext, ctaLabel1, ctaTarget1, ctaLabel2, ctaTarget2, accent, bg,
+  headlineColor, headlineFont, headlineWeight,
+  subtextColor, subtextFont, subtextWeight,
+  ctaBg1, ctaTextColor1, ctaFont1, ctaWeight1,
+  ctaBg2, ctaTextColor2, ctaFont2, ctaWeight2,
 }: HeroProps) {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center">
@@ -24,7 +42,11 @@ export default function Hero({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 2.4 }}
         className="text-4xl sm:text-6xl lg:text-7xl font-bold max-w-4xl leading-tight"
-        style={{ fontFamily: "var(--font-heading)", color: "var(--text)" }}
+        style={{
+          fontFamily: headlineFont ? headlineFont + ", sans-serif" : "var(--font-heading)",
+          color: headlineColor || "var(--text)",
+          fontWeight: headlineWeight || undefined,
+        }}
       >
         {headline}
       </motion.h1>
@@ -35,7 +57,12 @@ export default function Hero({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 2.6 }}
           className="text-base sm:text-lg mt-6 max-w-2xl"
-          style={{ color: "var(--text)", opacity: 0.7 }}
+          style={{
+            color: subtextColor || "var(--text)",
+            opacity: subtextColor ? 1 : 0.7,
+            fontFamily: subtextFont ? subtextFont + ", sans-serif" : undefined,
+            fontWeight: subtextWeight || undefined,
+          }}
         >
           {subtext}
         </motion.p>
@@ -51,7 +78,12 @@ export default function Hero({
           <a
             href={ctaTarget1}
             className="px-7 py-3 rounded-lg text-sm font-semibold transition-all hover:scale-105"
-            style={{ backgroundColor: accent, color: bg }}
+            style={{
+              backgroundColor: ctaBg1 || accent,
+              color: ctaTextColor1 || bg,
+              fontFamily: ctaFont1 ? ctaFont1 + ", sans-serif" : undefined,
+              fontWeight: ctaWeight1 || undefined,
+            }}
           >
             {ctaLabel1}
           </a>
@@ -60,7 +92,13 @@ export default function Hero({
           <a
             href={ctaTarget2}
             className="px-7 py-3 rounded-lg text-sm font-semibold border-2 transition-all hover:scale-105"
-            style={{ borderColor: accent, color: accent }}
+            style={{
+              borderColor: ctaBg2 || accent,
+              color: ctaTextColor2 || accent,
+              backgroundColor: ctaBg2 ? ctaBg2 : undefined,
+              fontFamily: ctaFont2 ? ctaFont2 + ", sans-serif" : undefined,
+              fontWeight: ctaWeight2 || undefined,
+            }}
           >
             {ctaLabel2}
           </a>

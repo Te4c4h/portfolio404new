@@ -46,18 +46,76 @@ export interface SiteContentData {
   loadingScreenEnabled: boolean;
   logoUrl: string;
   useLogoImage: boolean;
+  // N-1
+  navScrollBg?: string;
+  // N-3
+  logoTextColor?: string;
+  logoTextFont?: string;
+  logoTextWeight?: string;
+  // H-1
+  headlineColor?: string;
+  headlineFont?: string;
+  headlineWeight?: string;
+  subtextColor?: string;
+  subtextFont?: string;
+  subtextWeight?: string;
+  // H-2
+  ctaBg1?: string;
+  ctaTextColor1?: string;
+  ctaFont1?: string;
+  ctaWeight1?: string;
+  ctaBg2?: string;
+  ctaTextColor2?: string;
+  ctaFont2?: string;
+  ctaWeight2?: string;
+  // A-1
+  aboutTextColor?: string;
+  aboutTextFont?: string;
+  aboutTextWeight?: string;
+  // A-2
+  skillTagBg?: string;
+  skillTagColor?: string;
+  skillTagFont?: string;
+  skillTagWeight?: string;
+  // CT-1
+  contactTitleColor?: string;
+  contactTitleFont?: string;
+  contactTitleWeight?: string;
+  contactSubColor?: string;
+  contactSubFont?: string;
+  contactSubWeight?: string;
+  // F-1
+  footerTextColor?: string;
+  footerTextFont?: string;
+  footerTextWeight?: string;
+  // L-1
+  loadingHeadingColor?: string;
+  loadingHeadingFont?: string;
+  loadingHeadingWeight?: string;
+  loadingSubColor?: string;
+  loadingSubFont?: string;
+  loadingSubWeight?: string;
+  // L-2
+  loadingBgColor?: string;
+  // L-3
+  loadingDuration?: number;
 }
 
 export interface NavLinkData {
   id: string;
   label: string;
   href: string;
+  labelColor?: string;
+  labelFont?: string;
+  labelWeight?: string;
 }
 
 export interface ContactLinkData {
   id: string;
   platform: string;
   url: string;
+  iconBgColor?: string;
+  iconColor?: string;
 }
 
 export interface ContentItemData {
@@ -76,6 +134,24 @@ export interface ContentItemData {
   codeContent: string;
   codeLanguage: string;
   modelUrl: string;
+  titleColor?: string;
+  titleFont?: string;
+  titleWeight?: string;
+  descColor?: string;
+  descFont?: string;
+  descWeight?: string;
+  tagBg?: string;
+  tagColor?: string;
+  tagFont?: string;
+  tagWeight?: string;
+  liveBtnBg?: string;
+  liveBtnColor?: string;
+  liveBtnFont?: string;
+  liveBtnWeight?: string;
+  repoBtnBg?: string;
+  repoBtnColor?: string;
+  repoBtnFont?: string;
+  repoBtnWeight?: string;
 }
 
 export interface SectionData {
@@ -86,6 +162,15 @@ export interface SectionData {
   subtitle: string;
   backgroundColor: string;
   contentItems: ContentItemData[];
+  nameColor?: string;
+  nameFont?: string;
+  nameWeight?: string;
+  labelColor?: string;
+  labelFont?: string;
+  labelWeight?: string;
+  subtitleColor?: string;
+  subtitleFont?: string;
+  subtitleWeight?: string;
 }
 
 interface PortfolioClientProps {
@@ -153,7 +238,26 @@ export default function PortfolioClient({
     <>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link href={googleFontUrl([theme.bodyFont, theme.headingFont])} rel="stylesheet" />
+      <link href={googleFontUrl([
+        theme.bodyFont, theme.headingFont,
+        // Collect all custom font overrides so Google Fonts loads them
+        ...[
+          siteContent?.logoTextFont, siteContent?.headlineFont, siteContent?.subtextFont,
+          siteContent?.ctaFont1, siteContent?.ctaFont2,
+          siteContent?.aboutTextFont, siteContent?.skillTagFont,
+          siteContent?.contactTitleFont, siteContent?.contactSubFont,
+          siteContent?.footerTextFont,
+          siteContent?.loadingHeadingFont, siteContent?.loadingSubFont,
+        ].filter(Boolean) as string[],
+        ...navLinks.map((l) => l.labelFont).filter(Boolean) as string[],
+        ...sections.flatMap((s) => [
+          s.nameFont, s.labelFont, s.subtitleFont,
+          ...s.contentItems.flatMap((c) => [
+            c.titleFont, c.descFont, c.tagFont,
+            c.liveBtnFont, c.repoBtnFont,
+          ]),
+        ]).filter(Boolean) as string[],
+      ])} rel="stylesheet" />
       {theme.faviconUrl && <link rel="icon" href={theme.faviconUrl} />}
 
       <div
@@ -184,6 +288,14 @@ export default function PortfolioClient({
               subtitle={siteContent?.loadingSubtitle || "Portfolio"}
               accent={theme.accentColor}
               headingFont={theme.headingFont}
+              headingColor={siteContent?.loadingHeadingColor}
+              headingFontOverride={siteContent?.loadingHeadingFont}
+              headingWeight={siteContent?.loadingHeadingWeight}
+              subColor={siteContent?.loadingSubColor}
+              subFont={siteContent?.loadingSubFont}
+              subWeight={siteContent?.loadingSubWeight}
+              bgColor={siteContent?.loadingBgColor}
+              duration={siteContent?.loadingDuration}
             />
           )}
           <CustomCursor cursorColor={theme.cursorColor} />
@@ -192,6 +304,10 @@ export default function PortfolioClient({
             logoText={siteContent?.logoText || `${user.firstName} ${user.lastName}`}
             navLinks={navLinks}
             accent={theme.accentColor}
+            navScrollBg={siteContent?.navScrollBg}
+            logoTextColor={siteContent?.logoTextColor}
+            logoTextFont={siteContent?.logoTextFont}
+            logoTextWeight={siteContent?.logoTextWeight}
           />
           <Hero
             headline={siteContent?.headline || ""}
@@ -202,6 +318,20 @@ export default function PortfolioClient({
             ctaTarget2={ctaTarget2}
             accent={theme.accentColor}
             bg={theme.backgroundColor}
+            headlineColor={siteContent?.headlineColor}
+            headlineFont={siteContent?.headlineFont}
+            headlineWeight={siteContent?.headlineWeight}
+            subtextColor={siteContent?.subtextColor}
+            subtextFont={siteContent?.subtextFont}
+            subtextWeight={siteContent?.subtextWeight}
+            ctaBg1={siteContent?.ctaBg1}
+            ctaTextColor1={siteContent?.ctaTextColor1}
+            ctaFont1={siteContent?.ctaFont1}
+            ctaWeight1={siteContent?.ctaWeight1}
+            ctaBg2={siteContent?.ctaBg2}
+            ctaTextColor2={siteContent?.ctaTextColor2}
+            ctaFont2={siteContent?.ctaFont2}
+            ctaWeight2={siteContent?.ctaWeight2}
           />
           {(siteContent?.aboutText || siteContent?.skills) && (
             <About
@@ -209,6 +339,13 @@ export default function PortfolioClient({
               skills={siteContent?.skills || ""}
               accent={theme.accentColor}
               surface={theme.surfaceColor}
+              aboutTextColor={siteContent?.aboutTextColor}
+              aboutTextFont={siteContent?.aboutTextFont}
+              aboutTextWeight={siteContent?.aboutTextWeight}
+              skillTagBg={siteContent?.skillTagBg}
+              skillTagColor={siteContent?.skillTagColor}
+              skillTagFont={siteContent?.skillTagFont}
+              skillTagWeight={siteContent?.skillTagWeight}
             />
           )}
           {sections.map((section) => (
@@ -234,10 +371,19 @@ export default function PortfolioClient({
             links={contactLinks}
             accent={theme.accentColor}
             username={user.username}
+            titleColor={siteContent?.contactTitleColor}
+            titleFont={siteContent?.contactTitleFont}
+            titleWeight={siteContent?.contactTitleWeight}
+            subtitleColor={siteContent?.contactSubColor}
+            subtitleFont={siteContent?.contactSubFont}
+            subtitleWeight={siteContent?.contactSubWeight}
           />
           <Footer
             name={`${user.firstName} ${user.lastName}`}
             footerText={siteContent?.footerText || ""}
+            textColor={siteContent?.footerTextColor}
+            textFont={siteContent?.footerTextFont}
+            textWeight={siteContent?.footerTextWeight}
           />
           <ProjectModal
             item={modalItem}

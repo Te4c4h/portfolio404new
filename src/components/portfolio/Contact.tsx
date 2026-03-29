@@ -15,6 +15,12 @@ interface ContactProps {
   links: ContactLinkData[];
   accent: string;
   username?: string;
+  titleColor?: string;
+  titleFont?: string;
+  titleWeight?: string;
+  subtitleColor?: string;
+  subtitleFont?: string;
+  subtitleWeight?: string;
 }
 
 const iconMap: Record<string, React.ElementType> = {
@@ -24,7 +30,7 @@ const iconMap: Record<string, React.ElementType> = {
   Fiverr: SiFiverr, Viber: FaViber, YouTube: FiYoutube, Other: FiGlobe,
 };
 
-export default function Contact({ title, subtitle, links, accent, username }: ContactProps) {
+export default function Contact({ title, subtitle, links, accent, username, titleColor, titleFont, titleWeight, subtitleColor, subtitleFont, subtitleWeight }: ContactProps) {
   const trackClick = (platform: string) => {
     if (!username) return;
     fetch("/api/analytics/click", {
@@ -42,7 +48,11 @@ export default function Contact({ title, subtitle, links, accent, username }: Co
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
           className="text-3xl sm:text-4xl font-bold mb-3"
-          style={{ fontFamily: "var(--font-heading)", color: "var(--text)" }}
+          style={{
+            fontFamily: titleFont ? titleFont + ", sans-serif" : "var(--font-heading)",
+            color: titleColor || "var(--text)",
+            fontWeight: titleWeight || undefined,
+          }}
         >
           {title}
         </motion.h2>
@@ -54,7 +64,12 @@ export default function Contact({ title, subtitle, links, accent, username }: Co
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-sm mb-12"
-            style={{ color: "var(--text)", opacity: 0.6 }}
+            style={{
+              color: subtitleColor || "var(--text)",
+              opacity: subtitleColor ? 1 : 0.6,
+              fontFamily: subtitleFont ? subtitleFont + ", sans-serif" : undefined,
+              fontWeight: subtitleWeight || undefined,
+            }}
           >
             {subtitle}
           </motion.p>
@@ -77,9 +92,9 @@ export default function Contact({ title, subtitle, links, accent, username }: Co
                 style={{
                   width: 52,
                   height: 52,
-                  backgroundColor: "var(--surface)",
+                  backgroundColor: link.iconBgColor || "var(--surface)",
                   border: "1px solid rgba(255,255,255,0.1)",
-                  color: "var(--text)",
+                  color: link.iconColor || "var(--text)",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = accent;
@@ -87,8 +102,8 @@ export default function Contact({ title, subtitle, links, accent, username }: Co
                   e.currentTarget.style.borderColor = accent;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--surface)";
-                  e.currentTarget.style.color = "var(--text)";
+                  e.currentTarget.style.backgroundColor = link.iconBgColor || "var(--surface)";
+                  e.currentTarget.style.color = link.iconColor || "var(--text)";
                   e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
                 }}
               >

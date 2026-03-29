@@ -11,9 +11,13 @@ interface NavbarProps {
   logoText: string;
   navLinks: NavLinkData[];
   accent: string;
+  navScrollBg?: string;
+  logoTextColor?: string;
+  logoTextFont?: string;
+  logoTextWeight?: string;
 }
 
-export default function Navbar({ logoUrl, logoText, navLinks, accent }: NavbarProps) {
+export default function Navbar({ logoUrl, logoText, navLinks, accent, navScrollBg, logoTextColor, logoTextFont, logoTextWeight }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -37,7 +41,7 @@ export default function Navbar({ logoUrl, logoText, navLinks, accent }: NavbarPr
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled ? "backdrop-blur-xl" : ""
       }`}
-      style={scrolled ? { backgroundColor: "rgba(19, 19, 19, 0.9)" } : undefined}
+      style={scrolled ? { backgroundColor: navScrollBg || "rgba(19, 19, 19, 0.9)" } : undefined}
     >
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
         <a href="#" className="flex items-center gap-2">
@@ -63,7 +67,11 @@ export default function Navbar({ logoUrl, logoText, navLinks, accent }: NavbarPr
               }}
             />
           ) : (
-            <span className="text-lg font-bold" style={{ fontFamily: "var(--font-heading)", color: "var(--text)" }}>
+            <span className="text-lg font-bold" style={{
+              fontFamily: logoTextFont ? logoTextFont + ", sans-serif" : "var(--font-heading)",
+              color: logoTextColor || "var(--text)",
+              fontWeight: logoTextWeight || undefined,
+            }}>
               {logoText}
             </span>
           )}
@@ -77,9 +85,13 @@ export default function Navbar({ logoUrl, logoText, navLinks, accent }: NavbarPr
               href={link.href}
               onClick={(e) => handleScroll(e, link.href)}
               className="text-sm transition-colors"
-              style={{ color: "var(--text)" }}
+              style={{
+                color: link.labelColor || "var(--text)",
+                fontFamily: link.labelFont ? link.labelFont + ", sans-serif" : undefined,
+                fontWeight: link.labelWeight || undefined,
+              }}
               onMouseEnter={(e) => (e.currentTarget.style.color = accent)}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = link.labelColor || "var(--text)")}
             >
               {link.label}
             </a>
@@ -124,7 +136,11 @@ export default function Navbar({ logoUrl, logoText, navLinks, accent }: NavbarPr
                     }, 300);
                   }}
                   className="block text-sm py-1"
-                  style={{ color: "var(--text)" }}
+                  style={{
+                    color: link.labelColor || "var(--text)",
+                    fontFamily: link.labelFont ? link.labelFont + ", sans-serif" : undefined,
+                    fontWeight: link.labelWeight || undefined,
+                  }}
                 >
                   {link.label}
                 </a>

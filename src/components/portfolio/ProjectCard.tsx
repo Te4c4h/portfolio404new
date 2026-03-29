@@ -49,7 +49,12 @@ export default function ProjectCard({ item, accent, surface, onClick }: ProjectC
               <span
                 key={tag}
                 className="px-2 py-0.5 rounded-full text-[10px] font-medium"
-                style={{ backgroundColor: `${accent}15`, color: accent }}
+                style={{
+                  backgroundColor: item.tagBg || `${accent}15`,
+                  color: item.tagColor || accent,
+                  fontFamily: item.tagFont ? item.tagFont + ", sans-serif" : undefined,
+                  fontWeight: item.tagWeight || undefined,
+                }}
               >
                 {tag}
               </span>
@@ -59,13 +64,22 @@ export default function ProjectCard({ item, accent, surface, onClick }: ProjectC
 
         <h3
           className="font-semibold text-sm mb-1"
-          style={{ fontFamily: "var(--font-heading)", color: "var(--text)" }}
+          style={{
+            fontFamily: item.titleFont ? item.titleFont + ", sans-serif" : "var(--font-heading)",
+            color: item.titleColor || "var(--text)",
+            fontWeight: item.titleWeight || undefined,
+          }}
         >
           {item.title}
         </h3>
 
         {item.description && (
-          <p className="text-xs leading-relaxed line-clamp-2 mb-3" style={{ color: "var(--text)", opacity: 0.6 }}>
+          <p className="text-xs leading-relaxed line-clamp-2 mb-3" style={{
+            color: item.descColor || "var(--text)",
+            opacity: item.descColor ? 1 : 0.6,
+            fontFamily: item.descFont ? item.descFont + ", sans-serif" : undefined,
+            fontWeight: item.descWeight || undefined,
+          }}>
             {item.description}
           </p>
         )}
@@ -78,7 +92,12 @@ export default function ProjectCard({ item, accent, surface, onClick }: ProjectC
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors"
-              style={{ backgroundColor: accent, color: "var(--bg)" }}
+              style={{
+                backgroundColor: item.liveBtnBg || accent,
+                color: item.liveBtnColor || "var(--bg)",
+                fontFamily: item.liveBtnFont ? item.liveBtnFont + ", sans-serif" : undefined,
+                fontWeight: item.liveBtnWeight || undefined,
+              }}
             >
               <FiExternalLink size={12} /> View
             </a>
@@ -90,7 +109,13 @@ export default function ProjectCard({ item, accent, surface, onClick }: ProjectC
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-colors"
-              style={{ borderColor: `${accent}40`, color: "var(--text)" }}
+              style={{
+                borderColor: item.repoBtnBg ? item.repoBtnBg : `${accent}40`,
+                color: item.repoBtnColor || "var(--text)",
+                backgroundColor: item.repoBtnBg || undefined,
+                fontFamily: item.repoBtnFont ? item.repoBtnFont + ", sans-serif" : undefined,
+                fontWeight: item.repoBtnWeight || undefined,
+              }}
             >
               <FiGithub size={12} /> Source
             </a>

@@ -46,7 +46,12 @@ export default function ModelCard({ item, accent, surface }: ModelCardProps) {
               <span
                 key={tag}
                 className="px-2 py-0.5 rounded-full text-[10px] font-medium"
-                style={{ backgroundColor: `${accent}15`, color: accent }}
+                style={{
+                  backgroundColor: item.tagBg || `${accent}15`,
+                  color: item.tagColor || accent,
+                  fontFamily: item.tagFont ? item.tagFont + ", sans-serif" : undefined,
+                  fontWeight: item.tagWeight || undefined,
+                }}
               >
                 {tag}
               </span>
@@ -55,12 +60,21 @@ export default function ModelCard({ item, accent, surface }: ModelCardProps) {
         )}
         <h3
           className="font-semibold text-sm mb-1"
-          style={{ fontFamily: "var(--font-heading)", color: "var(--text)" }}
+          style={{
+            fontFamily: item.titleFont ? item.titleFont + ", sans-serif" : "var(--font-heading)",
+            color: item.titleColor || "var(--text)",
+            fontWeight: item.titleWeight || undefined,
+          }}
         >
           {item.title}
         </h3>
         {item.description && (
-          <p className="text-xs leading-relaxed line-clamp-2" style={{ color: "var(--text)", opacity: 0.6 }}>
+          <p className="text-xs leading-relaxed line-clamp-2" style={{
+            color: item.descColor || "var(--text)",
+            opacity: item.descColor ? 1 : 0.6,
+            fontFamily: item.descFont ? item.descFont + ", sans-serif" : undefined,
+            fontWeight: item.descWeight || undefined,
+          }}>
             {item.description}
           </p>
         )}
