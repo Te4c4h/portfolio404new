@@ -654,7 +654,7 @@ export default function ResumePage() {
         {/* Template & Display Settings */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Template & Display</h2>
-          <div className="grid grid-cols-3 gap-3 mb-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
             {templates.map((t) => (
               <button
                 key={t.id}
@@ -806,7 +806,7 @@ export default function ResumePage() {
                     <FiTrash2 size={14} />
                   </button>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <input className="dash-input" defaultValue={exp.location} onBlur={(e) => updateExperience(exp.id, { location: e.target.value })} placeholder="Location" />
                   <input className="dash-input" defaultValue={exp.startDate} onBlur={(e) => updateExperience(exp.id, { startDate: e.target.value })} placeholder="Start (e.g. Jan 2022)" />
                   <input className="dash-input" defaultValue={exp.endDate} onBlur={(e) => updateExperience(exp.id, { endDate: e.target.value })} placeholder="End (or Present)" />
@@ -840,7 +840,7 @@ export default function ResumePage() {
                     <FiTrash2 size={14} />
                   </button>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <input className="dash-input" defaultValue={edu.field} onBlur={(e) => updateEducation(edu.id, { field: e.target.value })} placeholder="Field of Study" />
                   <input className="dash-input" defaultValue={edu.startDate} onBlur={(e) => updateEducation(edu.id, { startDate: e.target.value })} placeholder="Start" />
                   <input className="dash-input" defaultValue={edu.endDate} onBlur={(e) => updateEducation(edu.id, { endDate: e.target.value })} placeholder="End" />

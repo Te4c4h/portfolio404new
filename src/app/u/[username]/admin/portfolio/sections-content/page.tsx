@@ -375,7 +375,7 @@ export default function ContentPage() {
             </h2>
 
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div>
                   <label className="text-xs text-[var(--muted)] mb-1 block">Section *</label>
                   <select className="dash-input" value={form.sectionId} onChange={(e) => setForm((f) => ({ ...f, sectionId: e.target.value }))}>
@@ -491,7 +491,7 @@ export default function ContentPage() {
                     acceptedFormats={["JPG", "PNG", "WEBP"]}
                     folder="content"
                   />
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <ImageUpload
                       label="Image 2"
                       value={form.image1}
@@ -517,7 +517,7 @@ export default function ContentPage() {
                       folder="content"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div>
                       <label className="text-xs text-[var(--muted)] mb-1 block">Live URL</label>
                       <input className="dash-input" value={form.liveUrl} onChange={(e) => setForm((f) => ({ ...f, liveUrl: e.target.value }))} placeholder="https://..." />

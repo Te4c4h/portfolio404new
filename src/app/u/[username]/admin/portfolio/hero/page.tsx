@@ -147,7 +147,7 @@ export default function HeroPage() {
         {/* Primary CTA */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Primary CTA Button</h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-[var(--muted)] mb-1 block">Label</label>
               <input className="dash-input" maxLength={25} value={ctaLabel1} onChange={(e) => setCtaLabel1(e.target.value)} placeholder="View Projects" />
@@ -180,7 +180,7 @@ export default function HeroPage() {
         {/* Secondary CTA */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Secondary CTA Button</h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-[var(--muted)] mb-1 block">Label</label>
               <input className="dash-input" maxLength={25} value={ctaLabel2} onChange={(e) => setCtaLabel2(e.target.value)} placeholder="Contact Me" />
