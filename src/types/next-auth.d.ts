@@ -7,6 +7,7 @@ declare module "next-auth" {
     username: string;
     email: string;
     isAdmin: boolean;
+    isPaid: boolean;
     firstName: string;
     lastName: string;
   }
@@ -17,6 +18,7 @@ declare module "next-auth" {
       username: string;
       email: string;
       isAdmin: boolean;
+      isPaid: boolean;
       firstName: string;
       lastName: string;
       needsSetup?: boolean;
@@ -31,6 +33,7 @@ declare module "next-auth/jwt" {
     username: string;
     email: string;
     isAdmin: boolean;
+    isPaid: boolean;
     firstName: string;
     lastName: string;
     needsSetup?: boolean;

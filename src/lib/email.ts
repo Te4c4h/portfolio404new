@@ -62,6 +62,34 @@ export async function sendWelcomeEmail(email: string, firstName: string, usernam
   });
 }
 
+export async function sendPaymentConfirmationEmail(email: string, firstName: string, username: string, txId: string) {
+  if (!resend) {
+    console.warn("Resend API key not configured. Email not sent.");
+    return;
+  }
+  const dashboardUrl = `${BASE_URL}/u/${username}/admin`;
+  await resend.emails.send({
+    from: FROM_EMAIL,
+    to: email,
+    subject: "Payment confirmed — Welcome to Portfolio 404 Pro!",
+    html: `
+      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#131313;color:#fafafa;border-radius:12px;">
+        <h2 style="color:#70E844;margin-bottom:16px;">Payment Confirmed!</h2>
+        <p style="color:#ccc;font-size:14px;line-height:1.6;">
+          Hey ${firstName}, your one-time payment of <strong style="color:#fafafa;">$5.00 USD</strong> was successfully processed. You now have lifetime access to Portfolio 404 Pro.
+        </p>
+        <p style="color:#666;font-size:12px;margin-top:12px;">Transaction ID: ${txId}</p>
+        <a href="${dashboardUrl}" style="display:inline-block;margin-top:20px;padding:12px 28px;background:#70E844;color:#131313;font-weight:600;text-decoration:none;border-radius:8px;font-size:14px;">
+          Go to Dashboard
+        </a>
+        <p style="color:#666;font-size:12px;margin-top:24px;">
+          If you have any questions, reply to this email.
+        </p>
+      </div>
+    `,
+  });
+}
+
 export async function sendPasswordResetEmail(email: string, token: string) {
   if (!resend) {
     console.warn("Resend API key not configured. Email not sent.");

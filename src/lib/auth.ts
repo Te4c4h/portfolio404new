@@ -55,6 +55,7 @@ export const authOptions: NextAuthOptions = {
           username: user.username,
           email: user.email,
           isAdmin,
+          isPaid: user.isPaid,
           firstName: user.firstName,
           lastName: user.lastName,
         };
@@ -88,6 +89,7 @@ export const authOptions: NextAuthOptions = {
           token.username = dbUser.username;
           token.email = dbUser.email;
           token.isAdmin = dbUser.username === "admin";
+          token.isPaid = dbUser.isPaid;
           token.firstName = dbUser.firstName;
           token.lastName = dbUser.lastName;
           token.needsSetup = false;
@@ -102,6 +104,7 @@ export const authOptions: NextAuthOptions = {
         token.username = user.username;
         token.email = user.email;
         token.isAdmin = user.isAdmin;
+        token.isPaid = user.isPaid;
         token.firstName = user.firstName;
         token.lastName = user.lastName;
       }
@@ -111,12 +114,12 @@ export const authOptions: NextAuthOptions = {
         const dbUser = token.id
           ? await prisma.user.findUnique({
               where: { id: token.id as string },
-              select: { id: true, username: true, firstName: true, lastName: true, email: true },
+              select: { id: true, username: true, firstName: true, lastName: true, email: true, isPaid: true },
             })
           : token.email
             ? await prisma.user.findUnique({
                 where: { email: token.email as string },
-                select: { id: true, username: true, firstName: true, lastName: true, email: true },
+                select: { id: true, username: true, firstName: true, lastName: true, email: true, isPaid: true },
               })
             : null;
         if (dbUser) {
@@ -126,6 +129,7 @@ export const authOptions: NextAuthOptions = {
           token.lastName = dbUser.lastName;
           token.email = dbUser.email;
           token.isAdmin = dbUser.username === "admin";
+          token.isPaid = dbUser.isPaid;
           token.needsSetup = false;
           token.googleName = undefined;
         }
@@ -139,6 +143,7 @@ export const authOptions: NextAuthOptions = {
         username: token.username,
         email: token.email,
         isAdmin: token.isAdmin,
+        isPaid: token.isPaid,
         firstName: token.firstName,
         lastName: token.lastName,
         needsSetup: token.needsSetup,

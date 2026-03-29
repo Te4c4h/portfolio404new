@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FiCheck, FiZap, FiArrowRight } from "react-icons/fi";
+import dynamic from "next/dynamic";
+
+const PayPalButton = dynamic(() => import("@/components/PayPalButton"), { ssr: false });
 
 const features = [
   "Custom portfolio with your own URL",
@@ -19,23 +23,17 @@ const features = [
 ];
 
 export default function PricingPage() {
-  const { data: session } = useSession();
-  const [checkingOut, setCheckingOut] = useState(false);
-  const lsEnabled = process.env.NEXT_PUBLIC_LEMONSQUEEZY_ENABLED === "true";
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  const handleSubscribe = async () => {
-    if (!session) return;
-    setCheckingOut(true);
-    try {
-      const r = await fetch("/api/subscription/checkout", { method: "POST" });
-      const data = await r.json();
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch {
-      setCheckingOut(false);
+  const user = session?.user as (typeof session.user & { isPaid?: boolean }) | undefined;
+  const isPaid = user?.isPaid === true;
+
+  useEffect(() => {
+    if (status === "authenticated" && isPaid) {
+      router.replace(`/u/${user?.username}/admin`);
     }
-  };
+  }, [status, isPaid, user?.username, router]);
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
@@ -69,32 +67,14 @@ export default function PricingPage() {
         </div>
       </nav>
 
-      {!lsEnabled ? (
-        <div className="max-w-3xl mx-auto px-6 pt-32 pb-8 text-center">
-          <FiZap size={32} className="text-[var(--accent)] mx-auto mb-4" />
-          <h1 className="text-3xl font-bold tracking-tight text-[var(--foreground)] mb-3">
-            Pricing — Coming Soon
-          </h1>
-          <p className="text-[var(--muted)] text-lg max-w-md mx-auto mb-8">
-            We&apos;re finalizing our subscription plans. All features are currently free while we set things up.
-          </p>
-          <Link
-            href="/"
-            className="inline-flex px-6 py-3 rounded-xl text-sm font-semibold bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors"
-          >
-            Back to Home
-          </Link>
-        </div>
-      ) : (
-      <>
       {/* Hero */}
       <div className="max-w-3xl mx-auto px-6 pt-16 pb-8 text-center">
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
-          Simple pricing,{" "}
-          <span className="text-[var(--accent)]">powerful portfolio</span>
+          One payment,{" "}
+          <span className="text-[var(--accent)]">lifetime access</span>
         </h1>
         <p className="text-[var(--muted)] mt-4 text-lg max-w-xl mx-auto">
-          Build and publish your professional portfolio for less than a cup of coffee per month.
+          Build and publish your professional portfolio with a single one-time payment. No subscriptions, no hidden fees.
         </p>
       </div>
 
@@ -107,14 +87,14 @@ export default function PricingPage() {
           <div className="relative">
             <div className="flex items-center gap-2 mb-2">
               <FiZap size={18} className="text-[var(--accent)]" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">Pro Plan</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">Lifetime Access</span>
             </div>
 
             <div className="flex items-baseline gap-1 mb-1">
-              <span className="text-5xl font-bold text-[var(--foreground)]">$1</span>
-              <span className="text-[var(--muted)] text-sm">/month</span>
+              <span className="text-5xl font-bold text-[var(--foreground)]">$5</span>
+              <span className="text-[var(--muted)] text-sm">one-time</span>
             </div>
-            <p className="text-[var(--muted-foreground)] text-xs mb-6">Cancel anytime. No hidden fees.</p>
+            <p className="text-[var(--muted)] text-xs mb-6">Pay once. Use forever. No recurring charges.</p>
 
             {/* Features */}
             <div className="space-y-3 mb-8">
@@ -127,37 +107,27 @@ export default function PricingPage() {
             </div>
 
             {/* CTA */}
-            {session ? (
-              <button
-                onClick={handleSubscribe}
-                disabled={checkingOut}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-50"
-              >
-                {checkingOut ? "Redirecting..." : (
-                  <>
-                    Subscribe Now
-                    <FiArrowRight size={16} />
-                  </>
-                )}
-              </button>
-            ) : (
+            {status === "loading" ? (
+              <div className="h-12 rounded-xl bg-[var(--border)] animate-pulse" />
+            ) : session && !isPaid ? (
+              <div>
+                <PayPalButton userEmail={session.user.email} />
+                <p className="text-[var(--muted)] text-[10px] text-center mt-3">
+                  Secure payment via PayPal. One-time charge of $5.00 USD.
+                </p>
+              </div>
+            ) : !session ? (
               <Link
                 href="/register"
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors"
               >
-                Create Account & Subscribe
+                Create Account to Buy
                 <FiArrowRight size={16} />
               </Link>
-            )}
-
-            <p className="text-[var(--muted-foreground)] text-[10px] text-center mt-3">
-              Secure payment via LemonSqueezy. Cancel from your dashboard at any time.
-            </p>
+            ) : null}
           </div>
         </div>
       </div>
-      </>
-      )}
     </div>
   );
 }

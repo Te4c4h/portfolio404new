@@ -26,6 +26,8 @@ model User {
   customerId         String?
   currentPeriodEnd   DateTime?
   isFreeAccess       Boolean   @default(false)
+  isPaid             Boolean   @default(false)
+  paypalTxId         String?
 
   sections     Section[]
   contentItems ContentItem[]
