@@ -4,7 +4,7 @@ import ThemeProvider from "@/components/ThemeProvider";
 import LanguageProvider from "@/lib/i18n/LanguageProvider";
 import "./globals.css";
 
-const baseUrl = process.env.NEXTAUTH_URL || "https://portfolio404new.vercel.app";
+const baseUrl = process.env.NEXTAUTH_URL || "https://portfolio404.site";
 
 export const metadata: Metadata = {
   title: "Portfolio 404 — Build Your Personal Portfolio",

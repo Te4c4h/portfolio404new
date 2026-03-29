@@ -30,7 +30,7 @@ async function getHomeData() {
   return user;
 }
 
-const baseUrl = process.env.NEXTAUTH_URL || "https://portfolio404new.vercel.app";
+const baseUrl = process.env.NEXTAUTH_URL || "https://portfolio404.site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const data = await getHomeData();

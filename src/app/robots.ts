@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/admin/", "/login", "/register", "/forgot-password"],
       },
     ],
-    sitemap: "https://www.portfolio404.site/sitemap.xml",
+    sitemap: `${process.env.NEXTAUTH_URL || "https://portfolio404.site"}/sitemap.xml`,
   };
 }

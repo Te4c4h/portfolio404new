@@ -50,7 +50,7 @@ async function getPortfolioData(username: string) {
   return { ...user, resume: resume?.showOnPortfolio ? resume : null };
 }
 
-const baseUrl = process.env.NEXTAUTH_URL || "https://portfolio404new.vercel.app";
+const baseUrl = process.env.NEXTAUTH_URL || "https://portfolio404.site";
 
 export async function generateMetadata({
   params,
