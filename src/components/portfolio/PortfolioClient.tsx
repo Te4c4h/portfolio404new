@@ -11,6 +11,7 @@ import Contact from "./Contact";
 import Footer from "./Footer";
 import ProjectModal from "./ProjectModal";
 import ResumeSection, { ResumeData } from "./ResumeSection";
+import PricingSection from "@/components/PricingSection";
 
 export interface ThemeData {
   accentColor: string;
@@ -395,6 +396,7 @@ export default function PortfolioClient({
               surface={theme.surfaceColor}
             />
           )}
+          <PricingSection />
           <Contact
             title={siteContent?.contactTitle || "Get in Touch"}
             subtitle={siteContent?.contactSubtitle || ""}

@@ -44,6 +44,7 @@ const portfolioChildren = [
   { href: "/portfolio/about", labelKey: "sidebar.about", icon: FiUser },
   { href: "/portfolio/sections", labelKey: "sidebar.categories", icon: FiFolder },
   { href: "/portfolio/sections-content", labelKey: "sidebar.projects", icon: FiBriefcase },
+  { href: "/portfolio/pricing", labelKey: "sidebar.pricing", icon: FiCreditCard },
   { href: "/portfolio/contact", labelKey: "sidebar.contactInfo", icon: FiMail },
   { href: "/portfolio/footer", labelKey: "sidebar.footer", icon: FiType },
   { href: "/portfolio/loading-screen", labelKey: "sidebar.loadingScreen", icon: FiMonitor },
@@ -229,18 +230,6 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
             >
               <FiLayers size={18} />
               {t("sidebar.manageUsers")}
-            </Link>
-            <Link
-              href={`${basePath}/pricing`}
-              onClick={() => setOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                pathname.startsWith(`${basePath}/pricing`)
-                  ? "bg-[var(--sidebar-active)] text-[var(--accent)]"
-                  : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--border)]/20"
-              }`}
-            >
-              <FiCreditCard size={18} />
-              Pricing
             </Link>
           </>
         )}

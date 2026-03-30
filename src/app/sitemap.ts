@@ -23,6 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     where.OR = [
       { subscriptionStatus: "active" },
       { isFreeAccess: true },
+      { isPaid: true },
     ];
   }
 

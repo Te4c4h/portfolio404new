@@ -24,6 +24,8 @@ export default function ManageUsersPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
+  const adminUserId = session?.user?.id;
+
   const load = useCallback(async () => {
     const r = await fetch("/api/users");
     if (r.ok) setUsers(await r.json());
@@ -42,14 +44,6 @@ export default function ManageUsersPage() {
       setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
     }
     setTogglingId(null);
-  };
-
-  const toggleFreeAccess = async (id: string) => {
-    const r = await fetch(`/api/users/${id}`, { method: "PATCH" });
-    if (r.ok) {
-      const updated = await r.json();
-      setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
-    }
   };
 
   const togglePaid = async (id: string) => {
@@ -74,6 +68,8 @@ export default function ManageUsersPage() {
     return <div className="text-[var(--muted)] text-sm">Loading...</div>;
   }
 
+  const isOwnAccount = (userId: string) => userId === adminUserId;
+
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
@@ -87,10 +83,9 @@ export default function ManageUsersPage() {
             <tr className="border-b border-[var(--border)]">
               <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Full Name</th>
               <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Email</th>
-              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Username</th>
+              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Portfolio</th>
               <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Registered</th>
               <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Status</th>
-              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Plan</th>
               <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Paid</th>
               <th className="text-right px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Actions</th>
             </tr>
@@ -99,10 +94,10 @@ export default function ManageUsersPage() {
             {users.map((user) => (
               <tr key={user.id} className="border-b border-[var(--border)] last:border-0">
                 <td className="px-4 py-3 text-[var(--foreground)]">{user.firstName} {user.lastName}</td>
-                <td className="px-4 py-3 text-[var(--background)]">{user.email}</td>
+                <td className="px-4 py-3 text-[var(--foreground)]">{user.email}</td>
                 <td className="px-4 py-3">
-                  <Link href={`/u/${user.username}`} className="text-[var(--accent)] hover:underline" target="_blank">
-                    {user.username}
+                  <Link href={`/u/${user.username}`} className="text-[var(--accent)] hover:underline text-xs" target="_blank">
+                    portfolio404.site/u/{user.username}
                   </Link>
                 </td>
                 <td className="px-4 py-3 text-[var(--muted)]">
@@ -118,15 +113,6 @@ export default function ManageUsersPage() {
                   }`}>
                     {user.isBlocked ? "Blocked" : "Active"}
                   </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-1.5">
-                    {user.isFreeAccess ? (
-                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)]">Free Access</span>
-                    ) : (
-                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--muted)]/15 text-[var(--muted)]">—</span>
-                    )}
-                  </div>
                 </td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -157,16 +143,6 @@ export default function ManageUsersPage() {
                         {user.isPaid ? "Revoke Paid" : "Mark Paid"}
                       </button>
                       <button
-                        onClick={() => toggleFreeAccess(user.id)}
-                        className={`px-3 py-1 rounded text-xs transition-colors ${
-                          user.isFreeAccess
-                            ? "bg-[var(--warning)]/15 text-[var(--warning)] hover:bg-[var(--accent-hover)]/25"
-                            : "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
-                        }`}
-                      >
-                        {user.isFreeAccess ? "Revoke Free" : "Grant Free"}
-                      </button>
-                      <button
                         onClick={() => toggleBlock(user.id)}
                         disabled={togglingId === user.id}
                         className={`px-3 py-1 rounded text-xs transition-colors ${
@@ -177,9 +153,11 @@ export default function ManageUsersPage() {
                       >
                         {user.isBlocked ? "Unblock" : "Block"}
                       </button>
-                      <button onClick={() => setDeletingId(user.id)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10">
-                        Delete
-                      </button>
+                      {!isOwnAccount(user.id) && (
+                        <button onClick={() => setDeletingId(user.id)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10">
+                          Delete
+                        </button>
+                      )}
                     </div>
                   )}
                 </td>
@@ -203,7 +181,7 @@ export default function ManageUsersPage() {
               <div className="min-w-0">
                 <p className="text-[var(--foreground)] font-medium text-sm">{user.firstName} {user.lastName}</p>
                 <Link href={`/u/${user.username}`} className="text-[var(--accent)] text-xs hover:underline" target="_blank">
-                  @{user.username}
+                  portfolio404.site/u/{user.username}
                 </Link>
               </div>
               <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap">
@@ -217,14 +195,11 @@ export default function ManageUsersPage() {
                 {user.isPaid && (
                   <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)]">Paid</span>
                 )}
-                {user.isFreeAccess && (
-                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)]">Free Access</span>
-                )}
               </div>
             </div>
             <div className="space-y-1">
-              <p className="text-[var(--muted)] text-xs truncate">{user.email}</p>
-              <p className="text-[var(--muted-foreground)] text-xs">
+              <p className="text-[var(--foreground)] text-xs truncate">{user.email}</p>
+              <p className="text-[var(--muted)] text-xs">
                 Joined {new Date(user.registeredAt).toLocaleDateString("en-US", {
                   month: "short", day: "numeric", year: "numeric",
                 })}
@@ -249,16 +224,6 @@ export default function ManageUsersPage() {
                   {user.isPaid ? "Revoke Paid" : "Mark Paid"}
                 </button>
                 <button
-                  onClick={() => toggleFreeAccess(user.id)}
-                  className={`px-3 py-1.5 rounded text-xs transition-colors ${
-                    user.isFreeAccess
-                      ? "bg-[var(--warning)]/15 text-[var(--warning)] hover:bg-[var(--accent-hover)]/25"
-                      : "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
-                  }`}
-                >
-                  {user.isFreeAccess ? "Revoke Free" : "Grant Free"}
-                </button>
-                <button
                   onClick={() => toggleBlock(user.id)}
                   disabled={togglingId === user.id}
                   className={`px-3 py-1.5 rounded text-xs transition-colors ${
@@ -269,9 +234,11 @@ export default function ManageUsersPage() {
                 >
                   {user.isBlocked ? "Unblock" : "Block"}
                 </button>
-                <button onClick={() => setDeletingId(user.id)} className="px-3 py-1.5 rounded text-xs bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10">
-                  Delete
-                </button>
+                {!isOwnAccount(user.id) && (
+                  <button onClick={() => setDeletingId(user.id)} className="px-3 py-1.5 rounded text-xs bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10">
+                    Delete
+                  </button>
+                )}
               </div>
             )}
           </div>

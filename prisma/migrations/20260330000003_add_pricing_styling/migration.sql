@@ -1,0 +1,23 @@
+-- AlterTable
+ALTER TABLE "PricingConfig" ADD COLUMN "priceColor" TEXT NOT NULL DEFAULT '#ffffff';
+ALTER TABLE "PricingConfig" ADD COLUMN "priceFont" TEXT NOT NULL DEFAULT '';
+ALTER TABLE "PricingConfig" ADD COLUMN "priceWeight" TEXT NOT NULL DEFAULT '700';
+
+ALTER TABLE "PricingConfig" ADD COLUMN "periodColor" TEXT NOT NULL DEFAULT '#9ca3af';
+ALTER TABLE "PricingConfig" ADD COLUMN "periodFont" TEXT NOT NULL DEFAULT '';
+ALTER TABLE "PricingConfig" ADD COLUMN "periodWeight" TEXT NOT NULL DEFAULT '400';
+
+ALTER TABLE "PricingConfig" ADD COLUMN "taglineColor" TEXT NOT NULL DEFAULT '#9ca3af';
+ALTER TABLE "PricingConfig" ADD COLUMN "taglineFont" TEXT NOT NULL DEFAULT '';
+ALTER TABLE "PricingConfig" ADD COLUMN "taglineWeight" TEXT NOT NULL DEFAULT '400';
+
+ALTER TABLE "PricingConfig" ADD COLUMN "featuresColor" TEXT NOT NULL DEFAULT '#e5e7eb';
+ALTER TABLE "PricingConfig" ADD COLUMN "featuresFont" TEXT NOT NULL DEFAULT '';
+ALTER TABLE "PricingConfig" ADD COLUMN "featuresWeight" TEXT NOT NULL DEFAULT '400';
+ALTER TABLE "PricingConfig" ADD COLUMN "featuresMarkColor" TEXT NOT NULL DEFAULT '#70E844';
+
+ALTER TABLE "PricingConfig" ADD COLUMN "ctaColor" TEXT NOT NULL DEFAULT '#131313';
+ALTER TABLE "PricingConfig" ADD COLUMN "ctaFont" TEXT NOT NULL DEFAULT '';
+ALTER TABLE "PricingConfig" ADD COLUMN "ctaWeight" TEXT NOT NULL DEFAULT '700';
+ALTER TABLE "PricingConfig" ADD COLUMN "ctaBgColor" TEXT NOT NULL DEFAULT '#70E844';
+ALTER TABLE "PricingConfig" ADD COLUMN "ctaAction" TEXT NOT NULL DEFAULT 'signup';

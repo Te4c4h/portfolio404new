@@ -19,7 +19,7 @@ export default function BillingPage() {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-hidden">
       <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">Plan & Billing</h1>
 
       {/* Current Plan Card */}
@@ -102,7 +102,7 @@ export default function BillingPage() {
             </div>
 
             <p className="mt-3 text-center">
-              <Link href="/pricing" className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
+              <Link href="/#pricing" className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
                 View all features →
               </Link>
             </p>

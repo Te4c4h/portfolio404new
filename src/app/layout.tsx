@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   title: "Portfolio 404 — Build Your Personal Portfolio",
   description:
     "Create a stunning personal portfolio in minutes. Free to start. No coding required. Perfect for developers, designers, photographers, freelancers and creators.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
   openGraph: {
     title: "Portfolio 404 — Build Your Personal Portfolio",
     description:

@@ -239,6 +239,35 @@ model PricingConfig {
   tagline     String   @default("Pay once. Lifetime access. No recurring charges.")
   features    String   @default("Live public portfolio\nResume builder & downloads\nCustom themes & colors\nBuilt-in analytics\nContact links & nav\nLifetime access")
   ctaLabel    String   @default("Get Started")
+
+  // Styling: Price
+  priceColor  String @default("#ffffff")
+  priceFont   String @default("")
+  priceWeight String @default("700")
+
+  // Styling: Period
+  periodColor  String @default("#9ca3af")
+  periodFont   String @default("")
+  periodWeight String @default("400")
+
+  // Styling: Tagline
+  taglineColor  String @default("#9ca3af")
+  taglineFont   String @default("")
+  taglineWeight String @default("400")
+
+  // Styling: Features
+  featuresColor  String @default("#e5e7eb")
+  featuresFont   String @default("")
+  featuresWeight String @default("400")
+  featuresMarkColor String @default("#70E844")
+
+  // Styling: CTA Button
+  ctaColor      String @default("#131313")
+  ctaFont       String @default("")
+  ctaWeight     String @default("700")
+  ctaBgColor    String @default("#70E844")
+  ctaAction     String @default("signup")
+
   updatedAt   DateTime @updatedAt
 }
 
