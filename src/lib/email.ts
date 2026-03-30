@@ -90,6 +90,38 @@ export async function sendPaymentConfirmationEmail(email: string, firstName: str
   });
 }
 
+const ADMIN_EMAIL = "te4c4h@gmail.com";
+
+export async function sendNewUserNotification(firstName: string, lastName: string, email: string, username: string, method: string) {
+  if (!resend) {
+    console.warn("Resend API key not configured. Admin notification not sent.");
+    return;
+  }
+  const profileUrl = `${BASE_URL}/u/${username}`;
+  const dashboardUrl = `${BASE_URL}/u/admin/admin/users`;
+  await resend.emails.send({
+    from: FROM_EMAIL,
+    to: ADMIN_EMAIL,
+    subject: `New user registered — ${firstName} ${lastName}`,
+    html: `
+      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#131313;color:#fafafa;border-radius:12px;">
+        <h2 style="color:#70E844;margin-bottom:16px;">New User Registration</h2>
+        <table style="color:#ccc;font-size:14px;line-height:1.8;border-collapse:collapse;">
+          <tr><td style="padding-right:12px;color:#666;">Name</td><td style="color:#fafafa;font-weight:600;">${firstName} ${lastName}</td></tr>
+          <tr><td style="padding-right:12px;color:#666;">Email</td><td>${email}</td></tr>
+          <tr><td style="padding-right:12px;color:#666;">Username</td><td style="color:#70E844;">${username}</td></tr>
+          <tr><td style="padding-right:12px;color:#666;">Method</td><td>${method}</td></tr>
+          <tr><td style="padding-right:12px;color:#666;">Time</td><td>${new Date().toUTCString()}</td></tr>
+        </table>
+        <div style="margin-top:20px;display:flex;gap:12px;">
+          <a href="${profileUrl}" style="display:inline-block;padding:10px 20px;background:#70E844;color:#131313;font-weight:600;text-decoration:none;border-radius:8px;font-size:13px;">View Profile</a>
+          <a href="${dashboardUrl}" style="display:inline-block;padding:10px 20px;background:#333;color:#fafafa;font-weight:600;text-decoration:none;border-radius:8px;font-size:13px;">Manage Users</a>
+        </div>
+      </div>
+    `,
+  });
+}
+
 export async function sendPasswordResetEmail(email: string, token: string) {
   if (!resend) {
     console.warn("Resend API key not configured. Email not sent.");

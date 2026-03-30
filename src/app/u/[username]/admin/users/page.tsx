@@ -132,27 +132,31 @@ export default function ManageUsersPage() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => togglePaid(user.id)}
-                        className={`px-3 py-1 rounded text-xs transition-colors ${
-                          user.isPaid
-                            ? "bg-[var(--warning)]/15 text-[var(--warning)] hover:bg-[var(--warning)]/25"
-                            : "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
-                        }`}
-                      >
-                        {user.isPaid ? "Revoke Paid" : "Mark Paid"}
-                      </button>
-                      <button
-                        onClick={() => toggleBlock(user.id)}
-                        disabled={togglingId === user.id}
-                        className={`px-3 py-1 rounded text-xs transition-colors ${
-                          user.isBlocked
-                            ? "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
-                            : "bg-[var(--danger)]/15 text-[var(--danger)] hover:bg-[var(--danger)]/25"
-                        }`}
-                      >
-                        {user.isBlocked ? "Unblock" : "Block"}
-                      </button>
+                      {!isOwnAccount(user.id) && (
+                        <button
+                          onClick={() => togglePaid(user.id)}
+                          className={`px-3 py-1 rounded text-xs transition-colors ${
+                            user.isPaid
+                              ? "bg-[var(--warning)]/15 text-[var(--warning)] hover:bg-[var(--warning)]/25"
+                              : "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
+                          }`}
+                        >
+                          {user.isPaid ? "Revoke Paid" : "Mark Paid"}
+                        </button>
+                      )}
+                      {!isOwnAccount(user.id) && (
+                        <button
+                          onClick={() => toggleBlock(user.id)}
+                          disabled={togglingId === user.id}
+                          className={`px-3 py-1 rounded text-xs transition-colors ${
+                            user.isBlocked
+                              ? "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
+                              : "bg-[var(--danger)]/15 text-[var(--danger)] hover:bg-[var(--danger)]/25"
+                          }`}
+                        >
+                          {user.isBlocked ? "Unblock" : "Block"}
+                        </button>
+                      )}
                       {!isOwnAccount(user.id) && (
                         <button onClick={() => setDeletingId(user.id)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10">
                           Delete
@@ -213,27 +217,31 @@ export default function ManageUsersPage() {
               </div>
             ) : (
               <div className="flex items-center gap-2 pt-1 flex-wrap">
-                <button
-                  onClick={() => togglePaid(user.id)}
-                  className={`px-3 py-1.5 rounded text-xs transition-colors ${
-                    user.isPaid
-                      ? "bg-[var(--warning)]/15 text-[var(--warning)] hover:bg-[var(--warning)]/25"
-                      : "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
-                  }`}
-                >
-                  {user.isPaid ? "Revoke Paid" : "Mark Paid"}
-                </button>
-                <button
-                  onClick={() => toggleBlock(user.id)}
-                  disabled={togglingId === user.id}
-                  className={`px-3 py-1.5 rounded text-xs transition-colors ${
-                    user.isBlocked
-                      ? "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
-                      : "bg-[var(--danger)]/15 text-[var(--danger)] hover:bg-[var(--danger)]/25"
-                  }`}
-                >
-                  {user.isBlocked ? "Unblock" : "Block"}
-                </button>
+                {!isOwnAccount(user.id) && (
+                  <button
+                    onClick={() => togglePaid(user.id)}
+                    className={`px-3 py-1.5 rounded text-xs transition-colors ${
+                      user.isPaid
+                        ? "bg-[var(--warning)]/15 text-[var(--warning)] hover:bg-[var(--warning)]/25"
+                        : "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
+                    }`}
+                  >
+                    {user.isPaid ? "Revoke Paid" : "Mark Paid"}
+                  </button>
+                )}
+                {!isOwnAccount(user.id) && (
+                  <button
+                    onClick={() => toggleBlock(user.id)}
+                    disabled={togglingId === user.id}
+                    className={`px-3 py-1.5 rounded text-xs transition-colors ${
+                      user.isBlocked
+                        ? "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
+                        : "bg-[var(--danger)]/15 text-[var(--danger)] hover:bg-[var(--danger)]/25"
+                    }`}
+                  >
+                    {user.isBlocked ? "Unblock" : "Block"}
+                  </button>
+                )}
                 {!isOwnAccount(user.id) && (
                   <button onClick={() => setDeletingId(user.id)} className="px-3 py-1.5 rounded text-xs bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10">
                     Delete

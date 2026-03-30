@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { sendWelcomeEmail } from "@/lib/email";
+import { sendWelcomeEmail, sendNewUserNotification } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -64,8 +64,9 @@ export async function POST(req: NextRequest) {
       return newUser;
     });
 
-    // Send welcome email (non-blocking)
+    // Send welcome email and admin notification (non-blocking)
     sendWelcomeEmail(email, firstName, username).catch(console.error);
+    sendNewUserNotification(firstName, lastName, email, username, "Google OAuth").catch(console.error);
 
     return NextResponse.json(
       { user: { id: user.id, username: user.username, email: user.email } },

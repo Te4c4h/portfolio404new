@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
-import { sendVerificationEmail, sendWelcomeEmail } from "@/lib/email";
+import { sendVerificationEmail, sendWelcomeEmail, sendNewUserNotification } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -101,6 +101,7 @@ export async function POST(req: NextRequest) {
     try {
       await sendVerificationEmail(email, verificationToken);
       sendWelcomeEmail(email, firstName, username).catch(console.error);
+      sendNewUserNotification(firstName, lastName, email, username, "Email/Password").catch(console.error);
     } catch (emailError) {
       console.error("Failed to send verification email:", emailError);
     }
