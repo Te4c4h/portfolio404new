@@ -34,10 +34,11 @@ export async function middleware(req: NextRequest) {
     }
 
     // Look up the username for this custom domain
-    const baseUrl = req.nextUrl.origin;
+    // Use internal URL to avoid SSL loop — Next.js runs on port 3000
+    const internalBase = "http://127.0.0.1:3000";
     try {
       const lookupRes = await fetch(
-        `${baseUrl}/api/domain-lookup?domain=${encodeURIComponent(hostname)}`,
+        `${internalBase}/api/domain-lookup?domain=${encodeURIComponent(hostname)}`,
         { headers: { "x-middleware-internal": "1" } }
       );
       const data = await lookupRes.json();
