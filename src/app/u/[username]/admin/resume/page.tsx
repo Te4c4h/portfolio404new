@@ -644,7 +644,7 @@ export default function ResumePage() {
               <p className="text-sm text-[var(--foreground)] font-medium">Unlock Resume Downloads</p>
               <p className="text-xs text-[var(--muted)] mt-0.5">Activate your plan to download PDF, DOCX, and JSON exports.</p>
             </div>
-            <a href="/pricing" className="px-4 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors whitespace-nowrap">
+            <a href={`/u/${session?.user?.username}/admin/billing`} className="px-4 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors whitespace-nowrap">
               Get Access
             </a>
           </div>

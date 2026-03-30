@@ -117,9 +117,9 @@ export default function AnalyticsPage() {
               >
                 Activate Plan — $5
               </Link>
-              <Link href="/pricing" className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
+              <a href="/#pricing" className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
                 Learn more
-              </Link>
+              </a>
             </div>
           </div>
         </div>

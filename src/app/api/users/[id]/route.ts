@@ -102,6 +102,10 @@ export async function DELETE(
   const user = await prisma.user.findUnique({ where: { id: params.id } });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
+  // Clean up analytics data (keyed by username, not foreign key)
+  await prisma.pageView.deleteMany({ where: { username: user.username } });
+  await prisma.contactClick.deleteMany({ where: { username: user.username } });
+
   await prisma.user.delete({ where: { id: params.id } });
 
   return NextResponse.json({ success: true });
