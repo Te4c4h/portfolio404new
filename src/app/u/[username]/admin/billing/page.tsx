@@ -3,7 +3,6 @@
 import { Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { FiZap, FiCheck } from "react-icons/fi";
-import Link from "next/link";
 import dynamic from "next/dynamic";
 
 const PayPalButton = dynamic(() => import("@/components/PayPalButton"), { ssr: false });
@@ -102,9 +101,9 @@ export default function BillingPage() {
             </div>
 
             <p className="mt-3 text-center">
-              <Link href="/#pricing" className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
+              <a href="/#pricing" className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
                 View all features →
-              </Link>
+              </a>
             </p>
           </div>
         )}

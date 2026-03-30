@@ -38,13 +38,13 @@ interface AdminSidebarProps {
   lastName?: string;
 }
 
-const portfolioChildren = [
+const allPortfolioChildren = [
   { href: "/portfolio/navbar", labelKey: "sidebar.navigation", icon: FiNavigation },
   { href: "/portfolio/hero", labelKey: "sidebar.hero", icon: FiStar },
   { href: "/portfolio/about", labelKey: "sidebar.about", icon: FiUser },
   { href: "/portfolio/sections", labelKey: "sidebar.categories", icon: FiFolder },
   { href: "/portfolio/sections-content", labelKey: "sidebar.projects", icon: FiBriefcase },
-  { href: "/portfolio/pricing", labelKey: "sidebar.pricing", icon: FiCreditCard },
+  { href: "/portfolio/pricing", labelKey: "sidebar.pricing", icon: FiCreditCard, adminOnly: true },
   { href: "/portfolio/contact", labelKey: "sidebar.contactInfo", icon: FiMail },
   { href: "/portfolio/footer", labelKey: "sidebar.footer", icon: FiType },
   { href: "/portfolio/loading-screen", labelKey: "sidebar.loadingScreen", icon: FiMonitor },
@@ -52,6 +52,9 @@ const portfolioChildren = [
 ];
 
 export default function AdminSidebar({ username, isAdmin, firstName, lastName }: AdminSidebarProps) {
+  const portfolioChildren = allPortfolioChildren.filter(
+    (item) => !item.adminOnly || isAdmin
+  );
   const pathname = usePathname();
   const basePath = `/u/${username}/admin`;
   const [open, setOpen] = useState(false);

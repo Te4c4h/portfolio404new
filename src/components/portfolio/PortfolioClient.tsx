@@ -190,6 +190,7 @@ interface PortfolioClientProps {
   contactLinks: ContactLinkData[];
   sections: SectionData[];
   resume?: ResumeData | null;
+  isHomePage?: boolean;
 }
 
 const defaults: ThemeData = {
@@ -223,7 +224,7 @@ function googleFontUrl(fonts: string[]): string {
 }
 
 export default function PortfolioClient({
-  user, theme: rawTheme, siteContent, navLinks, contactLinks, sections, resume,
+  user, theme: rawTheme, siteContent, navLinks, contactLinks, sections, resume, isHomePage,
 }: PortfolioClientProps) {
   const theme = { ...defaults, ...Object.fromEntries(
     Object.entries(rawTheme || {}).filter(([, v]) => v !== null && v !== "")
@@ -396,7 +397,7 @@ export default function PortfolioClient({
               surface={theme.surfaceColor}
             />
           )}
-          <PricingSection />
+          {isHomePage && <PricingSection />}
           <Contact
             title={siteContent?.contactTitle || "Get in Touch"}
             subtitle={siteContent?.contactSubtitle || ""}

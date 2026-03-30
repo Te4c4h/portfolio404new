@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { FiCheck, FiZap, FiArrowRight } from "react-icons/fi";
 import dynamic from "next/dynamic";
 
@@ -39,28 +38,28 @@ export default function PricingPage() {
 
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 max-w-5xl mx-auto">
-        <Link href="/" className="text-[var(--accent)] font-bold text-lg">
+        <a href="/" className="text-[var(--accent)] font-bold text-lg">
           Portfolio 404
-        </Link>
+        </a>
         <div className="flex items-center gap-4">
           {session ? (
-            <Link
+            <a
               href={`/u/${session.user.username}/admin`}
               className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
             >
               Dashboard
-            </Link>
+            </a>
           ) : (
             <>
-              <Link href="/login" className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
+              <a href="/login" className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
                 Login
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/register"
                 className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors"
               >
                 Get Started
-              </Link>
+              </a>
             </>
           )}
         </div>
@@ -116,13 +115,13 @@ export default function PricingPage() {
                 </p>
               </div>
             ) : !session ? (
-              <Link
+              <a
                 href="/register"
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors"
               >
                 Create Account to Buy
                 <FiArrowRight size={16} />
-              </Link>
+              </a>
             ) : null}
           </div>
         </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 
 interface FooterProps {
   name: string;
@@ -25,9 +24,9 @@ export default function Footer({ name, footerText, textColor, textFont, textWeig
         fontWeight: textWeight || undefined,
       }}>
         <span>{copyright}</span>
-        <Link href="/login" className="hover:opacity-100 transition-opacity">
+        <a href="/login" className="hover:opacity-100 transition-opacity">
           Login
-        </Link>
+        </a>
       </div>
     </footer>
   );

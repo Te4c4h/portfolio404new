@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import PricingSection from "@/components/PricingSection";
 
 export default function DefaultLandingPage() {
@@ -14,18 +13,18 @@ export default function DefaultLandingPage() {
               <span className="text-[#70E844] font-bold text-xl">Portfolio 404</span>
             </div>
             <div className="flex items-center gap-4">
-              <Link 
+              <a 
                 href="/login" 
                 className="text-gray-300 hover:text-white transition"
               >
                 Log In
-              </Link>
-              <Link 
+              </a>
+              <a 
                 href="/register" 
                 className="px-4 py-2 bg-[#70E844] text-[#131313] font-semibold rounded-lg hover:opacity-90 transition"
               >
                 Get Started
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -41,18 +40,18 @@ export default function DefaultLandingPage() {
             Create a stunning personal portfolio in minutes. Free to start. No coding required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
+            <a 
               href="/register" 
               className="px-8 py-4 bg-[#70E844] text-[#131313] font-bold text-lg rounded-lg hover:opacity-90 transition"
             >
               Create Your Portfolio
-            </Link>
-            <Link 
+            </a>
+            <a 
               href="/catalog" 
               className="px-8 py-4 border border-[#70E844] text-[#70E844] font-bold text-lg rounded-lg hover:bg-[#70E844]/10 transition"
             >
               Explore Examples
-            </Link>
+            </a>
           </div>
         </div>
       </section>
@@ -107,12 +106,12 @@ export default function DefaultLandingPage() {
           <p className="text-xl text-gray-400 mb-8">
             Join thousands of creators showcasing their work online.
           </p>
-          <Link 
+          <a 
             href="/register" 
             className="inline-block px-8 py-4 bg-[#70E844] text-[#131313] font-bold text-lg rounded-lg hover:opacity-90 transition"
           >
             Get Started Free
-          </Link>
+          </a>
         </div>
       </section>
 
@@ -123,8 +122,8 @@ export default function DefaultLandingPage() {
             © 2024 Portfolio 404. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/login" className="text-gray-500 hover:text-white transition">Log In</Link>
-            <Link href="/register" className="text-gray-500 hover:text-white transition">Sign Up</Link>
+            <a href="/login" className="text-gray-500 hover:text-white transition">Log In</a>
+            <a href="/register" className="text-gray-500 hover:text-white transition">Sign Up</a>
           </div>
         </div>
       </footer>

@@ -83,6 +83,7 @@ export default async function HomePage() {
       navLinks={navLinks}
       contactLinks={contactLinks}
       sections={sections}
+      isHomePage
     />
   );
 }
