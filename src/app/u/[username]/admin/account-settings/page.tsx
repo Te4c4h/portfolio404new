@@ -269,7 +269,7 @@ export default function AccountSettingsPage() {
     setRemovingDomain(false);
   };
 
-  // Verify DNS
+  // Verify DNS and auto-provision SSL if successful
   const handleCheckDns = async () => {
     const domainToCheck = profile?.customDomain || domainInput.trim();
     if (!domainToCheck) return;
@@ -282,6 +282,23 @@ export default function AccountSettingsPage() {
       });
       const data = await res.json();
       setDnsCheck(data);
+
+      // Auto-provision SSL if DNS is configured correctly
+      if (data.dnsConfigured) {
+        try {
+          const sslRes = await fetch("/api/user/provision-ssl", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ domain: domainToCheck }),
+          });
+          const sslData = await sslRes.json();
+          if (sslData.success) {
+            showToast("SSL certificate issued! Your domain is ready.");
+          }
+        } catch {
+          // SSL provisioning failed silently — domain still works with fallback cert
+        }
+      }
     } catch {
       setDnsCheck({ dnsConfigured: false, error: "Network error" });
     }
