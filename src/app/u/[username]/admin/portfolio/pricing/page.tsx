@@ -33,6 +33,7 @@ interface PricingConfig {
   featuresFont: string;
   featuresWeight: string;
   featuresMarkColor: string;
+  cardBgColor: string;
   ctaColor: string;
   ctaFont: string;
   ctaWeight: string;
@@ -256,6 +257,18 @@ export default function AdminPricingPage() {
           <div className="flex items-center gap-2">
             <input type="color" value={config.featuresMarkColor} onChange={(e) => update("featuresMarkColor", e.target.value)} className={colorCls} />
             <input type="text" value={config.featuresMarkColor} onChange={(e) => update("featuresMarkColor", e.target.value)} className={`${inputCls} max-w-[160px]`} placeholder="#70E844" />
+          </div>
+        </div>
+      </div>
+
+      {/* Card Background */}
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 space-y-5 mb-6">
+        <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Card Background</h2>
+        <div>
+          <label className="text-xs text-[var(--muted)] mb-1 block">Background Color</label>
+          <div className="flex items-center gap-2">
+            <input type="color" value={config.cardBgColor} onChange={(e) => update("cardBgColor", e.target.value)} className={colorCls} />
+            <input type="text" value={config.cardBgColor} onChange={(e) => update("cardBgColor", e.target.value)} className={inputCls} placeholder="#181818" />
           </div>
         </div>
       </div>

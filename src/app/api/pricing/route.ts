@@ -33,6 +33,7 @@ export async function PUT(req: NextRequest) {
     periodColor, periodFont, periodWeight,
     taglineColor, taglineFont, taglineWeight,
     featuresColor, featuresFont, featuresWeight, featuresMarkColor,
+    cardBgColor,
     ctaColor, ctaFont, ctaWeight, ctaBgColor,
   } = body;
 
@@ -68,6 +69,7 @@ export async function PUT(req: NextRequest) {
       ...(featuresFont !== undefined && { featuresFont }),
       ...(featuresWeight !== undefined && { featuresWeight }),
       ...(featuresMarkColor !== undefined && { featuresMarkColor }),
+      ...(cardBgColor !== undefined && { cardBgColor }),
       ...(ctaColor !== undefined && { ctaColor }),
       ...(ctaFont !== undefined && { ctaFont }),
       ...(ctaWeight !== undefined && { ctaWeight }),

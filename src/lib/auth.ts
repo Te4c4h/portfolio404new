@@ -112,7 +112,19 @@ export const authOptions: NextAuthOptions = {
         token.lastName = user.lastName;
       }
 
-      // Re-fetch user data from DB on session update trigger (e.g. after username change or profile completion)
+      // Always re-fetch isPaid/isFreeAccess from DB so admin revoke takes effect immediately
+      if (!user && !account && token.id) {
+        const freshUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { isPaid: true, isFreeAccess: true },
+        });
+        if (freshUser) {
+          token.isPaid = freshUser.isPaid;
+          token.isFreeAccess = freshUser.isFreeAccess;
+        }
+      }
+
+      // Re-fetch full user data from DB on session update trigger (e.g. after username change or profile completion)
       if (trigger === "update") {
         const dbUser = token.id
           ? await prisma.user.findUnique({

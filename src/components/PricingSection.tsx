@@ -32,6 +32,7 @@ interface PricingConfig {
   featuresFont: string;
   featuresWeight: string;
   featuresMarkColor: string;
+  cardBgColor: string;
   ctaColor: string;
   ctaFont: string;
   ctaWeight: string;
@@ -113,7 +114,7 @@ export default function PricingSection() {
           {config.subtitle}
         </p>
 
-        <div className="max-w-2xl mx-auto bg-[#181818] border border-white/10 rounded-2xl p-8 md:p-10">
+        <div className="max-w-2xl mx-auto border border-white/10 rounded-2xl p-8 md:p-10" style={{ backgroundColor: config.cardBgColor || "#181818" }}>
           <div className="text-center mb-6">
             <div className="flex items-baseline justify-center gap-2 mb-1">
               <span

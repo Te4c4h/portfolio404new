@@ -274,6 +274,9 @@ model PricingConfig {
   featuresWeight String @default("400")
   featuresMarkColor String @default("#70E844")
 
+  // Styling: Card
+  cardBgColor   String @default("#181818")
+
   // Styling: CTA Button
   ctaColor      String @default("#131313")
   ctaFont       String @default("")
