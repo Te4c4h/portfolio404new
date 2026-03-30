@@ -3,9 +3,17 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { FiCheck } from "react-icons/fi";
-import Link from "next/link";
 
 interface PricingConfig {
+  heading: string;
+  subtitle: string;
+  headingColor: string;
+  headingFont: string;
+  headingWeight: string;
+  headingAccentColor: string;
+  subtitleColor: string;
+  subtitleFont: string;
+  subtitleWeight: string;
   price: string;
   period: string;
   tagline: string;
@@ -28,7 +36,6 @@ interface PricingConfig {
   ctaFont: string;
   ctaWeight: string;
   ctaBgColor: string;
-  ctaAction: string;
 }
 
 export default function PricingSection() {
@@ -63,21 +70,16 @@ export default function PricingSection() {
   const isAdmin = session?.user?.isAdmin === true;
   const hasAccess = isPaid || isFreeAccess || isAdmin;
 
-  // Determine CTA link based on action config + auth state
-  let ctaHref = "/register";
+  // CTA: guest → /login, logged-in with access → dashboard, logged-in without → billing
+  let ctaHref = "/login";
   if (isLoggedIn) {
     if (hasAccess) {
       ctaHref = `/u/${session.user.username}/admin`;
-    } else if (config.ctaAction === "payment") {
-      ctaHref = `/u/${session.user.username}/admin/billing`;
     } else {
       ctaHref = `/u/${session.user.username}/admin/billing`;
     }
-  } else {
-    ctaHref = "/login";
   }
 
-  // Determine CTA label based on state
   let ctaText = config.ctaLabel;
   if (isLoggedIn && hasAccess) {
     ctaText = "Go to Dashboard";
@@ -86,10 +88,30 @@ export default function PricingSection() {
   return (
     <section id="pricing" className="py-20 px-4 border-t border-white/5">
       <div className="max-w-5xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center">
-          Simple, <span className="text-[#70E844]">Honest</span> Pricing
-        </h2>
-        <p className="text-gray-400 mb-10 text-center">No subscriptions. No surprises.</p>
+        <h2
+          className="text-3xl md:text-4xl mb-3 text-center"
+          style={{
+            color: config.headingColor,
+            fontFamily: config.headingFont || undefined,
+            fontWeight: Number(config.headingWeight) || 700,
+          }}
+          dangerouslySetInnerHTML={{
+            __html: config.heading.replace(
+              /\*([^*]+)\*/g,
+              `<span style="color:${config.headingAccentColor}">$1</span>`
+            ),
+          }}
+        />
+        <p
+          className="mb-10 text-center"
+          style={{
+            color: config.subtitleColor,
+            fontFamily: config.subtitleFont || undefined,
+            fontWeight: Number(config.subtitleWeight) || 400,
+          }}
+        >
+          {config.subtitle}
+        </p>
 
         <div className="max-w-2xl mx-auto bg-[#181818] border border-white/10 rounded-2xl p-8 md:p-10">
           <div className="text-center mb-6">
@@ -149,7 +171,7 @@ export default function PricingSection() {
             ))}
           </ul>
 
-          <Link
+          <a
             href={ctaHref}
             className="block w-full py-3.5 rounded-xl hover:opacity-90 transition text-center"
             style={{
@@ -160,7 +182,7 @@ export default function PricingSection() {
             }}
           >
             {ctaText}
-          </Link>
+          </a>
 
           {!isLoggedIn && (
             <p className="text-gray-500 text-xs text-center mt-3">

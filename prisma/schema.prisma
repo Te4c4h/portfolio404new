@@ -234,11 +234,24 @@ model SiteContent {
 
 model PricingConfig {
   id          String   @id @default(cuid())
+  heading     String   @default("Simple, *Honest* Pricing")
+  subtitle    String   @default("No subscriptions. No surprises.")
   price       String   @default("$5")
   period      String   @default("one-time")
   tagline     String   @default("Pay once. Lifetime access. No recurring charges.")
   features    String   @default("Live public portfolio\nResume builder & downloads\nCustom themes & colors\nBuilt-in analytics\nContact links & nav\nLifetime access")
   ctaLabel    String   @default("Get Started")
+
+  // Styling: Heading
+  headingColor       String @default("#ffffff")
+  headingFont        String @default("")
+  headingWeight      String @default("700")
+  headingAccentColor String @default("#70E844")
+
+  // Styling: Subtitle
+  subtitleColor  String @default("#9ca3af")
+  subtitleFont   String @default("")
+  subtitleWeight String @default("400")
 
   // Styling: Price
   priceColor  String @default("#ffffff")
@@ -266,7 +279,6 @@ model PricingConfig {
   ctaFont       String @default("")
   ctaWeight     String @default("700")
   ctaBgColor    String @default("#70E844")
-  ctaAction     String @default("signup")
 
   updatedAt   DateTime @updatedAt
 }

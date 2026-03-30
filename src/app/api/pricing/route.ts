@@ -23,12 +23,15 @@ export async function PUT(req: NextRequest) {
 
   const body = await req.json();
   const {
+    heading, subtitle,
+    headingColor, headingFont, headingWeight, headingAccentColor,
+    subtitleColor, subtitleFont, subtitleWeight,
     price, period, tagline, features, ctaLabel,
     priceColor, priceFont, priceWeight,
     periodColor, periodFont, periodWeight,
     taglineColor, taglineFont, taglineWeight,
     featuresColor, featuresFont, featuresWeight, featuresMarkColor,
-    ctaColor, ctaFont, ctaWeight, ctaBgColor, ctaAction,
+    ctaColor, ctaFont, ctaWeight, ctaBgColor,
   } = body;
 
   const config = await getOrCreate();
@@ -36,6 +39,15 @@ export async function PUT(req: NextRequest) {
   const updated = await prisma.pricingConfig.update({
     where: { id: config.id },
     data: {
+      ...(heading !== undefined && { heading }),
+      ...(subtitle !== undefined && { subtitle }),
+      ...(headingColor !== undefined && { headingColor }),
+      ...(headingFont !== undefined && { headingFont }),
+      ...(headingWeight !== undefined && { headingWeight }),
+      ...(headingAccentColor !== undefined && { headingAccentColor }),
+      ...(subtitleColor !== undefined && { subtitleColor }),
+      ...(subtitleFont !== undefined && { subtitleFont }),
+      ...(subtitleWeight !== undefined && { subtitleWeight }),
       ...(price !== undefined && { price }),
       ...(period !== undefined && { period }),
       ...(tagline !== undefined && { tagline }),
@@ -58,7 +70,6 @@ export async function PUT(req: NextRequest) {
       ...(ctaFont !== undefined && { ctaFont }),
       ...(ctaWeight !== undefined && { ctaWeight }),
       ...(ctaBgColor !== undefined && { ctaBgColor }),
-      ...(ctaAction !== undefined && { ctaAction }),
     },
   });
 

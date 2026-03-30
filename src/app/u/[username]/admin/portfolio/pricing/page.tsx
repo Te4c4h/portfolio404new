@@ -6,6 +6,15 @@ import Toast from "@/components/Toast";
 
 interface PricingConfig {
   id: string;
+  heading: string;
+  subtitle: string;
+  headingColor: string;
+  headingFont: string;
+  headingWeight: string;
+  headingAccentColor: string;
+  subtitleColor: string;
+  subtitleFont: string;
+  subtitleWeight: string;
   price: string;
   period: string;
   tagline: string;
@@ -28,7 +37,6 @@ interface PricingConfig {
   ctaFont: string;
   ctaWeight: string;
   ctaBgColor: string;
-  ctaAction: string;
 }
 
 const WEIGHT_OPTIONS = [
@@ -38,11 +46,6 @@ const WEIGHT_OPTIONS = [
   { value: "600", label: "Semibold" },
   { value: "700", label: "Bold" },
   { value: "800", label: "Extra Bold" },
-];
-
-const CTA_ACTIONS = [
-  { value: "signup", label: "Open Sign Up page" },
-  { value: "payment", label: "Redirect to Payment" },
 ];
 
 const inputCls = "w-full px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] text-sm focus:outline-none focus:ring-1 focus:ring-[var(--accent)]";
@@ -152,6 +155,14 @@ export default function AdminPricingPage() {
       {/* Content Fields */}
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 space-y-5 mb-6">
         <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Content</h2>
+        <div>
+          <label className="text-xs text-[var(--muted)] mb-1.5 block">Heading <span className="text-[var(--muted)]/60">(wrap text in *asterisks* for accent color)</span></label>
+          <input type="text" value={config.heading} onChange={(e) => update("heading", e.target.value)} placeholder="Simple, *Honest* Pricing" className={inputCls} />
+        </div>
+        <div>
+          <label className="text-xs text-[var(--muted)] mb-1.5 block">Subtitle</label>
+          <input type="text" value={config.subtitle} onChange={(e) => update("subtitle", e.target.value)} placeholder="No subscriptions. No surprises." className={inputCls} />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="text-xs text-[var(--muted)] mb-1.5 block">Price</label>
@@ -179,6 +190,32 @@ export default function AdminPricingPage() {
       {/* Styling Fields */}
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 space-y-6 mb-6">
         <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Text Styling</h2>
+
+        <StyleRow
+          label="Heading"
+          color={config.headingColor} onColor={(v) => update("headingColor", v)}
+          font={config.headingFont} onFont={(v) => update("headingFont", v)}
+          weight={config.headingWeight} onWeight={(v) => update("headingWeight", v)}
+        />
+
+        <div>
+          <label className="text-xs text-[var(--muted)] mb-1 block">Heading Accent Color</label>
+          <div className="flex items-center gap-2">
+            <input type="color" value={config.headingAccentColor} onChange={(e) => update("headingAccentColor", e.target.value)} className={colorCls} />
+            <input type="text" value={config.headingAccentColor} onChange={(e) => update("headingAccentColor", e.target.value)} className={`${inputCls} max-w-[160px]`} placeholder="#70E844" />
+          </div>
+        </div>
+
+        <div className="border-t border-[var(--border)]" />
+
+        <StyleRow
+          label="Subtitle"
+          color={config.subtitleColor} onColor={(v) => update("subtitleColor", v)}
+          font={config.subtitleFont} onFont={(v) => update("subtitleFont", v)}
+          weight={config.subtitleWeight} onWeight={(v) => update("subtitleWeight", v)}
+        />
+
+        <div className="border-t border-[var(--border)]" />
 
         <StyleRow
           label="Price"
@@ -227,21 +264,11 @@ export default function AdminPricingPage() {
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 space-y-5">
         <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">CTA Button</h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="text-xs text-[var(--muted)] mb-1 block">Button Action</label>
-            <select value={config.ctaAction} onChange={(e) => update("ctaAction", e.target.value)} className={selectCls}>
-              {CTA_ACTIONS.map((a) => (
-                <option key={a.value} value={a.value}>{a.label}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="text-xs text-[var(--muted)] mb-1 block">Background Color</label>
-            <div className="flex items-center gap-2">
-              <input type="color" value={config.ctaBgColor} onChange={(e) => update("ctaBgColor", e.target.value)} className={colorCls} />
-              <input type="text" value={config.ctaBgColor} onChange={(e) => update("ctaBgColor", e.target.value)} className={inputCls} placeholder="#70E844" />
-            </div>
+        <div>
+          <label className="text-xs text-[var(--muted)] mb-1 block">Background Color</label>
+          <div className="flex items-center gap-2">
+            <input type="color" value={config.ctaBgColor} onChange={(e) => update("ctaBgColor", e.target.value)} className={colorCls} />
+            <input type="text" value={config.ctaBgColor} onChange={(e) => update("ctaBgColor", e.target.value)} className={inputCls} placeholder="#70E844" />
           </div>
         </div>
 
