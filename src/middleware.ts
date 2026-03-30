@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
+const MAIN_DOMAINS = ["portfolio404.site", "localhost", "127.0.0.1"];
+
+function isMainDomain(host: string): boolean {
+  const h = host.split(":")[0]; // strip port
+  return MAIN_DOMAINS.some((d) => h === d || h === `www.${d}`);
+}
+
 export async function middleware(req: NextRequest) {
   // Force www → non-www redirect to prevent OAuth domain mismatch
   const host = req.headers.get("host") || "";
@@ -9,6 +16,46 @@ export async function middleware(req: NextRequest) {
     const url = req.nextUrl.clone();
     url.host = host.replace("www.", "");
     return NextResponse.redirect(url, 301);
+  }
+
+  // Custom domain handling — rewrite to /u/[username]
+  if (!isMainDomain(host)) {
+    const hostname = host.split(":")[0];
+    const { pathname } = req.nextUrl;
+
+    // Let API routes, static assets, and auth through as-is
+    if (
+      pathname.startsWith("/api/") ||
+      pathname.startsWith("/_next/") ||
+      pathname.startsWith("/uploads/") ||
+      pathname === "/favicon.ico"
+    ) {
+      return NextResponse.next();
+    }
+
+    // Look up the username for this custom domain
+    const baseUrl = req.nextUrl.origin;
+    try {
+      const lookupRes = await fetch(
+        `${baseUrl}/api/domain-lookup?domain=${encodeURIComponent(hostname)}`,
+        { headers: { "x-middleware-internal": "1" } }
+      );
+      const data = await lookupRes.json();
+
+      if (data.username) {
+        // Rewrite the request to the portfolio page
+        const url = req.nextUrl.clone();
+        url.pathname = `/u/${data.username}${pathname === "/" ? "" : pathname}`;
+        return NextResponse.rewrite(url);
+      }
+    } catch (e) {
+      console.error("Custom domain lookup failed:", e);
+    }
+
+    // Domain not found — show 404
+    const url = req.nextUrl.clone();
+    url.pathname = "/not-found";
+    return NextResponse.rewrite(url);
   }
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });

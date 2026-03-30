@@ -8,7 +8,7 @@ export async function GET() {
 
   const dbUser = await prisma.user.findUnique({
     where: { id: user.id },
-    select: { firstName: true, lastName: true, username: true, email: true, password: true },
+    select: { firstName: true, lastName: true, username: true, email: true, password: true, customDomain: true },
   });
 
   if (!dbUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -19,6 +19,7 @@ export async function GET() {
     username: dbUser.username,
     email: dbUser.email,
     isOAuth: !dbUser.password,
+    customDomain: (dbUser as Record<string, unknown>).customDomain || null,
   });
 }
 

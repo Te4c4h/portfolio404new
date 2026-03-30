@@ -12,6 +12,16 @@ interface ProfileData {
   username: string;
   email: string;
   isOAuth: boolean;
+  customDomain: string | null;
+}
+
+interface DnsCheckResult {
+  dnsConfigured: boolean;
+  aRecords?: string[];
+  cnameRecords?: string[];
+  expectedIp?: string;
+  expectedCname?: string;
+  error?: string;
 }
 
 export default function AccountSettingsPage() {
@@ -48,6 +58,13 @@ export default function AccountSettingsPage() {
   const [deleteConfirm, setDeleteConfirm] = useState("");
   const [deleting, setDeleting] = useState(false);
 
+  // Custom domain
+  const [domainInput, setDomainInput] = useState("");
+  const [savingDomain, setSavingDomain] = useState(false);
+  const [removingDomain, setRemovingDomain] = useState(false);
+  const [dnsCheck, setDnsCheck] = useState<DnsCheckResult | null>(null);
+  const [checkingDns, setCheckingDns] = useState(false);
+
   const [toast, setToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
 
@@ -60,6 +77,7 @@ export default function AccountSettingsPage() {
         setFirstName(data.firstName || "");
         setLastName(data.lastName || "");
         setNewUsername(data.username || "");
+        setDomainInput(data.customDomain || "");
       }
     } catch {
       // ignore
@@ -210,6 +228,66 @@ export default function AccountSettingsPage() {
     }
   };
 
+  // Save custom domain
+  const handleSaveDomain = async () => {
+    setSavingDomain(true);
+    setDnsCheck(null);
+    try {
+      const res = await fetch("/api/user/custom-domain", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: domainInput }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setProfile((p) => p ? { ...p, customDomain: data.customDomain } : p);
+        setDomainInput(data.customDomain);
+        showToast("Custom domain saved!");
+      } else {
+        alert(data.error || "Failed to save domain");
+      }
+    } catch {
+      alert("Network error");
+    }
+    setSavingDomain(false);
+  };
+
+  // Remove custom domain
+  const handleRemoveDomain = async () => {
+    setRemovingDomain(true);
+    try {
+      const res = await fetch("/api/user/custom-domain", { method: "DELETE" });
+      if (res.ok) {
+        setProfile((p) => p ? { ...p, customDomain: null } : p);
+        setDomainInput("");
+        setDnsCheck(null);
+        showToast("Custom domain removed");
+      }
+    } catch {
+      alert("Network error");
+    }
+    setRemovingDomain(false);
+  };
+
+  // Verify DNS
+  const handleCheckDns = async () => {
+    const domainToCheck = profile?.customDomain || domainInput.trim();
+    if (!domainToCheck) return;
+    setCheckingDns(true);
+    try {
+      const res = await fetch("/api/user/custom-domain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: domainToCheck }),
+      });
+      const data = await res.json();
+      setDnsCheck(data);
+    } catch {
+      setDnsCheck({ dnsConfigured: false, error: "Network error" });
+    }
+    setCheckingDns(false);
+  };
+
   if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
   if (!profile) return <div className="text-[var(--muted)] text-sm">Could not load profile.</div>;
 
@@ -290,6 +368,96 @@ export default function AccountSettingsPage() {
           >
             {savingUsername ? "Updating..." : "Change Username"}
           </button>
+        </div>
+
+        {/* Custom Domain */}
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Custom Domain</h2>
+          <p className="text-xs text-[var(--muted)] mb-4">
+            Connect your own domain to your portfolio. Visitors will see your portfolio at your custom domain.
+          </p>
+
+          {profile.customDomain ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-[var(--accent)]/5 border border-[var(--accent)]/15">
+                <div className="w-2 h-2 rounded-full bg-[var(--accent)] flex-shrink-0" />
+                <span className="text-sm text-[var(--foreground)] font-medium flex-1">{profile.customDomain}</span>
+                <button
+                  onClick={handleRemoveDomain}
+                  disabled={removingDomain}
+                  className="px-3 py-1 rounded text-xs bg-[var(--danger)]/10 text-[var(--danger)] hover:bg-[var(--danger)]/20 transition-colors"
+                >
+                  {removingDomain ? "Removing..." : "Remove"}
+                </button>
+              </div>
+
+              <div>
+                <button
+                  onClick={handleCheckDns}
+                  disabled={checkingDns}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--border)] text-[var(--foreground)] hover:opacity-80 disabled:opacity-50 transition-colors"
+                >
+                  {checkingDns ? "Checking..." : "Verify DNS"}
+                </button>
+              </div>
+
+              {dnsCheck && (
+                <div className={`p-3 rounded-lg text-xs space-y-1 ${dnsCheck.dnsConfigured ? "bg-[var(--accent)]/10 border border-[var(--accent)]/20" : "bg-[var(--danger)]/10 border border-[var(--danger)]/20"}`}>
+                  <p className={`font-medium ${dnsCheck.dnsConfigured ? "text-[var(--accent)]" : "text-[var(--danger)]"}`}>
+                    {dnsCheck.dnsConfigured ? "DNS is configured correctly!" : "DNS is not configured yet"}
+                  </p>
+                  {dnsCheck.aRecords && dnsCheck.aRecords.length > 0 && (
+                    <p className="text-[var(--muted)]">A records: {dnsCheck.aRecords.join(", ")}</p>
+                  )}
+                  {dnsCheck.cnameRecords && dnsCheck.cnameRecords.length > 0 && (
+                    <p className="text-[var(--muted)]">CNAME records: {dnsCheck.cnameRecords.join(", ")}</p>
+                  )}
+                </div>
+              )}
+
+              <div className="bg-[var(--background)] rounded-lg p-4 space-y-2">
+                <p className="text-xs font-medium text-[var(--muted)] uppercase tracking-wider">DNS Setup Instructions</p>
+                <p className="text-xs text-[var(--muted)]">
+                  Go to your domain registrar and add one of these DNS records:
+                </p>
+                <div className="space-y-1.5 text-xs">
+                  <div className="flex items-start gap-2">
+                    <span className="text-[var(--accent)] font-mono font-medium mt-0.5">A</span>
+                    <div>
+                      <p className="text-[var(--foreground)]">Point <code className="bg-[var(--border)] px-1 rounded">@</code> to <code className="bg-[var(--border)] px-1 rounded">109.75.40.220</code></p>
+                    </div>
+                  </div>
+                  <p className="text-[var(--muted)] text-center">— or —</p>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[var(--accent)] font-mono font-medium mt-0.5">CNAME</span>
+                    <div>
+                      <p className="text-[var(--foreground)]">Point <code className="bg-[var(--border)] px-1 rounded">@</code> to <code className="bg-[var(--border)] px-1 rounded">portfolio404.site</code></p>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-[var(--muted)] mt-2">DNS changes can take up to 24–48 hours to propagate.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs text-[var(--muted)] mb-1 block">Domain</label>
+                <input
+                  className="dash-input"
+                  value={domainInput}
+                  onChange={(e) => setDomainInput(e.target.value)}
+                  placeholder="e.g. yourdomain.com"
+                />
+              </div>
+              <button
+                onClick={handleSaveDomain}
+                disabled={savingDomain || !domainInput.trim()}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50"
+              >
+                {savingDomain ? "Saving..." : "Connect Domain"}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Change Password */}

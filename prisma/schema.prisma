@@ -28,6 +28,7 @@ model User {
   isFreeAccess       Boolean   @default(false)
   isPaid             Boolean   @default(false)
   paypalTxId         String?
+  customDomain       String?   @unique
 
   sections     Section[]
   contentItems ContentItem[]
