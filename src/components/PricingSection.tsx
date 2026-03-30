@@ -42,6 +42,14 @@ export default function PricingSection() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (config && typeof window !== "undefined" && window.location.hash === "#pricing") {
+      setTimeout(() => {
+        document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }, [config]);
+
   if (!config) return null;
 
   const featureList = config.features

@@ -274,14 +274,14 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setOpen(false)}
-              className="fixed inset-0 bg-[var(--overlay)] z-40 lg:hidden"
+              className="fixed inset-0 bg-[var(--overlay)] z-[9998] lg:hidden"
             />
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
-              className="fixed left-0 top-0 h-[100dvh] w-60 bg-[var(--surface)] border-r border-[var(--border)] z-50 lg:hidden"
+              className="fixed left-0 top-0 h-[100dvh] w-60 bg-[var(--surface)] border-r border-[var(--border)] z-[9999] lg:hidden"
             >
               <button
                 onClick={() => setOpen(false)}
