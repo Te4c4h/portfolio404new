@@ -85,11 +85,11 @@ export async function POST(req: NextRequest) {
 
   try {
     // Check A record
-    const aRecords = await dns.resolve4(clean).catch(() => []);
+    const aRecords: string[] = await dns.resolve4(clean).catch(() => [] as string[]);
     const aPointsCorrectly = aRecords.includes(serverIp);
 
     // Check CNAME record
-    const cnameRecords = await dns.resolveCname(clean).catch(() => []);
+    const cnameRecords: string[] = await dns.resolveCname(clean).catch(() => [] as string[]);
     const cnamePointsCorrectly = cnameRecords.some(
       (r: string) => r === "portfolio404.site" || r === "portfolio404.site."
     );
