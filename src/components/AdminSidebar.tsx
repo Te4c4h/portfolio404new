@@ -244,7 +244,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
         <ThemeToggle />
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="flex items-center justify-center gap-2 px-3 py-2.5 w-full rounded-lg text-sm font-medium transition-colors duration-200 border bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:text-red-700"
+          className="flex items-center justify-center gap-2 px-3 py-2.5 w-full rounded-lg text-sm font-medium transition-colors duration-200 border text-[var(--danger)] border-[var(--danger)]/30 hover:bg-[var(--danger)]/10"
         >
           <FiLogOut size={16} />
           <span>{t("sidebar.logout")}</span>
