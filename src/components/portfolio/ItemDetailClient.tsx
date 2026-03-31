@@ -50,10 +50,12 @@ interface ItemData {
   tagColor?: string;
   tagFont?: string;
   tagWeight?: string;
+  liveBtnText?: string;
   liveBtnBg?: string;
   liveBtnColor?: string;
   liveBtnFont?: string;
   liveBtnWeight?: string;
+  repoBtnText?: string;
   repoBtnBg?: string;
   repoBtnColor?: string;
   repoBtnFont?: string;
@@ -269,7 +271,7 @@ export default function ItemDetailClient({
                         fontWeight: item.liveBtnWeight || undefined,
                       }}
                     >
-                      <FiExternalLink size={16} /> View Live
+                      <FiExternalLink size={16} /> {item.liveBtnText || "View Live"}
                     </a>
                   )}
                   {item.repoUrl && (
@@ -286,7 +288,7 @@ export default function ItemDetailClient({
                         fontWeight: item.repoBtnWeight || undefined,
                       }}
                     >
-                      <FiGithub size={16} /> Source Code
+                      <FiGithub size={16} /> {item.repoBtnText || "Source Code"}
                     </a>
                   )}
                 </motion.div>

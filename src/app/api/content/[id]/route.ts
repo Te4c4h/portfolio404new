@@ -20,8 +20,8 @@ export async function PUT(
     titleColor, titleFont, titleWeight,
     descColor, descFont, descWeight,
     tagBg, tagColor, tagFont, tagWeight,
-    liveBtnBg, liveBtnColor, liveBtnFont, liveBtnWeight,
-    repoBtnBg, repoBtnColor, repoBtnFont, repoBtnWeight,
+    liveBtnText, liveBtnBg, liveBtnColor, liveBtnFont, liveBtnWeight,
+    repoBtnText, repoBtnBg, repoBtnColor, repoBtnFont, repoBtnWeight,
     longDescColor, longDescFont, longDescWeight,
     imgDescColor, imgDescFont, imgDescWeight,
   } = body;
@@ -72,10 +72,12 @@ export async function PUT(
   if (tagColor !== undefined) data.tagColor = tagColor;
   if (tagFont !== undefined) data.tagFont = tagFont;
   if (tagWeight !== undefined) data.tagWeight = tagWeight;
+  if (liveBtnText !== undefined) data.liveBtnText = liveBtnText;
   if (liveBtnBg !== undefined) data.liveBtnBg = liveBtnBg;
   if (liveBtnColor !== undefined) data.liveBtnColor = liveBtnColor;
   if (liveBtnFont !== undefined) data.liveBtnFont = liveBtnFont;
   if (liveBtnWeight !== undefined) data.liveBtnWeight = liveBtnWeight;
+  if (repoBtnText !== undefined) data.repoBtnText = repoBtnText;
   if (repoBtnBg !== undefined) data.repoBtnBg = repoBtnBg;
   if (repoBtnColor !== undefined) data.repoBtnColor = repoBtnColor;
   if (repoBtnFont !== undefined) data.repoBtnFont = repoBtnFont;

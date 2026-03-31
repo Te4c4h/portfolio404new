@@ -342,7 +342,9 @@
     "labelColor": "Պոդպիսի գույն",
     "subtitleColor": "Նկարագրի գույն",
     "saved": "Բաժինները պահպանվեց՝",
-    "nameRequired": "Բաժնի անվանումը պարտադիր է"
+    "nameRequired": "Բաժնի անվանումը պարտադիր է",
+    "tabContent": "Բովանդակություն",
+    "tabStyle": "Ոճ"
   },
   "sectionsContent": {
     "title": "Իմ աշխատանքները",
@@ -413,7 +415,15 @@
     "videoDescriptionHint": "Տեսանյութի նկարագրությունը",
     "areYouSure": "Վստահ՞ եք",
     "saved": "Տարրը պահպանվեց՝",
-    "duplicateTitle": "Կրկնակի վերնագիր"
+    "duplicateTitle": "Կրկնակի վերնագիր",
+    "liveBtnText": "Հղում 1 կոճակի տեքստ",
+    "liveBtnTextPlaceholder": "Դիտել",
+    "repoBtnText": "Հղում 2 կոճակի տեքստ",
+    "repoBtnTextPlaceholder": "Բնագիր կոդ",
+    "tabContent": "Բովանդակություն",
+    "tabMedia": "Մեդիա",
+    "tabLinks": "Հղումներ",
+    "tabStyle": "Ոճ"
   },
   "billing": {
     "title": "Պլան և բաժանորդագրություն",

@@ -342,7 +342,9 @@
     "labelColor": "Цвет подписи",
     "subtitleColor": "Цвет описания",
     "saved": "Разделы сохранены!",
-    "nameRequired": "Название раздела обязательно"
+    "nameRequired": "Название раздела обязательно",
+    "tabContent": "Контент",
+    "tabStyle": "Стиль"
   },
   "sectionsContent": {
     "title": "Мои работы",
@@ -406,6 +408,14 @@
     "videoDescription": "Описание видео",
     "videoDescriptionPlaceholder": "Опишите это видео...",
     "duplicateTitle": "Элемент с таким названием уже существует. Выберите другое название.",
+    "liveBtnText": "Текст кнопки ссылки 1",
+    "liveBtnTextPlaceholder": "Открыть",
+    "repoBtnText": "Текст кнопки ссылки 2",
+    "repoBtnTextPlaceholder": "Исходный код",
+    "tabContent": "Контент",
+    "tabMedia": "Медиа",
+    "tabLinks": "Ссылки",
+    "tabStyle": "Стиль",
     "areYouSure": "Вы уверены?",
     "saved": "Элемент сохранён!"
   },

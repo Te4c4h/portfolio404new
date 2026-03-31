@@ -80,10 +80,12 @@ interface FormData {
   tagColor: string;
   tagFont: string;
   tagWeight: string;
+  liveBtnText: string;
   liveBtnBg: string;
   liveBtnColor: string;
   liveBtnFont: string;
   liveBtnWeight: string;
+  repoBtnText: string;
   repoBtnBg: string;
   repoBtnColor: string;
   repoBtnFont: string;
@@ -105,8 +107,8 @@ const emptyForm: FormData = {
   titleColor: "", titleFont: "", titleWeight: "",
   descColor: "", descFont: "", descWeight: "",
   tagBg: "", tagColor: "", tagFont: "", tagWeight: "",
-  liveBtnBg: "", liveBtnColor: "", liveBtnFont: "", liveBtnWeight: "",
-  repoBtnBg: "", repoBtnColor: "", repoBtnFont: "", repoBtnWeight: "",
+  liveBtnText: "", liveBtnBg: "", liveBtnColor: "", liveBtnFont: "", liveBtnWeight: "",
+  repoBtnText: "", repoBtnBg: "", repoBtnColor: "", repoBtnFont: "", repoBtnWeight: "",
   longDescColor: "", longDescFont: "", longDescWeight: "",
   imgDescColor: "", imgDescFont: "", imgDescWeight: "",
 };
@@ -193,6 +195,7 @@ export default function ContentPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"content" | "media" | "links" | "style">("content");
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -225,6 +228,7 @@ export default function ContentPage() {
     setEditingId(null);
     setForm({ ...emptyForm, sectionId: filter || (sections[0]?.id || "") });
     setError("");
+    setActiveTab("content");
     setModalOpen(true);
   };
 
@@ -255,10 +259,12 @@ export default function ContentPage() {
       tagColor: (item as never as Record<string, string>).tagColor || "",
       tagFont: (item as never as Record<string, string>).tagFont || "",
       tagWeight: (item as never as Record<string, string>).tagWeight || "",
+      liveBtnText: (item as never as Record<string, string>).liveBtnText || "",
       liveBtnBg: (item as never as Record<string, string>).liveBtnBg || "",
       liveBtnColor: (item as never as Record<string, string>).liveBtnColor || "",
       liveBtnFont: (item as never as Record<string, string>).liveBtnFont || "",
       liveBtnWeight: (item as never as Record<string, string>).liveBtnWeight || "",
+      repoBtnText: (item as never as Record<string, string>).repoBtnText || "",
       repoBtnBg: (item as never as Record<string, string>).repoBtnBg || "",
       repoBtnColor: (item as never as Record<string, string>).repoBtnColor || "",
       repoBtnFont: (item as never as Record<string, string>).repoBtnFont || "",
@@ -271,6 +277,7 @@ export default function ContentPage() {
       imgDescWeight: (item as never as Record<string, string>).imgDescWeight || "",
     });
     setError("");
+    setActiveTab("content");
     setModalOpen(true);
   };
 
@@ -403,248 +410,328 @@ export default function ContentPage() {
         </>)
       }
 
-      {/* Modal */}
+      {/* Slide-in Drawer */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-[var(--overlay)] z-50 flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">
-              {editingId ? t("sectionsContent.editItem") : t("sectionsContent.addItem")}
-            </h2>
+        <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setModalOpen(false)}>
+          <div className="absolute inset-0 bg-[var(--overlay)]" />
+          <div
+            className="relative bg-[var(--surface)] border-l border-[var(--border)] w-full max-w-2xl h-full flex flex-col animate-in slide-in-from-right duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] shrink-0">
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">
+                {editingId ? t("sectionsContent.editItem") : t("sectionsContent.addItem")}
+              </h2>
+              <button onClick={() => setModalOpen(false)} className="p-1.5 rounded-lg hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] text-lg leading-none">&times;</button>
+            </div>
 
-            <div className="space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div>
-                  <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.section")} *</label>
-                  <select className="dash-input" value={form.sectionId} onChange={(e) => setForm((f) => ({ ...f, sectionId: e.target.value }))}>
-                    <option value="">{t("sectionsContent.section")}</option>
-                    {sections.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.contentType")} *</label>
-                  <select className="dash-input" value={form.contentType} onChange={(e) => setForm((f) => ({ ...f, contentType: e.target.value }))}>
-                    {contentTypes.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                  </select>
-                </div>
-              </div>
-              {/* Card Background Color */}
-              <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">
-                  {t("sectionsContent.cardBgColor")}
-                  {form.cardBg && <button onClick={() => setForm((f) => ({ ...f, cardBg: "" }))} className="ml-2 text-[var(--accent)] text-xs hover:underline">{t("common.clear")}</button>}
-                </label>
-                <div className="flex items-center gap-2">
-                  <input type="color" value={form.cardBg || "#1a1a2e"} onChange={(e) => setForm((f) => ({ ...f, cardBg: e.target.value }))} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
-                  <input className="dash-input" value={form.cardBg} onChange={(e) => setForm((f) => ({ ...f, cardBg: e.target.value }))} placeholder={t("common.default")} />
-                </div>
-              </div>
-              <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.itemTitle")} *</label>
-                <input className="dash-input" maxLength={60} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder={t("sectionsContent.itemTitlePlaceholder")} />
-                <CharLimitHint max={60} current={form.title.length} />
-                <TextStyleGroup
-                  colorLabel={t("sectionsContent.titleColor")} colorValue={form.titleColor} onColorChange={(v) => setForm((f) => ({ ...f, titleColor: v }))}
-                  fontValue={form.titleFont} onFontChange={(v) => setForm((f) => ({ ...f, titleFont: v }))}
-                  weightValue={form.titleWeight} onWeightChange={(v) => setForm((f) => ({ ...f, titleWeight: v }))}
-                />
-              </div>
-              <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.description")}{form.contentType === "project" ? " *" : ""}</label>
-                <textarea className="dash-input min-h-[80px]" maxLength={300} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder={t("sectionsContent.descriptionPlaceholder")} />
-                <CharLimitHint max={300} current={form.description.length} />
-                <TextStyleGroup
-                  colorLabel={t("sectionsContent.descColor")} colorValue={form.descColor} onColorChange={(v) => setForm((f) => ({ ...f, descColor: v }))}
-                  fontValue={form.descFont} onFontChange={(v) => setForm((f) => ({ ...f, descFont: v }))}
-                  weightValue={form.descWeight} onWeightChange={(v) => setForm((f) => ({ ...f, descWeight: v }))}
-                />
-              </div>
-              <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.tags")}</label>
-                <input className="dash-input" value={form.tags} onChange={(e) => {
-                  const val = e.target.value;
-                  const count = val.split(",").filter((s) => s.trim()).length;
-                  if (count <= 6 || val.length < form.tags.length) setForm((f) => ({ ...f, tags: val }));
-                }} placeholder={t("sectionsContent.tagsPlaceholder")} />
-                <p className={`text-[10px] mt-0.5 ${form.tags.split(",").filter((s) => s.trim()).length >= 6 ? "text-[var(--danger)]" : "text-[var(--muted)]"}`}>
-                  Comma-separated ({form.tags.split(",").filter((s) => s.trim()).length}/6 max){form.tags.split(",").filter((s) => s.trim()).length >= 6 ? " — limit reached" : ""}
-                </p>
-                <TextStyleGroup
-                  colorLabel={t("sectionsContent.tagTextColor")} colorValue={form.tagColor} onColorChange={(v) => setForm((f) => ({ ...f, tagColor: v }))}
-                  fontValue={form.tagFont} onFontChange={(v) => setForm((f) => ({ ...f, tagFont: v }))}
-                  weightValue={form.tagWeight} onWeightChange={(v) => setForm((f) => ({ ...f, tagWeight: v }))}
-                />
-                <div className="mt-2">
-                  <label className="text-xs text-[var(--muted)] mb-1 block">
-                    {t("sectionsContent.tagBgColor")}
-                    {form.tagBg && <button onClick={() => setForm((f) => ({ ...f, tagBg: "" }))} className="ml-2 text-[var(--accent)] text-xs hover:underline">{t("common.clear")}</button>}
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input type="color" value={form.tagBg || "#1a1a2e"} onChange={(e) => setForm((f) => ({ ...f, tagBg: e.target.value }))} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
-                    <input className="dash-input" value={form.tagBg} onChange={(e) => setForm((f) => ({ ...f, tagBg: e.target.value }))} placeholder={t("common.default")} />
-                  </div>
-                </div>
-              </div>
+            {/* Tabs */}
+            <div className="flex border-b border-[var(--border)] px-6 shrink-0">
+              {(["content", "media", "links", "style"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2.5 text-xs font-medium border-b-2 transition-colors ${
+                    activeTab === tab
+                      ? "border-[var(--accent)] text-[var(--accent)]"
+                      : "border-transparent text-[var(--muted)] hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  {t(`sectionsContent.tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`)}
+                </button>
+              ))}
+            </div>
 
-              {/* Long description — detail page */}
-              <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.longDescription")}</label>
-                <textarea className="dash-input min-h-[120px]" value={form.longDescription} onChange={(e) => setForm((f) => ({ ...f, longDescription: e.target.value }))} placeholder={t("sectionsContent.longDescriptionPlaceholder")} />
-                <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">{t("sectionsContent.longDescriptionHint")}</p>
-                <TextStyleGroup
-                  colorLabel={t("sectionsContent.longDescColor")} colorValue={form.longDescColor} onColorChange={(v) => setForm((f) => ({ ...f, longDescColor: v }))}
-                  fontValue={form.longDescFont} onFontChange={(v) => setForm((f) => ({ ...f, longDescFont: v }))}
-                  weightValue={form.longDescWeight} onWeightChange={(v) => setForm((f) => ({ ...f, longDescWeight: v }))}
-                />
-              </div>
-
-              {/* Video fields */}
-              {form.contentType === "video" && (
-                <>
-                  <div>
-                    <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.videoUrl")} *</label>
-                    <input className="dash-input" value={form.videoUrl} onChange={(e) => setForm((f) => ({ ...f, videoUrl: e.target.value }))} placeholder={t("sectionsContent.videoUrlPlaceholder")} />
-                    <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">YouTube or Vimeo URL. Will be embedded as a player.</p>
-                  </div>
-                  <div>
-                    <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.videoDescription")}</label>
-                    <input className="dash-input" value={form.videoDesc} onChange={(e) => setForm((f) => ({ ...f, videoDesc: e.target.value }))} placeholder={t("sectionsContent.videoDescriptionPlaceholder")} />
-                  </div>
-                </>
-              )}
-
-              {/* Code fields */}
-              {form.contentType === "code" && (
-                <>
-                  <div>
-                    <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.codeLanguage")}</label>
-                    <select className="dash-input" value={form.codeLanguage} onChange={(e) => setForm((f) => ({ ...f, codeLanguage: e.target.value }))}>
-                      <option value="">Auto-detect</option>
-                      {codeLanguages.map((l) => <option key={l} value={l}>{l}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.codeContent")} *</label>
-                    <textarea
-                      className="dash-input min-h-[160px] font-mono text-xs"
-                      value={form.codeContent}
-                      onChange={(e) => setForm((f) => ({ ...f, codeContent: e.target.value }))}
-                      placeholder="Paste your code here..."
-                      spellCheck={false}
-                    />
-                  </div>
-                </>
-              )}
-
-              {/* 3D Model fields */}
-              {form.contentType === "model3d" && (
-                <div>
-                  <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.modelUrl")} *</label>
-                  <input className="dash-input" value={form.modelUrl} onChange={(e) => setForm((f) => ({ ...f, modelUrl: e.target.value }))} placeholder={t("sectionsContent.modelUrlPlaceholder")} />
-                  <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">URL to a .glb or .gltf file. Will render as an interactive 3D viewer.</p>
-                </div>
-              )}
-
-              {/* Project-specific fields */}
-              {form.contentType === "project" && (
-                <>
-                  <ImageUpload
-                    label={t("sectionsContent.coverImage")}
-                    value={form.coverImage}
-                    onChange={(url) => setForm((f) => ({ ...f, coverImage: url }))}
-                    maxSizeMB={3}
-                    recommendedDimensions={{ width: 1200, height: 675 }}
-                    acceptedFormats={["JPG", "PNG", "WEBP"]}
-                    folder="content"
-                  />
-                  {form.coverImage && (
+            {/* Tab Content */}
+            <div className="flex-1 overflow-y-auto px-6 py-5">
+              <div className="space-y-4">
+                {/* ── CONTENT TAB ── */}
+                {activeTab === "content" && (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.section")} *</label>
+                        <select className="dash-input" value={form.sectionId} onChange={(e) => setForm((f) => ({ ...f, sectionId: e.target.value }))}>
+                          <option value="">{t("sectionsContent.section")}</option>
+                          {sections.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.contentType")} *</label>
+                        <select className="dash-input" value={form.contentType} onChange={(e) => setForm((f) => ({ ...f, contentType: e.target.value }))}>
+                          {contentTypes.map((ct) => <option key={ct.value} value={ct.value}>{ct.label}</option>)}
+                        </select>
+                      </div>
+                    </div>
                     <div>
-                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.imageDescription")}</label>
-                      <input className="dash-input" value={form.coverImageDesc} onChange={(e) => setForm((f) => ({ ...f, coverImageDesc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.itemTitle")} *</label>
+                      <input className="dash-input" maxLength={60} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder={t("sectionsContent.itemTitlePlaceholder")} />
+                      <CharLimitHint max={60} current={form.title.length} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.description")}{form.contentType === "project" ? " *" : ""}</label>
+                      <textarea className="dash-input min-h-[80px]" maxLength={300} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder={t("sectionsContent.descriptionPlaceholder")} />
+                      <CharLimitHint max={300} current={form.description.length} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.tags")}</label>
+                      <input className="dash-input" value={form.tags} onChange={(e) => {
+                        const val = e.target.value;
+                        const count = val.split(",").filter((s) => s.trim()).length;
+                        if (count <= 6 || val.length < form.tags.length) setForm((f) => ({ ...f, tags: val }));
+                      }} placeholder={t("sectionsContent.tagsPlaceholder")} />
+                      <p className={`text-[10px] mt-0.5 ${form.tags.split(",").filter((s) => s.trim()).length >= 6 ? "text-[var(--danger)]" : "text-[var(--muted)]"}`}>
+                        Comma-separated ({form.tags.split(",").filter((s) => s.trim()).length}/6 max){form.tags.split(",").filter((s) => s.trim()).length >= 6 ? " — limit reached" : ""}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.longDescription")}</label>
+                      <textarea className="dash-input min-h-[120px]" value={form.longDescription} onChange={(e) => setForm((f) => ({ ...f, longDescription: e.target.value }))} placeholder={t("sectionsContent.longDescriptionPlaceholder")} />
+                      <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">{t("sectionsContent.longDescriptionHint")}</p>
+                    </div>
+
+                    {/* Video fields */}
+                    {form.contentType === "video" && (
+                      <>
+                        <div>
+                          <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.videoUrl")} *</label>
+                          <input className="dash-input" value={form.videoUrl} onChange={(e) => setForm((f) => ({ ...f, videoUrl: e.target.value }))} placeholder={t("sectionsContent.videoUrlPlaceholder")} />
+                          <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">YouTube or Vimeo URL</p>
+                        </div>
+                        <div>
+                          <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.videoDescription")}</label>
+                          <input className="dash-input" value={form.videoDesc} onChange={(e) => setForm((f) => ({ ...f, videoDesc: e.target.value }))} placeholder={t("sectionsContent.videoDescriptionPlaceholder")} />
+                        </div>
+                      </>
+                    )}
+
+                    {/* Code fields */}
+                    {form.contentType === "code" && (
+                      <>
+                        <div>
+                          <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.codeLanguage")}</label>
+                          <select className="dash-input" value={form.codeLanguage} onChange={(e) => setForm((f) => ({ ...f, codeLanguage: e.target.value }))}>
+                            <option value="">Auto-detect</option>
+                            {codeLanguages.map((l) => <option key={l} value={l}>{l}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.codeContent")} *</label>
+                          <textarea className="dash-input min-h-[160px] font-mono text-xs" value={form.codeContent} onChange={(e) => setForm((f) => ({ ...f, codeContent: e.target.value }))} placeholder="Paste your code here..." spellCheck={false} />
+                        </div>
+                      </>
+                    )}
+
+                    {/* 3D Model fields */}
+                    {form.contentType === "model3d" && (
+                      <div>
+                        <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.modelUrl")} *</label>
+                        <input className="dash-input" value={form.modelUrl} onChange={(e) => setForm((f) => ({ ...f, modelUrl: e.target.value }))} placeholder={t("sectionsContent.modelUrlPlaceholder")} />
+                        <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">URL to a .glb or .gltf file</p>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* ── MEDIA TAB ── */}
+                {activeTab === "media" && (
+                  <>
+                    {form.contentType === "project" ? (
+                      <>
+                        <ImageUpload
+                          label={t("sectionsContent.coverImage")}
+                          value={form.coverImage}
+                          onChange={(url) => setForm((f) => ({ ...f, coverImage: url }))}
+                          maxSizeMB={3}
+                          recommendedDimensions={{ width: 1200, height: 675 }}
+                          acceptedFormats={["JPG", "PNG", "WEBP"]}
+                          folder="content"
+                        />
+                        {form.coverImage && (
+                          <div>
+                            <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.imageDescription")}</label>
+                            <input className="dash-input" value={form.coverImageDesc} onChange={(e) => setForm((f) => ({ ...f, coverImageDesc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />
+                          </div>
+                        )}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
+                          <div>
+                            <ImageUpload label="Image 2" value={form.image1} onChange={(url) => setForm((f) => ({ ...f, image1: url }))} maxSizeMB={3} acceptedFormats={["JPG", "PNG", "WEBP"]} folder="content" />
+                            {form.image1 && <input className="dash-input mt-1 text-xs" value={form.image1Desc} onChange={(e) => setForm((f) => ({ ...f, image1Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
+                          </div>
+                          <div>
+                            <ImageUpload label="Image 3" value={form.image2} onChange={(url) => setForm((f) => ({ ...f, image2: url }))} maxSizeMB={3} acceptedFormats={["JPG", "PNG", "WEBP"]} folder="content" />
+                            {form.image2 && <input className="dash-input mt-1 text-xs" value={form.image2Desc} onChange={(e) => setForm((f) => ({ ...f, image2Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
+                          </div>
+                          <div>
+                            <ImageUpload label="Image 4" value={form.image3} onChange={(url) => setForm((f) => ({ ...f, image3: url }))} maxSizeMB={3} acceptedFormats={["JPG", "PNG", "WEBP"]} folder="content" />
+                            {form.image3 && <input className="dash-input mt-1 text-xs" value={form.image3Desc} onChange={(e) => setForm((f) => ({ ...f, image3Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="text-sm text-[var(--muted)] text-center py-8">Media options are available for Project type items. Switch to Content tab to change the type.</p>
+                    )}
+                  </>
+                )}
+
+                {/* ── LINKS TAB ── */}
+                {activeTab === "links" && (
+                  <>
+                    {form.contentType === "project" ? (
+                      <>
+                        {/* Link 1 */}
+                        <div className="bg-[var(--background)] rounded-lg p-4 space-y-3">
+                          <p className="text-sm font-semibold text-[var(--foreground)]">{t("sectionsContent.link1")}</p>
+                          <div>
+                            <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.liveUrlHint")}</label>
+                            <input className="dash-input" value={form.liveUrl} onChange={(e) => setForm((f) => ({ ...f, liveUrl: e.target.value }))} placeholder={t("sectionsContent.liveUrlPlaceholder")} />
+                          </div>
+                          {form.liveUrl && (
+                            <>
+                              <div>
+                                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.liveBtnText")}</label>
+                                <input className="dash-input" value={form.liveBtnText} onChange={(e) => setForm((f) => ({ ...f, liveBtnText: e.target.value }))} placeholder={t("sectionsContent.liveBtnTextPlaceholder")} />
+                              </div>
+                              <div>
+                                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.liveBtnBg")}</label>
+                                <div className="flex items-center gap-2">
+                                  <input type="color" value={form.liveBtnBg || "#6366f1"} onChange={(e) => setForm((f) => ({ ...f, liveBtnBg: e.target.value }))} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
+                                  <input className="dash-input" value={form.liveBtnBg} onChange={(e) => setForm((f) => ({ ...f, liveBtnBg: e.target.value }))} placeholder={t("common.default")} />
+                                </div>
+                              </div>
+                              <TextStyleGroup
+                                colorLabel={t("sectionsContent.liveBtnColor")} colorValue={form.liveBtnColor} onColorChange={(v) => setForm((f) => ({ ...f, liveBtnColor: v }))}
+                                fontValue={form.liveBtnFont} onFontChange={(v) => setForm((f) => ({ ...f, liveBtnFont: v }))}
+                                weightValue={form.liveBtnWeight} onWeightChange={(v) => setForm((f) => ({ ...f, liveBtnWeight: v }))}
+                              />
+                            </>
+                          )}
+                        </div>
+
+                        {/* Link 2 */}
+                        <div className="bg-[var(--background)] rounded-lg p-4 space-y-3">
+                          <p className="text-sm font-semibold text-[var(--foreground)]">{t("sectionsContent.link2")}</p>
+                          <div>
+                            <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.repoUrlHint")}</label>
+                            <input className="dash-input" value={form.repoUrl} onChange={(e) => setForm((f) => ({ ...f, repoUrl: e.target.value }))} placeholder={t("sectionsContent.repoUrlPlaceholder")} />
+                          </div>
+                          {form.repoUrl && (
+                            <>
+                              <div>
+                                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.repoBtnText")}</label>
+                                <input className="dash-input" value={form.repoBtnText} onChange={(e) => setForm((f) => ({ ...f, repoBtnText: e.target.value }))} placeholder={t("sectionsContent.repoBtnTextPlaceholder")} />
+                              </div>
+                              <div>
+                                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.repoBtnBg")}</label>
+                                <div className="flex items-center gap-2">
+                                  <input type="color" value={form.repoBtnBg || "#333333"} onChange={(e) => setForm((f) => ({ ...f, repoBtnBg: e.target.value }))} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
+                                  <input className="dash-input" value={form.repoBtnBg} onChange={(e) => setForm((f) => ({ ...f, repoBtnBg: e.target.value }))} placeholder={t("common.default")} />
+                                </div>
+                              </div>
+                              <TextStyleGroup
+                                colorLabel={t("sectionsContent.repoBtnColor")} colorValue={form.repoBtnColor} onColorChange={(v) => setForm((f) => ({ ...f, repoBtnColor: v }))}
+                                fontValue={form.repoBtnFont} onFontChange={(v) => setForm((f) => ({ ...f, repoBtnFont: v }))}
+                                weightValue={form.repoBtnWeight} onWeightChange={(v) => setForm((f) => ({ ...f, repoBtnWeight: v }))}
+                              />
+                            </>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <p className="text-sm text-[var(--muted)] text-center py-8">Link options are available for Project type items.</p>
+                    )}
+                  </>
+                )}
+
+                {/* ── STYLE TAB ── */}
+                {activeTab === "style" && (
+                  <>
+                    {/* Card background */}
+                    <div>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">
+                        {t("sectionsContent.cardBgColor")}
+                        {form.cardBg && <button onClick={() => setForm((f) => ({ ...f, cardBg: "" }))} className="ml-2 text-[var(--accent)] text-xs hover:underline">{t("common.clear")}</button>}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input type="color" value={form.cardBg || "#1a1a2e"} onChange={(e) => setForm((f) => ({ ...f, cardBg: e.target.value }))} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
+                        <input className="dash-input" value={form.cardBg} onChange={(e) => setForm((f) => ({ ...f, cardBg: e.target.value }))} placeholder={t("common.default")} />
+                      </div>
+                    </div>
+
+                    {/* Title style */}
+                    <div className="bg-[var(--background)] rounded-lg p-4 space-y-2">
+                      <p className="text-xs font-semibold text-[var(--foreground)]">{t("sectionsContent.itemTitle")}</p>
+                      <TextStyleGroup
+                        colorLabel={t("sectionsContent.titleColor")} colorValue={form.titleColor} onColorChange={(v) => setForm((f) => ({ ...f, titleColor: v }))}
+                        fontValue={form.titleFont} onFontChange={(v) => setForm((f) => ({ ...f, titleFont: v }))}
+                        weightValue={form.titleWeight} onWeightChange={(v) => setForm((f) => ({ ...f, titleWeight: v }))}
+                      />
+                    </div>
+
+                    {/* Description style */}
+                    <div className="bg-[var(--background)] rounded-lg p-4 space-y-2">
+                      <p className="text-xs font-semibold text-[var(--foreground)]">{t("sectionsContent.description")}</p>
+                      <TextStyleGroup
+                        colorLabel={t("sectionsContent.descColor")} colorValue={form.descColor} onColorChange={(v) => setForm((f) => ({ ...f, descColor: v }))}
+                        fontValue={form.descFont} onFontChange={(v) => setForm((f) => ({ ...f, descFont: v }))}
+                        weightValue={form.descWeight} onWeightChange={(v) => setForm((f) => ({ ...f, descWeight: v }))}
+                      />
+                    </div>
+
+                    {/* Tag style */}
+                    <div className="bg-[var(--background)] rounded-lg p-4 space-y-2">
+                      <p className="text-xs font-semibold text-[var(--foreground)]">{t("sectionsContent.tags")}</p>
+                      <TextStyleGroup
+                        colorLabel={t("sectionsContent.tagTextColor")} colorValue={form.tagColor} onColorChange={(v) => setForm((f) => ({ ...f, tagColor: v }))}
+                        fontValue={form.tagFont} onFontChange={(v) => setForm((f) => ({ ...f, tagFont: v }))}
+                        weightValue={form.tagWeight} onWeightChange={(v) => setForm((f) => ({ ...f, tagWeight: v }))}
+                      />
+                      <div className="mt-2">
+                        <label className="text-xs text-[var(--muted)] mb-1 block">
+                          {t("sectionsContent.tagBgColor")}
+                          {form.tagBg && <button onClick={() => setForm((f) => ({ ...f, tagBg: "" }))} className="ml-2 text-[var(--accent)] text-xs hover:underline">{t("common.clear")}</button>}
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <input type="color" value={form.tagBg || "#1a1a2e"} onChange={(e) => setForm((f) => ({ ...f, tagBg: e.target.value }))} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
+                          <input className="dash-input" value={form.tagBg} onChange={(e) => setForm((f) => ({ ...f, tagBg: e.target.value }))} placeholder={t("common.default")} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Long description style */}
+                    <div className="bg-[var(--background)] rounded-lg p-4 space-y-2">
+                      <p className="text-xs font-semibold text-[var(--foreground)]">{t("sectionsContent.longDescription")}</p>
+                      <TextStyleGroup
+                        colorLabel={t("sectionsContent.longDescColor")} colorValue={form.longDescColor} onColorChange={(v) => setForm((f) => ({ ...f, longDescColor: v }))}
+                        fontValue={form.longDescFont} onFontChange={(v) => setForm((f) => ({ ...f, longDescFont: v }))}
+                        weightValue={form.longDescWeight} onWeightChange={(v) => setForm((f) => ({ ...f, longDescWeight: v }))}
+                      />
+                    </div>
+
+                    {/* Image description style */}
+                    <div className="bg-[var(--background)] rounded-lg p-4 space-y-2">
+                      <p className="text-xs font-semibold text-[var(--foreground)]">{t("sectionsContent.imageDescription")}</p>
                       <TextStyleGroup
                         colorLabel={t("sectionsContent.imgDescColor")} colorValue={form.imgDescColor} onColorChange={(v) => setForm((f) => ({ ...f, imgDescColor: v }))}
                         fontValue={form.imgDescFont} onFontChange={(v) => setForm((f) => ({ ...f, imgDescFont: v }))}
                         weightValue={form.imgDescWeight} onWeightChange={(v) => setForm((f) => ({ ...f, imgDescWeight: v }))}
                       />
                     </div>
-                  )}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <div>
-                      <ImageUpload
-                        label="Image 2"
-                        value={form.image1}
-                        onChange={(url) => setForm((f) => ({ ...f, image1: url }))}
-                        maxSizeMB={3}
-                        acceptedFormats={["JPG", "PNG", "WEBP"]}
-                        folder="content"
-                      />
-                      {form.image1 && <input className="dash-input mt-1 text-xs" value={form.image1Desc} onChange={(e) => setForm((f) => ({ ...f, image1Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
-                    </div>
-                    <div>
-                      <ImageUpload
-                        label="Image 3"
-                        value={form.image2}
-                        onChange={(url) => setForm((f) => ({ ...f, image2: url }))}
-                        maxSizeMB={3}
-                        acceptedFormats={["JPG", "PNG", "WEBP"]}
-                        folder="content"
-                      />
-                      {form.image2 && <input className="dash-input mt-1 text-xs" value={form.image2Desc} onChange={(e) => setForm((f) => ({ ...f, image2Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
-                    </div>
-                    <div>
-                      <ImageUpload
-                        label="Image 4"
-                        value={form.image3}
-                        onChange={(url) => setForm((f) => ({ ...f, image3: url }))}
-                        maxSizeMB={3}
-                        acceptedFormats={["JPG", "PNG", "WEBP"]}
-                        folder="content"
-                      />
-                      {form.image3 && <input className="dash-input mt-1 text-xs" value={form.image3Desc} onChange={(e) => setForm((f) => ({ ...f, image3Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <div>
-                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.link1")}</label>
-                      <input className="dash-input" value={form.liveUrl} onChange={(e) => setForm((f) => ({ ...f, liveUrl: e.target.value }))} placeholder={t("sectionsContent.liveUrlPlaceholder")} />
-                    </div>
-                    <div>
-                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.link2")}</label>
-                      <input className="dash-input" value={form.repoUrl} onChange={(e) => setForm((f) => ({ ...f, repoUrl: e.target.value }))} placeholder={t("sectionsContent.repoUrlPlaceholder")} />
-                    </div>
-                  </div>
-                  {/* P-2: Live Button Styling */}
-                  {form.liveUrl && (
-                    <div className="border-t border-[var(--border)] pt-3 mt-3">
-                      <p className="text-xs text-[var(--muted)] font-semibold mb-2">{t("sectionsContent.liveBtnBg")}</p>
-                      <TextStyleGroup
-                        colorLabel={t("sectionsContent.liveBtnBg")} colorValue={form.liveBtnBg} onColorChange={(v) => setForm((f) => ({ ...f, liveBtnBg: v }))}
-                        fontValue={form.liveBtnFont} onFontChange={(v) => setForm((f) => ({ ...f, liveBtnFont: v }))}
-                        weightValue={form.liveBtnWeight} onWeightChange={(v) => setForm((f) => ({ ...f, liveBtnWeight: v }))}
-                      />
-                    </div>
-                  )}
-                  {/* P-2: Repo Button Styling */}
-                  {form.repoUrl && (
-                    <div className="border-t border-[var(--border)] pt-3 mt-3">
-                      <p className="text-xs text-[var(--muted)] font-semibold mb-2">{t("sectionsContent.repoBtnBg")}</p>
-                      <TextStyleGroup
-                        colorLabel={t("sectionsContent.repoBtnBg")} colorValue={form.repoBtnBg} onColorChange={(v) => setForm((f) => ({ ...f, repoBtnBg: v }))}
-                        fontValue={form.repoBtnFont} onFontChange={(v) => setForm((f) => ({ ...f, repoBtnFont: v }))}
-                        weightValue={form.repoBtnWeight} onWeightChange={(v) => setForm((f) => ({ ...f, repoBtnWeight: v }))}
-                      />
-                    </div>
-                  )}
-                </>
-              )}
+                  </>
+                )}
+              </div>
             </div>
 
-            {error && <p className="text-[var(--danger)] text-xs mt-3">{error}</p>}
-
-            <div className="flex justify-end gap-2 mt-5">
-              <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">{t("common.cancel")}</button>
-              <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
-                {saving ? t("common.saving") : editingId ? t("common.update") : t("common.create")}
-              </button>
+            {/* Footer */}
+            <div className="shrink-0 border-t border-[var(--border)] px-6 py-4 flex items-center justify-between">
+              {error && <p className="text-[var(--danger)] text-xs mr-4 truncate">{error}</p>}
+              <div className="flex gap-2 ml-auto">
+                <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">{t("common.cancel")}</button>
+                <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
+                  {saving ? t("common.saving") : editingId ? t("common.update") : t("common.create")}
+                </button>
+              </div>
             </div>
           </div>
         </div>

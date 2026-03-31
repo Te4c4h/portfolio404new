@@ -129,6 +129,7 @@ export default function SectionsPage() {
   const [slugManual, setSlugManual] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState<"content" | "style">("content");
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -152,6 +153,7 @@ export default function SectionsPage() {
     setForm(emptyModal);
     setSlugManual(false);
     setError("");
+    setActiveTab("content");
     setModalOpen(true);
   };
 
@@ -165,6 +167,7 @@ export default function SectionsPage() {
     });
     setSlugManual(true);
     setError("");
+    setActiveTab("content");
     setModalOpen(true);
   };
 
@@ -277,103 +280,150 @@ export default function SectionsPage() {
         </DndContext>
       )}
 
-      {/* Modal */}
+      {/* Slide-in Drawer */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-[var(--overlay)] z-50 flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">
-              {editingId ? t("sections.editSection") : t("sections.addSection")}
-            </h2>
+        <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setModalOpen(false)}>
+          <div className="absolute inset-0 bg-[var(--overlay)]" />
+          <div
+            className="relative bg-[var(--surface)] border-l border-[var(--border)] w-full max-w-xl h-full flex flex-col animate-in slide-in-from-right duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] shrink-0">
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">
+                {editingId ? t("sections.editSection") : t("sections.addSection")}
+              </h2>
+              <button onClick={() => setModalOpen(false)} className="p-1.5 rounded-lg hover:bg-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] text-lg leading-none">&times;</button>
+            </div>
 
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sections.sectionName")} *</label>
-                <input
-                  className="dash-input"
-                  maxLength={40}
-                  value={form.name}
-                  onChange={(e) => {
-                    const name = e.target.value;
-                    setForm((f) => ({
-                      ...f,
-                      name,
-                      ...(slugManual ? {} : { slug: autoSlug(name) }),
-                    }));
-                  }}
-                  placeholder={t("sections.sectionNamePlaceholder")}
-                />
-                <CharLimitHint max={40} current={form.name.length} />
-                <TextStyleGroup
-                  colorLabel={t("sections.nameColor")} colorValue={form.nameColor} onColorChange={(v) => setForm((f) => ({ ...f, nameColor: v }))}
-                  fontValue={form.nameFont} onFontChange={(v) => setForm((f) => ({ ...f, nameFont: v }))}
-                  weightValue={form.nameWeight} onWeightChange={(v) => setForm((f) => ({ ...f, nameWeight: v }))}
-                />
-              </div>
-              <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Slug *</label>
-                <input
-                  className="dash-input"
-                  value={form.slug}
-                  onChange={(e) => {
-                    setSlugManual(true);
-                    setForm((f) => ({ ...f, slug: e.target.value }));
-                  }}
-                  placeholder="auto-generated-from-name"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sections.sectionLabel")}</label>
-                <input className="dash-input" maxLength={30} value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} placeholder={t("sections.sectionLabelPlaceholder")} />
-                <CharLimitHint max={30} current={form.label.length} />
-                <TextStyleGroup
-                  colorLabel={t("sections.labelColor")} colorValue={form.labelColor} onColorChange={(v) => setForm((f) => ({ ...f, labelColor: v }))}
-                  fontValue={form.labelFont} onFontChange={(v) => setForm((f) => ({ ...f, labelFont: v }))}
-                  weightValue={form.labelWeight} onWeightChange={(v) => setForm((f) => ({ ...f, labelWeight: v }))}
-                />
-              </div>
-              <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sections.sectionSubtitle")}</label>
-                <input className="dash-input" maxLength={100} value={form.subtitle} onChange={(e) => setForm((f) => ({ ...f, subtitle: e.target.value }))} placeholder={t("sections.sectionSubtitlePlaceholder")} />
-                <CharLimitHint max={100} current={form.subtitle.length} />
-                <TextStyleGroup
-                  colorLabel={t("sections.subtitleColor")} colorValue={form.subtitleColor} onColorChange={(v) => setForm((f) => ({ ...f, subtitleColor: v }))}
-                  fontValue={form.subtitleFont} onFontChange={(v) => setForm((f) => ({ ...f, subtitleFont: v }))}
-                  weightValue={form.subtitleWeight} onWeightChange={(v) => setForm((f) => ({ ...f, subtitleWeight: v }))}
-                />
-              </div>
-              <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">
-                  {t("sections.bgColor")}
-                  {form.backgroundColor && (
-                    <button onClick={() => setForm((f) => ({ ...f, backgroundColor: "" }))} className="ml-2 text-[var(--accent)] text-xs hover:underline">{t("common.clear")}</button>
-                  )}
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="color"
-                    value={form.backgroundColor || "#181818"}
-                    onChange={(e) => setForm((f) => ({ ...f, backgroundColor: e.target.value }))}
-                    className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer"
-                  />
-                  <input
-                    className="dash-input"
-                    value={form.backgroundColor}
-                    onChange={(e) => setForm((f) => ({ ...f, backgroundColor: e.target.value }))}
-                    placeholder="#181818 (default)"
-                  />
-                </div>
+            {/* Tabs */}
+            <div className="flex border-b border-[var(--border)] px-6 shrink-0">
+              {(["content", "style"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2.5 text-xs font-medium border-b-2 transition-colors ${
+                    activeTab === tab
+                      ? "border-[var(--accent)] text-[var(--accent)]"
+                      : "border-transparent text-[var(--muted)] hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  {t(`sections.tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`)}
+                </button>
+              ))}
+            </div>
+
+            {/* Tab Content */}
+            <div className="flex-1 overflow-y-auto px-6 py-5">
+              <div className="space-y-4">
+                {/* ── CONTENT TAB ── */}
+                {activeTab === "content" && (
+                  <>
+                    <div>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sections.sectionName")} *</label>
+                      <input
+                        className="dash-input"
+                        maxLength={40}
+                        value={form.name}
+                        onChange={(e) => {
+                          const name = e.target.value;
+                          setForm((f) => ({
+                            ...f,
+                            name,
+                            ...(slugManual ? {} : { slug: autoSlug(name) }),
+                          }));
+                        }}
+                        placeholder={t("sections.sectionNamePlaceholder")}
+                      />
+                      <CharLimitHint max={40} current={form.name.length} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">Slug *</label>
+                      <input
+                        className="dash-input"
+                        value={form.slug}
+                        onChange={(e) => {
+                          setSlugManual(true);
+                          setForm((f) => ({ ...f, slug: e.target.value }));
+                        }}
+                        placeholder="auto-generated-from-name"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sections.sectionLabel")}</label>
+                      <input className="dash-input" maxLength={30} value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} placeholder={t("sections.sectionLabelPlaceholder")} />
+                      <CharLimitHint max={30} current={form.label.length} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sections.sectionSubtitle")}</label>
+                      <input className="dash-input" maxLength={100} value={form.subtitle} onChange={(e) => setForm((f) => ({ ...f, subtitle: e.target.value }))} placeholder={t("sections.sectionSubtitlePlaceholder")} />
+                      <CharLimitHint max={100} current={form.subtitle.length} />
+                    </div>
+                  </>
+                )}
+
+                {/* ── STYLE TAB ── */}
+                {activeTab === "style" && (
+                  <>
+                    {/* Background color */}
+                    <div>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">
+                        {t("sections.bgColor")}
+                        {form.backgroundColor && (
+                          <button onClick={() => setForm((f) => ({ ...f, backgroundColor: "" }))} className="ml-2 text-[var(--accent)] text-xs hover:underline">{t("common.clear")}</button>
+                        )}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input type="color" value={form.backgroundColor || "#181818"} onChange={(e) => setForm((f) => ({ ...f, backgroundColor: e.target.value }))} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
+                        <input className="dash-input" value={form.backgroundColor} onChange={(e) => setForm((f) => ({ ...f, backgroundColor: e.target.value }))} placeholder="#181818 (default)" />
+                      </div>
+                    </div>
+
+                    {/* Name style */}
+                    <div className="bg-[var(--background)] rounded-lg p-4 space-y-2">
+                      <p className="text-xs font-semibold text-[var(--foreground)]">{t("sections.sectionName")}</p>
+                      <TextStyleGroup
+                        colorLabel={t("sections.nameColor")} colorValue={form.nameColor} onColorChange={(v) => setForm((f) => ({ ...f, nameColor: v }))}
+                        fontValue={form.nameFont} onFontChange={(v) => setForm((f) => ({ ...f, nameFont: v }))}
+                        weightValue={form.nameWeight} onWeightChange={(v) => setForm((f) => ({ ...f, nameWeight: v }))}
+                      />
+                    </div>
+
+                    {/* Label style */}
+                    <div className="bg-[var(--background)] rounded-lg p-4 space-y-2">
+                      <p className="text-xs font-semibold text-[var(--foreground)]">{t("sections.sectionLabel")}</p>
+                      <TextStyleGroup
+                        colorLabel={t("sections.labelColor")} colorValue={form.labelColor} onColorChange={(v) => setForm((f) => ({ ...f, labelColor: v }))}
+                        fontValue={form.labelFont} onFontChange={(v) => setForm((f) => ({ ...f, labelFont: v }))}
+                        weightValue={form.labelWeight} onWeightChange={(v) => setForm((f) => ({ ...f, labelWeight: v }))}
+                      />
+                    </div>
+
+                    {/* Subtitle style */}
+                    <div className="bg-[var(--background)] rounded-lg p-4 space-y-2">
+                      <p className="text-xs font-semibold text-[var(--foreground)]">{t("sections.sectionSubtitle")}</p>
+                      <TextStyleGroup
+                        colorLabel={t("sections.subtitleColor")} colorValue={form.subtitleColor} onColorChange={(v) => setForm((f) => ({ ...f, subtitleColor: v }))}
+                        fontValue={form.subtitleFont} onFontChange={(v) => setForm((f) => ({ ...f, subtitleFont: v }))}
+                        weightValue={form.subtitleWeight} onWeightChange={(v) => setForm((f) => ({ ...f, subtitleWeight: v }))}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
-            {error && <p className="text-[var(--danger)] text-xs mt-3">{error}</p>}
-
-            <div className="flex justify-end gap-2 mt-5">
-              <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">
-                {t("common.cancel")}
-              </button>
-              <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
-                {saving ? t("common.saving") : editingId ? t("common.update") : t("common.create")}
-              </button>
+            {/* Footer */}
+            <div className="shrink-0 border-t border-[var(--border)] px-6 py-4 flex items-center justify-between">
+              {error && <p className="text-[var(--danger)] text-xs mr-4 truncate">{error}</p>}
+              <div className="flex gap-2 ml-auto">
+                <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">
+                  {t("common.cancel")}
+                </button>
+                <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
+                  {saving ? t("common.saving") : editingId ? t("common.update") : t("common.create")}
+                </button>
+              </div>
             </div>
           </div>
         </div>

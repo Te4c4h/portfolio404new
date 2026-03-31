@@ -342,7 +342,9 @@
     "labelColor": "Label Color",
     "subtitleColor": "Description Color",
     "saved": "Sections saved!",
-    "nameRequired": "Section name is required"
+    "nameRequired": "Section name is required",
+    "tabContent": "Content",
+    "tabStyle": "Style"
   },
   "sectionsContent": {
     "title": "My Work",
@@ -406,6 +408,14 @@
     "videoDescription": "Video Description",
     "videoDescriptionPlaceholder": "Describe this video...",
     "duplicateTitle": "An item with this name already exists. Please choose a different title.",
+    "liveBtnText": "Link 1 Button Text",
+    "liveBtnTextPlaceholder": "View Live",
+    "repoBtnText": "Link 2 Button Text",
+    "repoBtnTextPlaceholder": "Source Code",
+    "tabContent": "Content",
+    "tabMedia": "Media",
+    "tabLinks": "Links",
+    "tabStyle": "Style",
     "areYouSure": "Are you sure?",
     "saved": "Item saved!"
   },

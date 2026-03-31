@@ -127,12 +127,14 @@ model ContentItem {
   imgDescWeight   String @default("")
 
   // P-2: Live URL button styling
+  liveBtnText     String @default("")
   liveBtnBg       String @default("")
   liveBtnColor    String @default("")
   liveBtnFont     String @default("")
   liveBtnWeight   String @default("")
 
   // P-2: Repo URL button styling
+  repoBtnText     String @default("")
   repoBtnBg       String @default("")
   repoBtnColor    String @default("")
   repoBtnFont     String @default("")
