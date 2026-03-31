@@ -128,13 +128,13 @@ export default function AccountSettingsPage() {
       });
       if (res.ok) {
         await updateSession();
-        showToast("Profile updated!");
+        showToast(t("accountSettings.profileUpdated"));
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to save");
+        alert(data.error || t("accountSettings.failedToSave"));
       }
     } catch {
-      alert("Network error");
+      alert(t("accountSettings.networkError"));
     }
     setSavingProfile(false);
   };
@@ -145,7 +145,7 @@ export default function AccountSettingsPage() {
     const trimmed = newUsername.trim().toLowerCase();
     if (trimmed === profile?.username) return;
     if (usernameStatus !== "available") {
-      setUsernameError("Username is not available");
+      setUsernameError(t("accountSettings.usernameNotAvailable"));
       return;
     }
     setSavingUsername(true);
@@ -159,7 +159,7 @@ export default function AccountSettingsPage() {
       if (res.ok) {
         // Force session refresh so JWT picks up new username from DB
         await updateSession();
-        showToast("Username updated! Redirecting...");
+        showToast(t("accountSettings.usernameUpdated"));
         setTimeout(() => {
           window.location.href = `/u/${data.username}/admin/account-settings`;
         }, 1500);
@@ -167,7 +167,7 @@ export default function AccountSettingsPage() {
         setUsernameError(data.error || "Failed to update");
       }
     } catch {
-      setUsernameError("Network error");
+      setUsernameError(t("accountSettings.networkError"));
     }
     setSavingUsername(false);
   };
@@ -177,11 +177,11 @@ export default function AccountSettingsPage() {
     setPasswordError("");
     setPasswordSuccess(false);
     if (newPassword.length < 8) {
-      setPasswordError("New password must be at least 8 characters");
+      setPasswordError(t("accountSettings.passwordMinError"));
       return;
     }
     if (newPassword !== confirmPassword) {
-      setPasswordError("Passwords do not match");
+      setPasswordError(t("accountSettings.passwordMismatch"));
       return;
     }
     setSavingPassword(true);
@@ -196,7 +196,7 @@ export default function AccountSettingsPage() {
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
-        showToast("Password changed!");
+        showToast(t("accountSettings.passwordChanged"));
       } else {
         const data = await res.json();
         setPasswordError(data.error || "Failed to change password");
@@ -216,13 +216,13 @@ export default function AccountSettingsPage() {
         await signOut({ callbackUrl: "/" });
       } else {
         const err = await r.json().catch(() => ({}));
-        alert(err.error || `Delete failed (${r.status})`);
+        alert(err.error || t("accountSettings.failedToSave"));
         setDeleting(false);
         setDeleteModalOpen(false);
       }
     } catch (e) {
       console.error("Delete account error:", e);
-      alert("Network error — please try again");
+      alert(t("accountSettings.networkError"));
       setDeleting(false);
       setDeleteModalOpen(false);
     }
@@ -242,12 +242,12 @@ export default function AccountSettingsPage() {
       if (res.ok) {
         setProfile((p) => p ? { ...p, customDomain: data.customDomain } : p);
         setDomainInput(data.customDomain);
-        showToast("Custom domain saved!");
+        showToast(t("accountSettings.domainSaved"));
       } else {
-        alert(data.error || "Failed to save domain");
+        alert(data.error || t("accountSettings.failedToSave"));
       }
     } catch {
-      alert("Network error");
+      alert(t("accountSettings.networkError"));
     }
     setSavingDomain(false);
   };
@@ -261,10 +261,10 @@ export default function AccountSettingsPage() {
         setProfile((p) => p ? { ...p, customDomain: null } : p);
         setDomainInput("");
         setDnsCheck(null);
-        showToast("Custom domain removed");
+        showToast(t("accountSettings.domainRemoved"));
       }
     } catch {
-      alert("Network error");
+      alert(t("accountSettings.networkError"));
     }
     setRemovingDomain(false);
   };
@@ -293,7 +293,7 @@ export default function AccountSettingsPage() {
           });
           const sslData = await sslRes.json();
           if (sslData.success) {
-            showToast("SSL certificate issued! Your domain is ready.");
+            showToast(t("accountSettings.sslReady"));
           }
         } catch {
           // SSL provisioning failed silently — domain still works with fallback cert
@@ -305,48 +305,48 @@ export default function AccountSettingsPage() {
     setCheckingDns(false);
   };
 
-  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
-  if (!profile) return <div className="text-[var(--muted)] text-sm">Could not load profile.</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">{t("accountSettings.loading")}</div>;
+  if (!profile) return <div className="text-[var(--muted)] text-sm">{t("accountSettings.errorLoad")}</div>;
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">Account Settings</h1>
+      <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">{t("accountSettings.title")}</h1>
 
       <div className="space-y-6">
         {/* Profile */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Profile</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("accountSettings.profile")}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">First Name</label>
-              <input className="dash-input" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" />
+              <label className="text-xs text-[var(--muted)] mb-1 block">{t("accountSettings.firstName")}</label>
+              <input className="dash-input" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder={t("accountSettings.firstName")} />
             </div>
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Last Name</label>
-              <input className="dash-input" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last Name" />
+              <label className="text-xs text-[var(--muted)] mb-1 block">{t("accountSettings.lastName")}</label>
+              <input className="dash-input" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder={t("accountSettings.lastName")} />
             </div>
           </div>
           <div className="mb-4">
-            <label className="text-xs text-[var(--muted)] mb-1 block">Email</label>
+            <label className="text-xs text-[var(--muted)] mb-1 block">{t("accountSettings.email")}</label>
             <input className="dash-input opacity-50 cursor-not-allowed" value={profile.email} readOnly />
           </div>
           <button onClick={handleSaveProfile} disabled={savingProfile} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
-            {savingProfile ? "Saving..." : "Save Changes"}
+            {savingProfile ? t("accountSettings.saving") : t("accountSettings.saveChanges")}
           </button>
         </div>
 
         {/* Username & Portfolio URL */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Username & Portfolio URL</h2>
-          <p className="text-xs text-[var(--danger)]/80 mb-3">⚠ Changing your username will change your portfolio URL.</p>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("accountSettings.usernamePortfolioUrl")}</h2>
+          <p className="text-xs text-[var(--danger)]/80 mb-3">{t("accountSettings.usernameWarning")}</p>
           <div className="mb-3">
-            <label className="text-xs text-[var(--muted)] mb-1 block">Username</label>
+            <label className="text-xs text-[var(--muted)] mb-1 block">{t("accountSettings.username")}</label>
             <div className="relative">
               <input
                 className="dash-input pr-10"
                 value={newUsername}
                 onChange={(e) => setNewUsername(e.target.value)}
-                placeholder="username"
+                placeholder={t("accountSettings.username").toLowerCase()}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2">
                 {usernameStatus === "checking" && (
@@ -368,13 +368,13 @@ export default function AccountSettingsPage() {
               </span>
             </div>
             {usernameStatus === "taken" && (
-              <p className="text-[var(--danger)] text-xs mt-1">Username is already taken</p>
+              <p className="text-[var(--danger)] text-xs mt-1">{t("accountSettings.usernameTaken")}</p>
             )}
             {usernameStatus === "available" && (
-              <p className="text-[var(--accent)] text-xs mt-1">Username is available</p>
+              <p className="text-[var(--accent)] text-xs mt-1">{t("accountSettings.usernameAvailable")}</p>
             )}
             <p className="text-[var(--muted-foreground)] text-xs mt-1">
-              Portfolio URL: <span className="text-[var(--muted)]">portfolio404.site/u/{newUsername.trim().toLowerCase() || currentUsername}</span>
+              {t("accountSettings.portfolioUrlLabel")} <span className="text-[var(--muted)]">portfolio404.site/u/{newUsername.trim().toLowerCase() || currentUsername}</span>
             </p>
           </div>
           {usernameError && <p className="text-[var(--danger)] text-sm mb-3">{usernameError}</p>}
@@ -383,15 +383,15 @@ export default function AccountSettingsPage() {
             disabled={savingUsername || usernameStatus !== "available"}
             className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50"
           >
-            {savingUsername ? "Updating..." : "Change Username"}
+            {savingUsername ? t("accountSettings.updating") : t("accountSettings.changeUsername")}
           </button>
         </div>
 
         {/* Custom Domain */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Custom Domain</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("accountSettings.customDomain")}</h2>
           <p className="text-xs text-[var(--muted)] mb-4">
-            Connect your own domain to your portfolio. Visitors will see your portfolio at your custom domain.
+            {t("accountSettings.customDomainDesc")}
           </p>
 
           {profile.customDomain ? (
@@ -404,7 +404,7 @@ export default function AccountSettingsPage() {
                   disabled={removingDomain}
                   className="px-3 py-1 rounded text-xs bg-[var(--danger)]/10 text-[var(--danger)] hover:bg-[var(--danger)]/20 transition-colors"
                 >
-                  {removingDomain ? "Removing..." : "Remove"}
+                  {removingDomain ? t("accountSettings.removing") : t("accountSettings.remove")}
                 </button>
               </div>
 
@@ -414,14 +414,14 @@ export default function AccountSettingsPage() {
                   disabled={checkingDns}
                   className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--border)] text-[var(--foreground)] hover:opacity-80 disabled:opacity-50 transition-colors"
                 >
-                  {checkingDns ? "Checking..." : "Verify DNS"}
+                  {checkingDns ? t("accountSettings.checking") : t("accountSettings.verifyDns")}
                 </button>
               </div>
 
               {dnsCheck && (
                 <div className={`p-3 rounded-lg text-xs space-y-1 ${dnsCheck.dnsConfigured ? "bg-[var(--accent)]/10 border border-[var(--accent)]/20" : "bg-[var(--danger)]/10 border border-[var(--danger)]/20"}`}>
                   <p className={`font-medium ${dnsCheck.dnsConfigured ? "text-[var(--accent)]" : "text-[var(--danger)]"}`}>
-                    {dnsCheck.dnsConfigured ? "DNS is configured correctly!" : "DNS is not configured yet"}
+                    {dnsCheck.dnsConfigured ? t("accountSettings.dnsOk") : t("accountSettings.dnsNotOk")}
                   </p>
                   {dnsCheck.aRecords && dnsCheck.aRecords.length > 0 && (
                     <p className="text-[var(--muted)]">A records: {dnsCheck.aRecords.join(", ")}</p>
@@ -433,9 +433,9 @@ export default function AccountSettingsPage() {
               )}
 
               <div className="bg-[var(--background)] rounded-lg p-4 space-y-2">
-                <p className="text-xs font-medium text-[var(--muted)] uppercase tracking-wider">DNS Setup Instructions</p>
+                <p className="text-xs font-medium text-[var(--muted)] uppercase tracking-wider">{t("accountSettings.dnsInstructions")}</p>
                 <p className="text-xs text-[var(--muted)]">
-                  Go to your domain registrar and add one of these DNS records:
+                  {t("accountSettings.dnsDesc")}
                 </p>
                 <div className="space-y-1.5 text-xs">
                   <div className="flex items-start gap-2">
@@ -444,7 +444,7 @@ export default function AccountSettingsPage() {
                       <p className="text-[var(--foreground)]">Point <code className="bg-[var(--border)] px-1 rounded">@</code> to <code className="bg-[var(--border)] px-1 rounded">109.75.40.220</code></p>
                     </div>
                   </div>
-                  <p className="text-[var(--muted)] text-center">— or —</p>
+                  <p className="text-[var(--muted)] text-center">{t("accountSettings.dnsOrSeparator")}</p>
                   <div className="flex items-start gap-2">
                     <span className="text-[var(--accent)] font-mono font-medium mt-0.5">CNAME</span>
                     <div>
@@ -452,18 +452,18 @@ export default function AccountSettingsPage() {
                     </div>
                   </div>
                 </div>
-                <p className="text-xs text-[var(--muted)] mt-2">DNS changes can take up to 24–48 hours to propagate.</p>
+                <p className="text-xs text-[var(--muted)] mt-2">{t("accountSettings.dnsPropagation")}</p>
               </div>
             </div>
           ) : (
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Domain</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("accountSettings.domain")}</label>
                 <input
                   className="dash-input"
                   value={domainInput}
                   onChange={(e) => setDomainInput(e.target.value)}
-                  placeholder="e.g. yourdomain.com"
+                  placeholder={t("accountSettings.domainPlaceholder")}
                 />
               </div>
               <button
@@ -471,7 +471,7 @@ export default function AccountSettingsPage() {
                 disabled={savingDomain || !domainInput.trim()}
                 className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50"
               >
-                {savingDomain ? "Saving..." : "Connect Domain"}
+                {savingDomain ? t("accountSettings.saving") : t("accountSettings.connectDomain")}
               </button>
             </div>
           )}
@@ -479,29 +479,29 @@ export default function AccountSettingsPage() {
 
         {/* Change Password */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Change Password</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("accountSettings.changePassword")}</h2>
           {profile.isOAuth ? (
-            <p className="text-[var(--muted)] text-sm">Your account uses Google sign-in. Password change is not available.</p>
+            <p className="text-[var(--muted)] text-sm">{t("accountSettings.oauthPassword")}</p>
           ) : (
             <>
               <div className="space-y-3 mb-4">
                 <div>
-                  <label className="text-xs text-[var(--muted)] mb-1 block">Current Password</label>
+                  <label className="text-xs text-[var(--muted)] mb-1 block">{t("accountSettings.currentPassword")}</label>
                   <input type="password" className="dash-input" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="••••••••" />
                 </div>
                 <div>
-                  <label className="text-xs text-[var(--muted)] mb-1 block">New Password</label>
-                  <input type="password" className="dash-input" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Min. 8 characters" />
+                  <label className="text-xs text-[var(--muted)] mb-1 block">{t("accountSettings.newPassword")}</label>
+                  <input type="password" className="dash-input" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder={t("accountSettings.minChars")} />
                 </div>
                 <div>
-                  <label className="text-xs text-[var(--muted)] mb-1 block">Confirm New Password</label>
-                  <input type="password" className="dash-input" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Repeat new password" />
+                  <label className="text-xs text-[var(--muted)] mb-1 block">{t("accountSettings.confirmPassword")}</label>
+                  <input type="password" className="dash-input" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder={t("accountSettings.repeatPassword")} />
                 </div>
               </div>
               {passwordError && <p className="text-[var(--danger)] text-sm mb-3">{passwordError}</p>}
-              {passwordSuccess && <p className="text-[var(--accent)] text-sm mb-3">Password changed successfully!</p>}
+              {passwordSuccess && <p className="text-[var(--accent)] text-sm mb-3">{t("accountSettings.passwordSuccess")}</p>}
               <button onClick={handleChangePassword} disabled={savingPassword} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
-                {savingPassword ? "Saving..." : "Change Password"}
+                {savingPassword ? t("accountSettings.saving") : t("accountSettings.changePassword")}
               </button>
             </>
           )}
@@ -526,9 +526,9 @@ export default function AccountSettingsPage() {
       {!isAdmin && deleteModalOpen && (
         <div className="fixed inset-0 bg-[var(--overlay)] z-50 flex items-center justify-center p-4" onClick={() => setDeleteModalOpen(false)}>
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-2">Delete Account</h2>
+            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-2">{t("accountSettings.deleteTitle")}</h2>
             <p className="text-[var(--muted)] text-sm mb-4">
-              This will permanently delete your account, portfolio, sections, content, analytics, and all settings. This cannot be undone.
+              {t("accountSettings.deleteWarning")}
             </p>
             <p className="text-[var(--muted)] text-sm mb-2">
               Type <strong className="text-[var(--danger)]">{profile.username}</strong> to confirm:
@@ -541,14 +541,14 @@ export default function AccountSettingsPage() {
             />
             <div className="flex justify-end gap-2">
               <button onClick={() => { setDeleteModalOpen(false); setDeleteConfirm(""); }} className="px-4 py-2 rounded-lg text-sm bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">
-                Cancel
+                {t("accountSettings.cancel")}
               </button>
               <button
                 onClick={handleDeleteAccount}
                 disabled={deleting || deleteConfirm !== profile.username}
                 className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)] disabled:opacity-50"
               >
-                {deleting ? "Deleting..." : "Delete Forever"}
+                {deleting ? t("accountSettings.deleting") : t("accountSettings.deleteForever")}
               </button>
             </div>
           </div>

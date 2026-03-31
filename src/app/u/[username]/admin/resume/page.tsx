@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { FiPlus, FiTrash2, FiSave, FiDownload, FiEye, FiEyeOff } from "react-icons/fi";
 import Toast from "@/components/Toast";
 import ImageUpload from "@/components/ImageUpload";
+import { useTranslation } from "@/lib/i18n/LanguageProvider";
 // jsPDF and docx are dynamically imported at use-time to reduce initial bundle
 
 interface Experience {
@@ -65,6 +66,7 @@ const templates = [
 ];
 
 export default function ResumePage() {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const hasAccess = session?.user?.isPaid || session?.user?.isFreeAccess || session?.user?.isAdmin;
   const [resume, setResume] = useState<ResumeData | null>(null);
@@ -120,7 +122,7 @@ export default function ResumePage() {
       }),
     });
     setSaving(false);
-    setToastMsg("Resume saved!");
+    setToastMsg(t("resume.resumeSaved"));
     setToast(true);
   };
 
@@ -133,7 +135,7 @@ export default function ResumePage() {
 
   const downloadJSON = () => {
     if (!resume || !hasContent) {
-      setToastMsg("Resume data incomplete — please fill in at least one section");
+      setToastMsg(t("resume.dataIncomplete"));
       setToast(true);
       return;
     }
@@ -150,7 +152,7 @@ export default function ResumePage() {
 
   const downloadPDF = async () => {
     if (!resume || !hasContent) {
-      setToastMsg("Resume data incomplete — please fill in at least one section");
+      setToastMsg(t("resume.dataIncomplete"));
       setToast(true);
       return;
     }
@@ -374,7 +376,7 @@ export default function ResumePage() {
       doc.save(`${resume.fullName || "resume"}.pdf`);
     } catch (e) {
       console.error(e);
-      setToastMsg("Failed to generate PDF");
+      setToastMsg(t("resume.failedPdf"));
       setToast(true);
     }
     setDownloading(null);
@@ -382,7 +384,7 @@ export default function ResumePage() {
 
   const downloadDOCX = async () => {
     if (!resume || !hasContent) {
-      setToastMsg("Resume data incomplete — please fill in at least one section");
+      setToastMsg(t("resume.dataIncomplete"));
       setToast(true);
       return;
     }
@@ -541,7 +543,7 @@ export default function ResumePage() {
       URL.revokeObjectURL(url);
     } catch (e) {
       console.error(e);
-      setToastMsg("Failed to generate DOCX");
+      setToastMsg(t("resume.failedDocx"));
       setToast(true);
     }
     setDownloading(null);
@@ -617,50 +619,50 @@ export default function ResumePage() {
     setResume((r) => r ? { ...r, [key]: value } : r);
   };
 
-  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">{t("common.loading")}</div>;
   if (!resume) return <div className="text-[var(--muted)] text-sm">{error || "Could not load resume."}</div>;
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Resume Builder</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("resume.title")}</h1>
         <button
           onClick={saveInfo}
           disabled={saving}
           className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50"
         >
           <FiSave size={14} />
-          {saving ? "Saving..." : "Save"}
+          {saving ? t("common.saving") : t("common.save")}
         </button>
       </div>
 
       {/* Download Resume */}
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 mb-6">
-        <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-3">Download Resume</h2>
+        <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-3">{t("resume.downloadResume")}</h2>
         {!hasAccess ? (
           <div className="flex items-center gap-3 p-4 rounded-lg bg-[var(--accent)]/5 border border-[var(--accent)]/15">
             <FiDownload size={16} className="text-[var(--muted)] flex-shrink-0" />
             <div className="flex-1">
-              <p className="text-sm text-[var(--foreground)] font-medium">Unlock Resume Downloads</p>
-              <p className="text-xs text-[var(--muted)] mt-0.5">Activate your plan to download PDF, DOCX, and JSON exports.</p>
+              <p className="text-sm text-[var(--foreground)] font-medium">{t("billing.unlockDownloads")}</p>
+              <p className="text-xs text-[var(--muted)] mt-0.5">{t("billing.unlockDownloadsDesc")}</p>
             </div>
             <a href={`/u/${session?.user?.username}/admin/billing`} className="px-4 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors whitespace-nowrap">
-              Get Access
+              {t("billing.getAccess")}
             </a>
           </div>
         ) : (
           <div className="flex flex-wrap gap-2">
             <button onClick={downloadPDF} disabled={downloading === "pdf"} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--border)] text-[var(--foreground)] hover:opacity-80 disabled:opacity-50 transition-colors">
               <FiDownload size={14} />
-              {downloading === "pdf" ? "Generating..." : "Download PDF"}
+              {downloading === "pdf" ? t("resume.generating") : t("resume.downloadPdf")}
             </button>
             <button onClick={downloadDOCX} disabled={downloading === "docx"} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--border)] text-[var(--foreground)] hover:opacity-80 disabled:opacity-50 transition-colors">
               <FiDownload size={14} />
-              {downloading === "docx" ? "Generating..." : "Download DOCX"}
+              {downloading === "docx" ? t("resume.generating") : t("resume.downloadDocx")}
             </button>
             <button onClick={downloadJSON} disabled={downloading === "json"} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--border)] text-[var(--foreground)] hover:opacity-80 disabled:opacity-50 transition-colors">
               <FiDownload size={14} />
-              {downloading === "json" ? "Generating..." : "Export JSON"}
+              {downloading === "json" ? t("resume.generating") : t("resume.exportJson")}
             </button>
           </div>
         )}
@@ -669,26 +671,26 @@ export default function ResumePage() {
       <div className="space-y-6">
         {/* Template & Display Settings */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Template & Display</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("resume.templateDisplay")}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
-            {templates.map((t) => (
+            {templates.map((tpl) => (
               <button
-                key={t.id}
-                onClick={() => update("templateId", t.id)}
+                key={tpl.id}
+                onClick={() => update("templateId", tpl.id)}
                 className={`px-4 py-3 rounded-lg text-sm font-medium border transition-colors ${
-                  resume.templateId === t.id
+                  resume.templateId === tpl.id
                     ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]"
                     : "border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] hover:border-[var(--muted-foreground)]"
                 }`}
               >
-                {t.label}
+                {tpl.label}
               </button>
             ))}
           </div>
 
           {/* Accent color */}
           <div className="mb-5">
-            <label className="text-xs text-[var(--muted)] mb-2 block">Accent Color <span className="text-[var(--muted)]/60">(used in headings & downloads)</span></label>
+            <label className="text-xs text-[var(--muted)] mb-2 block">{t("resume.accentColor")} <span className="text-[var(--muted)]/60">({t("resume.accentColorHint")})</span></label>
             <div className="flex items-center gap-3">
               <input
                 type="color"
@@ -704,7 +706,7 @@ export default function ResumePage() {
               />
               {resume.accentColor && (
                 <button onClick={() => update("accentColor", "")} className="text-xs text-[var(--muted)] hover:text-[var(--foreground)]">
-                  Reset
+                  {t("resume.reset")}
                 </button>
               )}
             </div>
@@ -712,13 +714,13 @@ export default function ResumePage() {
 
           {/* Section visibility toggles */}
           <div className="mb-5">
-            <label className="text-xs text-[var(--muted)] mb-2 block">Show / Hide Sections</label>
+            <label className="text-xs text-[var(--muted)] mb-2 block">{t("resume.showHide")}</label>
             <div className="flex flex-wrap gap-2">
               {([
-                ["showSummary", "Summary"],
-                ["showExperience", "Experience"],
-                ["showEducation", "Education"],
-                ["showSkills", "Skills"],
+                ["showSummary", t("resume.summary")],
+                ["showExperience", t("resume.experience")],
+                ["showEducation", t("resume.education")],
+                ["showSkills", t("resume.skills")],
               ] as [keyof ResumeData, string][]).map(([key, label]) => (
                 <button
                   key={key}
@@ -743,18 +745,18 @@ export default function ResumePage() {
               onChange={(e) => update("showOnPortfolio", e.target.checked)}
               className="w-4 h-4 rounded border-[var(--border)] accent-[var(--accent)]"
             />
-            Show resume on public portfolio
+            {t("resume.showOnPortfolio")}
           </label>
         </div>
 
         {/* Personal Info */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Personal Information</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("resume.personalInfo")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-6 mb-4">
             {/* Photo */}
             <div>
               <ImageUpload
-                label="Profile Photo"
+                label={t("resume.profilePhoto")}
                 value={resume.photoUrl}
                 onChange={(url) => update("photoUrl", url)}
                 maxSizeMB={2}
@@ -766,35 +768,35 @@ export default function ResumePage() {
             {/* Fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Full Name</label>
-                <input className="dash-input" value={resume.fullName} onChange={(e) => update("fullName", e.target.value)} placeholder="John Doe" />
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("resume.fullName")}</label>
+                <input className="dash-input" value={resume.fullName} onChange={(e) => update("fullName", e.target.value)} placeholder={t("resume.fullName")} />
               </div>
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Job Title</label>
-                <input className="dash-input" value={resume.jobTitle} onChange={(e) => update("jobTitle", e.target.value)} placeholder="Full Stack Developer" />
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("resume.jobTitle")}</label>
+                <input className="dash-input" value={resume.jobTitle} onChange={(e) => update("jobTitle", e.target.value)} placeholder={t("resume.jobTitle")} />
               </div>
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Email</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("resume.email")}</label>
                 <input className="dash-input" value={resume.email} onChange={(e) => update("email", e.target.value)} placeholder="john@example.com" />
               </div>
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Phone</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("resume.phone")}</label>
                 <input className="dash-input" value={resume.phone} onChange={(e) => update("phone", e.target.value)} placeholder="+1 555 123 4567" />
               </div>
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Location</label>
-                <input className="dash-input" value={resume.location} onChange={(e) => update("location", e.target.value)} placeholder="New York, NY" />
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("resume.location")}</label>
+                <input className="dash-input" value={resume.location} onChange={(e) => update("location", e.target.value)} placeholder={t("resume.location")} />
               </div>
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Website / LinkedIn</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("resume.website")}</label>
                 <input className="dash-input" value={resume.website} onChange={(e) => update("website", e.target.value)} placeholder="https://..." />
               </div>
             </div>
           </div>
           {resume.showSummary && (
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Professional Summary <span className="text-[var(--muted)]/60">(tip: write in first person for AI tools)</span></label>
-              <textarea className="dash-input min-h-[100px]" value={resume.summary} onChange={(e) => update("summary", e.target.value)} placeholder="Results-driven developer with X years of experience in..." />
+              <label className="text-xs text-[var(--muted)] mb-1 block">{t("resume.profSummary")} <span className="text-[var(--muted)]/60">({t("resume.profSummaryHint")})</span></label>
+              <textarea className="dash-input min-h-[100px]" value={resume.summary} onChange={(e) => update("summary", e.target.value)} placeholder={t("resume.summaryPlaceholder")} />
             </div>
           )}
         </div>
@@ -802,32 +804,32 @@ export default function ResumePage() {
         {/* Experience */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Experience</h2>
+            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">{t("resume.experience")}</h2>
             <button onClick={addExperience} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]">
-              <FiPlus size={12} /> Add
+              <FiPlus size={12} /> {t("common.add")}
             </button>
           </div>
           {resume.experiences.length === 0 && (
-            <p className="text-[var(--muted-foreground)] text-sm text-center py-4">No experience entries yet.</p>
+            <p className="text-[var(--muted-foreground)] text-sm text-center py-4">{t("resume.noExperience")}</p>
           )}
           <div className="space-y-4">
             {resume.experiences.map((exp) => (
               <div key={exp.id} className="border border-[var(--border)] rounded-lg p-4 space-y-2">
                 <div className="flex items-start justify-between">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 flex-1">
-                    <input className="dash-input" defaultValue={exp.position} onBlur={(e) => updateExperience(exp.id, { position: e.target.value })} placeholder="Position" />
-                    <input className="dash-input" defaultValue={exp.company} onBlur={(e) => updateExperience(exp.id, { company: e.target.value })} placeholder="Company" />
+                    <input className="dash-input" defaultValue={exp.position} onBlur={(e) => updateExperience(exp.id, { position: e.target.value })} placeholder={t("resume.position")} />
+                    <input className="dash-input" defaultValue={exp.company} onBlur={(e) => updateExperience(exp.id, { company: e.target.value })} placeholder={t("resume.company")} />
                   </div>
                   <button onClick={() => deleteExperience(exp.id)} className="ml-2 p-1.5 text-[var(--muted)] hover:text-[var(--danger)] transition-colors">
                     <FiTrash2 size={14} />
                   </button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <input className="dash-input" defaultValue={exp.location} onBlur={(e) => updateExperience(exp.id, { location: e.target.value })} placeholder="Location" />
-                  <input className="dash-input" defaultValue={exp.startDate} onBlur={(e) => updateExperience(exp.id, { startDate: e.target.value })} placeholder="Start (e.g. Jan 2022)" />
-                  <input className="dash-input" defaultValue={exp.endDate} onBlur={(e) => updateExperience(exp.id, { endDate: e.target.value })} placeholder="End (or Present)" />
+                  <input className="dash-input" defaultValue={exp.location} onBlur={(e) => updateExperience(exp.id, { location: e.target.value })} placeholder={t("resume.location")} />
+                  <input className="dash-input" defaultValue={exp.startDate} onBlur={(e) => updateExperience(exp.id, { startDate: e.target.value })} placeholder={t("resume.startDate")} />
+                  <input className="dash-input" defaultValue={exp.endDate} onBlur={(e) => updateExperience(exp.id, { endDate: e.target.value })} placeholder={t("resume.endDate")} />
                 </div>
-                <textarea className="dash-input min-h-[60px] text-xs" defaultValue={exp.description} onBlur={(e) => updateExperience(exp.id, { description: e.target.value })} placeholder="Description of responsibilities and achievements..." />
+                <textarea className="dash-input min-h-[60px] text-xs" defaultValue={exp.description} onBlur={(e) => updateExperience(exp.id, { description: e.target.value })} placeholder={t("resume.descriptionPlaceholder")} />
               </div>
             ))}
           </div>
@@ -836,32 +838,32 @@ export default function ResumePage() {
         {/* Education */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Education</h2>
+            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">{t("resume.education")}</h2>
             <button onClick={addEducation} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]">
-              <FiPlus size={12} /> Add
+              <FiPlus size={12} /> {t("common.add")}
             </button>
           </div>
           {resume.educations.length === 0 && (
-            <p className="text-[var(--muted-foreground)] text-sm text-center py-4">No education entries yet.</p>
+            <p className="text-[var(--muted-foreground)] text-sm text-center py-4">{t("resume.noEducation")}</p>
           )}
           <div className="space-y-4">
             {resume.educations.map((edu) => (
               <div key={edu.id} className="border border-[var(--border)] rounded-lg p-4 space-y-2">
                 <div className="flex items-start justify-between">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 flex-1">
-                    <input className="dash-input" defaultValue={edu.school} onBlur={(e) => updateEducation(edu.id, { school: e.target.value })} placeholder="School / University" />
-                    <input className="dash-input" defaultValue={edu.degree} onBlur={(e) => updateEducation(edu.id, { degree: e.target.value })} placeholder="Degree" />
+                    <input className="dash-input" defaultValue={edu.school} onBlur={(e) => updateEducation(edu.id, { school: e.target.value })} placeholder={t("resume.school")} />
+                    <input className="dash-input" defaultValue={edu.degree} onBlur={(e) => updateEducation(edu.id, { degree: e.target.value })} placeholder={t("resume.degree")} />
                   </div>
                   <button onClick={() => deleteEducation(edu.id)} className="ml-2 p-1.5 text-[var(--muted)] hover:text-[var(--danger)] transition-colors">
                     <FiTrash2 size={14} />
                   </button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <input className="dash-input" defaultValue={edu.field} onBlur={(e) => updateEducation(edu.id, { field: e.target.value })} placeholder="Field of Study" />
-                  <input className="dash-input" defaultValue={edu.startDate} onBlur={(e) => updateEducation(edu.id, { startDate: e.target.value })} placeholder="Start" />
-                  <input className="dash-input" defaultValue={edu.endDate} onBlur={(e) => updateEducation(edu.id, { endDate: e.target.value })} placeholder="End" />
+                  <input className="dash-input" defaultValue={edu.field} onBlur={(e) => updateEducation(edu.id, { field: e.target.value })} placeholder={t("resume.fieldOfStudy")} />
+                  <input className="dash-input" defaultValue={edu.startDate} onBlur={(e) => updateEducation(edu.id, { startDate: e.target.value })} placeholder={t("resume.start")} />
+                  <input className="dash-input" defaultValue={edu.endDate} onBlur={(e) => updateEducation(edu.id, { endDate: e.target.value })} placeholder={t("resume.end")} />
                 </div>
-                <textarea className="dash-input min-h-[60px] text-xs" defaultValue={edu.description} onBlur={(e) => updateEducation(edu.id, { description: e.target.value })} placeholder="Additional details..." />
+                <textarea className="dash-input min-h-[60px] text-xs" defaultValue={edu.description} onBlur={(e) => updateEducation(edu.id, { description: e.target.value })} placeholder={t("resume.additionalDetails")} />
               </div>
             ))}
           </div>
@@ -870,24 +872,24 @@ export default function ResumePage() {
         {/* Skills */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Skills</h2>
+            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">{t("resume.skills")}</h2>
             <button onClick={addSkill} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]">
-              <FiPlus size={12} /> Add
+              <FiPlus size={12} /> {t("common.add")}
             </button>
           </div>
           {resume.skills.length === 0 && (
-            <p className="text-[var(--muted-foreground)] text-sm text-center py-4">No skills added yet.</p>
+            <p className="text-[var(--muted-foreground)] text-sm text-center py-4">{t("resume.noSkills")}</p>
           )}
           <div className="space-y-2">
             {resume.skills.map((skill) => (
               <div key={skill.id} className="flex items-center gap-2">
-                <input className="dash-input flex-1" defaultValue={skill.name} onBlur={(e) => updateSkill(skill.id, { name: e.target.value })} placeholder="Skill name" />
+                <input className="dash-input flex-1" defaultValue={skill.name} onBlur={(e) => updateSkill(skill.id, { name: e.target.value })} placeholder={t("resume.skillName")} />
                 <select className="dash-input w-32" defaultValue={skill.level} onChange={(e) => updateSkill(skill.id, { level: e.target.value })}>
-                  <option value="">Level</option>
-                  <option value="Beginner">Beginner</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Advanced">Advanced</option>
-                  <option value="Expert">Expert</option>
+                  <option value="">{t("resume.level")}</option>
+                  <option value="Beginner">{t("resume.beginner")}</option>
+                  <option value="Intermediate">{t("resume.intermediate")}</option>
+                  <option value="Advanced">{t("resume.advanced")}</option>
+                  <option value="Expert">{t("resume.expert")}</option>
                 </select>
                 <button onClick={() => deleteSkill(skill.id)} className="p-1.5 text-[var(--muted)] hover:text-[var(--danger)] transition-colors">
                   <FiTrash2 size={14} />

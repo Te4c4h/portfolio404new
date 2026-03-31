@@ -13,6 +13,7 @@ import Image from "next/image";
 import Toast from "@/components/Toast";
 import ImageUpload from "@/components/ImageUpload";
 import { TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
+import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
 interface Section {
   id: string;
@@ -112,6 +113,7 @@ function SortableRow({
   deletingId: string | null;
   setDeletingId: (id: string | null) => void;
 }) {
+  const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
   const style = { transform: CSS.Transform.toString(transform), transition };
 
@@ -140,9 +142,9 @@ function SortableRow({
       </div>
       {deletingId === item.id ? (
         <div className="flex items-center gap-2">
-          <span className="text-[var(--danger)] text-xs">Are you sure?</span>
-          <button onClick={() => onDelete(item.id)} className="px-3 py-1 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)]">Delete</button>
-          <button onClick={() => setDeletingId(null)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">Cancel</button>
+          <span className="text-[var(--danger)] text-xs">{t("sectionsContent.areYouSure")}</span>
+          <button onClick={() => onDelete(item.id)} className="px-3 py-1 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)]">{t("common.delete")}</button>
+          <button onClick={() => setDeletingId(null)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">{t("common.cancel")}</button>
         </div>
       ) : (
         <div className="flex items-center gap-2">
@@ -159,6 +161,7 @@ function SortableRow({
 }
 
 export default function ContentPage() {
+  const { t } = useTranslation();
   const [sections, setSections] = useState<Section[]>([]);
   const [items, setItems] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -239,9 +242,9 @@ export default function ContentPage() {
   };
 
   const handleSave = async () => {
-    if (!form.sectionId) { setError("Section is required"); return; }
-    if (!form.title.trim()) { setError("Title is required"); return; }
-    if (form.contentType === "project" && !form.description.trim()) { setError("Description is required"); return; }
+    if (!form.sectionId) { setError(t("sectionsContent.sectionRequired")); return; }
+    if (!form.title.trim()) { setError(t("sectionsContent.titleRequired")); return; }
+    if (form.contentType === "project" && !form.description.trim()) { setError(t("sectionsContent.descRequired")); return; }
     setSaving(true);
     setError("");
 
@@ -304,25 +307,25 @@ export default function ContentPage() {
     }
   };
 
-  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">{t("common.loading")}</div>;
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Projects</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("sectionsContent.title")}</h1>
         {sections.length > 0 && (
           <button
             onClick={openAdd}
             disabled={filtered.length >= 6}
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <FiPlus size={16} /> Add
+            <FiPlus size={16} /> {t("sectionsContent.addItem")}
           </button>
         )}
       </div>
 
       {sections.length === 0 ? (
-        <p className="text-[var(--muted-foreground)] text-sm text-center py-12">No sections yet — go to Portfolio → Sections to create one.</p>
+        <p className="text-[var(--muted-foreground)] text-sm text-center py-12">{t("sectionsContent.noContent")}</p>
       ) : (
         <>
       {/* Filter Tabs */}
@@ -344,7 +347,7 @@ export default function ContentPage() {
       )}
 
       {filtered.length === 0 ? (
-        <p className="text-[var(--muted-foreground)] text-sm text-center py-12">No content yet.</p>
+        <p className="text-[var(--muted-foreground)] text-sm text-center py-12">{t("sectionsContent.noContent")}</p>
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={filtered.map((i) => i.id)} strategy={verticalListSortingStrategy}>
@@ -372,20 +375,20 @@ export default function ContentPage() {
         <div className="fixed inset-0 bg-[var(--overlay)] z-50 flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">
-              {editingId ? "Edit Content" : "Add Content"}
+              {editingId ? t("sectionsContent.editItem") : t("sectionsContent.addItem")}
             </h2>
 
             <div className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div>
-                  <label className="text-xs text-[var(--muted)] mb-1 block">Section *</label>
+                  <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.section")} *</label>
                   <select className="dash-input" value={form.sectionId} onChange={(e) => setForm((f) => ({ ...f, sectionId: e.target.value }))}>
-                    <option value="">Select section</option>
+                    <option value="">{t("sectionsContent.section")}</option>
                     {sections.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-[var(--muted)] mb-1 block">Type *</label>
+                  <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.contentType")} *</label>
                   <select className="dash-input" value={form.contentType} onChange={(e) => setForm((f) => ({ ...f, contentType: e.target.value }))}>
                     {contentTypes.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                   </select>
@@ -394,46 +397,46 @@ export default function ContentPage() {
               {/* Card Background Color */}
               <div>
                 <label className="text-xs text-[var(--muted)] mb-1 block">
-                  Card Background Color
-                  {form.cardBg && <button onClick={() => setForm((f) => ({ ...f, cardBg: "" }))} className="ml-2 text-[var(--accent)] text-xs hover:underline">Clear</button>}
+                  {t("sectionsContent.cardBgColor")}
+                  {form.cardBg && <button onClick={() => setForm((f) => ({ ...f, cardBg: "" }))} className="ml-2 text-[var(--accent)] text-xs hover:underline">{t("common.clear")}</button>}
                 </label>
                 <div className="flex items-center gap-2">
                   <input type="color" value={form.cardBg || "#1a1a2e"} onChange={(e) => setForm((f) => ({ ...f, cardBg: e.target.value }))} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
-                  <input className="dash-input" value={form.cardBg} onChange={(e) => setForm((f) => ({ ...f, cardBg: e.target.value }))} placeholder="Default" />
+                  <input className="dash-input" value={form.cardBg} onChange={(e) => setForm((f) => ({ ...f, cardBg: e.target.value }))} placeholder={t("common.default")} />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Title *</label>
-                <input className="dash-input" maxLength={60} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Content title" />
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.itemTitle")} *</label>
+                <input className="dash-input" maxLength={60} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder={t("sectionsContent.itemTitlePlaceholder")} />
                 <CharLimitHint max={60} current={form.title.length} />
                 <TextStyleGroup
-                  colorLabel="Title Color" colorValue={form.titleColor} onColorChange={(v) => setForm((f) => ({ ...f, titleColor: v }))}
+                  colorLabel={t("sectionsContent.titleColor")} colorValue={form.titleColor} onColorChange={(v) => setForm((f) => ({ ...f, titleColor: v }))}
                   fontValue={form.titleFont} onFontChange={(v) => setForm((f) => ({ ...f, titleFont: v }))}
                   weightValue={form.titleWeight} onWeightChange={(v) => setForm((f) => ({ ...f, titleWeight: v }))}
                 />
               </div>
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Description{form.contentType === "project" ? " *" : ""}</label>
-                <textarea className="dash-input min-h-[80px]" maxLength={300} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" />
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.description")}{form.contentType === "project" ? " *" : ""}</label>
+                <textarea className="dash-input min-h-[80px]" maxLength={300} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder={t("sectionsContent.descriptionPlaceholder")} />
                 <CharLimitHint max={300} current={form.description.length} />
                 <TextStyleGroup
-                  colorLabel="Description Color" colorValue={form.descColor} onColorChange={(v) => setForm((f) => ({ ...f, descColor: v }))}
+                  colorLabel={t("sectionsContent.descColor")} colorValue={form.descColor} onColorChange={(v) => setForm((f) => ({ ...f, descColor: v }))}
                   fontValue={form.descFont} onFontChange={(v) => setForm((f) => ({ ...f, descFont: v }))}
                   weightValue={form.descWeight} onWeightChange={(v) => setForm((f) => ({ ...f, descWeight: v }))}
                 />
               </div>
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Tags</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.tags")}</label>
                 <input className="dash-input" value={form.tags} onChange={(e) => {
                   const val = e.target.value;
                   const count = val.split(",").filter((s) => s.trim()).length;
                   if (count <= 6 || val.length < form.tags.length) setForm((f) => ({ ...f, tags: val }));
-                }} placeholder="React, Next.js, TypeScript" />
+                }} placeholder={t("sectionsContent.tagsPlaceholder")} />
                 <p className={`text-[10px] mt-0.5 ${form.tags.split(",").filter((s) => s.trim()).length >= 6 ? "text-[var(--danger)]" : "text-[var(--muted)]"}`}>
                   Comma-separated ({form.tags.split(",").filter((s) => s.trim()).length}/6 max){form.tags.split(",").filter((s) => s.trim()).length >= 6 ? " — limit reached" : ""}
                 </p>
                 <TextStyleGroup
-                  colorLabel="Tag Text Color" colorValue={form.tagColor} onColorChange={(v) => setForm((f) => ({ ...f, tagColor: v }))}
+                  colorLabel={t("sectionsContent.tagTextColor")} colorValue={form.tagColor} onColorChange={(v) => setForm((f) => ({ ...f, tagColor: v }))}
                   fontValue={form.tagFont} onFontChange={(v) => setForm((f) => ({ ...f, tagFont: v }))}
                   weightValue={form.tagWeight} onWeightChange={(v) => setForm((f) => ({ ...f, tagWeight: v }))}
                 />
@@ -442,8 +445,8 @@ export default function ContentPage() {
               {/* Video fields */}
               {form.contentType === "video" && (
                 <div>
-                  <label className="text-xs text-[var(--muted)] mb-1 block">Video URL *</label>
-                  <input className="dash-input" value={form.videoUrl} onChange={(e) => setForm((f) => ({ ...f, videoUrl: e.target.value }))} placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..." />
+                  <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.videoUrl")} *</label>
+                  <input className="dash-input" value={form.videoUrl} onChange={(e) => setForm((f) => ({ ...f, videoUrl: e.target.value }))} placeholder={t("sectionsContent.videoUrlPlaceholder")} />
                   <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">YouTube or Vimeo URL. Will be embedded as a player.</p>
                 </div>
               )}
@@ -452,14 +455,14 @@ export default function ContentPage() {
               {form.contentType === "code" && (
                 <>
                   <div>
-                    <label className="text-xs text-[var(--muted)] mb-1 block">Language</label>
+                    <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.codeLanguage")}</label>
                     <select className="dash-input" value={form.codeLanguage} onChange={(e) => setForm((f) => ({ ...f, codeLanguage: e.target.value }))}>
                       <option value="">Auto-detect</option>
                       {codeLanguages.map((l) => <option key={l} value={l}>{l}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs text-[var(--muted)] mb-1 block">Code *</label>
+                    <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.codeContent")} *</label>
                     <textarea
                       className="dash-input min-h-[160px] font-mono text-xs"
                       value={form.codeContent}
@@ -474,8 +477,8 @@ export default function ContentPage() {
               {/* 3D Model fields */}
               {form.contentType === "model3d" && (
                 <div>
-                  <label className="text-xs text-[var(--muted)] mb-1 block">3D Model URL *</label>
-                  <input className="dash-input" value={form.modelUrl} onChange={(e) => setForm((f) => ({ ...f, modelUrl: e.target.value }))} placeholder="https://... (.glb or .gltf)" />
+                  <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.modelUrl")} *</label>
+                  <input className="dash-input" value={form.modelUrl} onChange={(e) => setForm((f) => ({ ...f, modelUrl: e.target.value }))} placeholder={t("sectionsContent.modelUrlPlaceholder")} />
                   <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">URL to a .glb or .gltf file. Will render as an interactive 3D viewer.</p>
                 </div>
               )}
@@ -484,7 +487,7 @@ export default function ContentPage() {
               {form.contentType === "project" && (
                 <>
                   <ImageUpload
-                    label="Cover Image"
+                    label={t("sectionsContent.coverImage")}
                     value={form.coverImage}
                     onChange={(url) => setForm((f) => ({ ...f, coverImage: url }))}
                     maxSizeMB={3}
@@ -520,20 +523,20 @@ export default function ContentPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div>
-                      <label className="text-xs text-[var(--muted)] mb-1 block">Live URL</label>
-                      <input className="dash-input" value={form.liveUrl} onChange={(e) => setForm((f) => ({ ...f, liveUrl: e.target.value }))} placeholder="https://..." />
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.liveUrl")}</label>
+                      <input className="dash-input" value={form.liveUrl} onChange={(e) => setForm((f) => ({ ...f, liveUrl: e.target.value }))} placeholder={t("sectionsContent.liveUrlPlaceholder")} />
                     </div>
                     <div>
-                      <label className="text-xs text-[var(--muted)] mb-1 block">Repo URL</label>
-                      <input className="dash-input" value={form.repoUrl} onChange={(e) => setForm((f) => ({ ...f, repoUrl: e.target.value }))} placeholder="https://..." />
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.repoUrl")}</label>
+                      <input className="dash-input" value={form.repoUrl} onChange={(e) => setForm((f) => ({ ...f, repoUrl: e.target.value }))} placeholder={t("sectionsContent.repoUrlPlaceholder")} />
                     </div>
                   </div>
                   {/* P-2: Live Button Styling */}
                   {form.liveUrl && (
                     <div className="border-t border-[var(--border)] pt-3 mt-3">
-                      <p className="text-xs text-[var(--muted)] font-semibold mb-2">Live Button Styling</p>
+                      <p className="text-xs text-[var(--muted)] font-semibold mb-2">{t("sectionsContent.liveBtnBg")}</p>
                       <TextStyleGroup
-                        colorLabel="Background" colorValue={form.liveBtnBg} onColorChange={(v) => setForm((f) => ({ ...f, liveBtnBg: v }))}
+                        colorLabel={t("sectionsContent.liveBtnBg")} colorValue={form.liveBtnBg} onColorChange={(v) => setForm((f) => ({ ...f, liveBtnBg: v }))}
                         fontValue={form.liveBtnFont} onFontChange={(v) => setForm((f) => ({ ...f, liveBtnFont: v }))}
                         weightValue={form.liveBtnWeight} onWeightChange={(v) => setForm((f) => ({ ...f, liveBtnWeight: v }))}
                       />
@@ -542,9 +545,9 @@ export default function ContentPage() {
                   {/* P-2: Repo Button Styling */}
                   {form.repoUrl && (
                     <div className="border-t border-[var(--border)] pt-3 mt-3">
-                      <p className="text-xs text-[var(--muted)] font-semibold mb-2">Repo Button Styling</p>
+                      <p className="text-xs text-[var(--muted)] font-semibold mb-2">{t("sectionsContent.repoBtnBg")}</p>
                       <TextStyleGroup
-                        colorLabel="Background" colorValue={form.repoBtnBg} onColorChange={(v) => setForm((f) => ({ ...f, repoBtnBg: v }))}
+                        colorLabel={t("sectionsContent.repoBtnBg")} colorValue={form.repoBtnBg} onColorChange={(v) => setForm((f) => ({ ...f, repoBtnBg: v }))}
                         fontValue={form.repoBtnFont} onFontChange={(v) => setForm((f) => ({ ...f, repoBtnFont: v }))}
                         weightValue={form.repoBtnWeight} onWeightChange={(v) => setForm((f) => ({ ...f, repoBtnWeight: v }))}
                       />
@@ -557,9 +560,9 @@ export default function ContentPage() {
             {error && <p className="text-[var(--danger)] text-xs mt-3">{error}</p>}
 
             <div className="flex justify-end gap-2 mt-5">
-              <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">Cancel</button>
+              <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">{t("common.cancel")}</button>
               <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
-                {saving ? "Saving..." : editingId ? "Update" : "Create"}
+                {saving ? t("common.saving") : editingId ? t("common.update") : t("common.create")}
               </button>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import Toast from "@/components/Toast";
 import { TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
+import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
 interface Section {
   id: string;
@@ -13,6 +14,7 @@ interface Section {
 
 export default function HeroPage() {
   const { data: session } = useSession();
+  const { t } = useTranslation();
   const isAdmin = session?.user?.isAdmin;
   const [headline, setHeadline] = useState("");
   const [subtext, setSubtext] = useState("");
@@ -95,8 +97,8 @@ export default function HeroPage() {
   };
 
   const ctaOptions = [
-    { value: "", label: "Auto (first section)" },
-    { value: "#about", label: "About" },
+    { value: "", label: t("hero.autoFirstSection") },
+    { value: "#about", label: t("sidebar.about") },
     ...sections.map((s) => ({ value: `#${s.slug}`, label: s.name })),
     { value: "#contact", label: "Contact" },
     ...(isAdmin ? [
@@ -105,25 +107,25 @@ export default function HeroPage() {
     ] : []),
   ];
 
-  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">{t("common.loading")}</div>;
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Hero</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("hero.title")}</h1>
         <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? t("common.saving") : t("common.saveChanges")}
         </button>
       </div>
 
       <div className="space-y-8">
         {/* Hero Section */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Hero Section</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("hero.heroSection")}</h2>
           <div className="space-y-4">
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Headline</label>
-              <input className="dash-input" maxLength={60} value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder="Welcome to my portfolio" />
+              <label className="text-xs text-[var(--muted)] mb-1 block">{t("hero.headline")}</label>
+              <input className="dash-input" maxLength={60} value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder={t("hero.headlinePlaceholder")} />
               <CharLimitHint max={60} current={headline.length} />
               <TextStyleGroup
                 colorLabel="Text Color" colorValue={headlineColor} onColorChange={setHeadlineColor}
@@ -132,8 +134,8 @@ export default function HeroPage() {
               />
             </div>
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Subtext</label>
-              <input className="dash-input" maxLength={150} value={subtext} onChange={(e) => setSubtext(e.target.value)} placeholder="A short description" />
+              <label className="text-xs text-[var(--muted)] mb-1 block">{t("hero.subtext")}</label>
+              <input className="dash-input" maxLength={150} value={subtext} onChange={(e) => setSubtext(e.target.value)} placeholder={t("hero.subtextPlaceholder")} />
               <CharLimitHint max={150} current={subtext.length} />
               <TextStyleGroup
                 colorLabel="Text Color" colorValue={subtextColor} onColorChange={setSubtextColor}
@@ -146,72 +148,72 @@ export default function HeroPage() {
 
         {/* Primary CTA */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Primary CTA Button</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("hero.primaryCta")}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Label</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">{t("hero.ctaLabel")}</label>
               <input className="dash-input" maxLength={25} value={ctaLabel1} onChange={(e) => setCtaLabel1(e.target.value)} placeholder="View Projects" />
               <CharLimitHint max={25} current={ctaLabel1.length} />
             </div>
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Target</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">{t("hero.ctaTarget")}</label>
               <select className="dash-input" value={ctaTarget1} onChange={(e) => setCtaTarget1(e.target.value)}>
                 {ctaOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
           </div>
           <TextStyleGroup
-            colorLabel="Button Background Color" colorValue={ctaBg1} onColorChange={setCtaBg1}
+            colorLabel={t("hero.buttonBgColor")} colorValue={ctaBg1} onColorChange={setCtaBg1}
             fontValue={ctaFont1} onFontChange={setCtaFont1}
             weightValue={ctaWeight1} onWeightChange={setCtaWeight1}
           />
           <div className="mt-3">
             <label className="text-xs text-[var(--muted)] mb-1 block">
-              Button Text Color
-              {ctaTextColor1 && <button onClick={() => setCtaTextColor1("")} className="ml-2 text-[var(--accent)] text-xs hover:underline">Clear</button>}
+              {t("hero.buttonTextColor")}
+              {ctaTextColor1 && <button onClick={() => setCtaTextColor1("")} className="ml-2 text-[var(--accent)] text-xs hover:underline">{t("common.clear")}</button>}
             </label>
             <div className="flex items-center gap-2">
               <input type="color" value={ctaTextColor1 || "#ffffff"} onChange={(e) => setCtaTextColor1(e.target.value)} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
-              <input className="dash-input" value={ctaTextColor1} onChange={(e) => setCtaTextColor1(e.target.value)} placeholder="Default" />
+              <input className="dash-input" value={ctaTextColor1} onChange={(e) => setCtaTextColor1(e.target.value)} placeholder={t("common.default")} />
             </div>
           </div>
         </div>
 
         {/* Secondary CTA */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Secondary CTA Button</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("hero.secondaryCta")}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Label</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">{t("hero.ctaLabel")}</label>
               <input className="dash-input" maxLength={25} value={ctaLabel2} onChange={(e) => setCtaLabel2(e.target.value)} placeholder="Contact Me" />
               <CharLimitHint max={25} current={ctaLabel2.length} />
             </div>
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Target</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">{t("hero.ctaTarget")}</label>
               <select className="dash-input" value={ctaTarget2} onChange={(e) => setCtaTarget2(e.target.value)}>
                 {ctaOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
           </div>
           <TextStyleGroup
-            colorLabel="Button Background Color" colorValue={ctaBg2} onColorChange={setCtaBg2}
+            colorLabel={t("hero.buttonBgColor")} colorValue={ctaBg2} onColorChange={setCtaBg2}
             fontValue={ctaFont2} onFontChange={setCtaFont2}
             weightValue={ctaWeight2} onWeightChange={setCtaWeight2}
           />
           <div className="mt-3">
             <label className="text-xs text-[var(--muted)] mb-1 block">
-              Button Text Color
-              {ctaTextColor2 && <button onClick={() => setCtaTextColor2("")} className="ml-2 text-[var(--accent)] text-xs hover:underline">Clear</button>}
+              {t("hero.buttonTextColor")}
+              {ctaTextColor2 && <button onClick={() => setCtaTextColor2("")} className="ml-2 text-[var(--accent)] text-xs hover:underline">{t("common.clear")}</button>}
             </label>
             <div className="flex items-center gap-2">
               <input type="color" value={ctaTextColor2 || "#ffffff"} onChange={(e) => setCtaTextColor2(e.target.value)} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
-              <input className="dash-input" value={ctaTextColor2} onChange={(e) => setCtaTextColor2(e.target.value)} placeholder="Default" />
+              <input className="dash-input" value={ctaTextColor2} onChange={(e) => setCtaTextColor2(e.target.value)} placeholder={t("common.default")} />
             </div>
           </div>
         </div>
       </div>
 
-      <Toast message="Hero saved!" show={toast} onClose={() => setToast(false)} />
+      <Toast message={t("hero.saved")} show={toast} onClose={() => setToast(false)} />
     </div>
   );
 }

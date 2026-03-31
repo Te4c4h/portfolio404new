@@ -14,6 +14,7 @@ import {
 } from "react-icons/fi";
 import Toast from "@/components/Toast";
 import { TextStyleGroup, CharLimitHint, ColorPickerField } from "@/components/StyleFields";
+import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
 interface ContactLink {
   id: string;
@@ -55,6 +56,7 @@ function SortableRow({
   onEdit: (l: ContactLink) => void;
   onDelete: (id: string) => void;
 }) {
+  const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: link.id });
   const style = { transform: CSS.Transform.toString(transform), transition };
   const [confirming, setConfirming] = useState(false);
@@ -72,9 +74,9 @@ function SortableRow({
       </div>
       {confirming ? (
         <div className="flex items-center gap-2">
-          <span className="text-[var(--danger)] text-xs">Sure?</span>
-          <button onClick={() => { onDelete(link.id); setConfirming(false); }} className="px-3 py-1 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)]">Delete</button>
-          <button onClick={() => setConfirming(false)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">Cancel</button>
+          <span className="text-[var(--danger)] text-xs">{t("contact.sure")}</span>
+          <button onClick={() => { onDelete(link.id); setConfirming(false); }} className="px-3 py-1 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)]">{t("common.delete")}</button>
+          <button onClick={() => setConfirming(false)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">{t("common.cancel")}</button>
         </div>
       ) : (
         <div className="flex items-center gap-2">
@@ -87,6 +89,7 @@ function SortableRow({
 }
 
 export default function ContactPage() {
+  const { t } = useTranslation();
   const [contactTitle, setContactTitle] = useState("");
   const [contactSubtitle, setContactSubtitle] = useState("");
   // CT-1: Contact title/subtitle styling
@@ -158,7 +161,7 @@ export default function ContactPage() {
   };
 
   const handleLinkSave = async () => {
-    if (!form.url.trim()) { setError("URL is required"); return; }
+    if (!form.url.trim()) { setError(t("contact.urlRequired")); return; }
     setLinkSaving(true); setError("");
     let finalUrl = form.url.trim();
     if (form.platform === "Email" && !finalUrl.startsWith("mailto:")) finalUrl = `mailto:${finalUrl}`;
@@ -189,38 +192,38 @@ export default function ContactPage() {
     });
   };
 
-  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">{t("common.loading")}</div>;
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Contact Info</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("contact.title")}</h1>
         <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? t("common.saving") : t("common.saveChanges")}
         </button>
       </div>
 
       <div className="space-y-8">
         {/* Contact Section Text */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Contact Section</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("contact.contactSection")}</h2>
           <div className="space-y-4">
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Contact Title</label>
-              <input className="dash-input" maxLength={40} value={contactTitle} onChange={(e) => setContactTitle(e.target.value)} placeholder="Get in Touch" />
+              <label className="text-xs text-[var(--muted)] mb-1 block">{t("contact.contactTitle")}</label>
+              <input className="dash-input" maxLength={40} value={contactTitle} onChange={(e) => setContactTitle(e.target.value)} placeholder={t("contact.contactTitlePlaceholder")} />
               <CharLimitHint max={40} current={contactTitle.length} />
               <TextStyleGroup
-                colorLabel="Title Color" colorValue={contactTitleColor} onColorChange={setContactTitleColor}
+                colorLabel={t("contact.titleColor")} colorValue={contactTitleColor} onColorChange={setContactTitleColor}
                 fontValue={contactTitleFont} onFontChange={setContactTitleFont}
                 weightValue={contactTitleWeight} onWeightChange={setContactTitleWeight}
               />
             </div>
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Contact Subtitle</label>
-              <input className="dash-input" maxLength={100} value={contactSubtitle} onChange={(e) => setContactSubtitle(e.target.value)} placeholder="I'd love to hear from you" />
+              <label className="text-xs text-[var(--muted)] mb-1 block">{t("contact.contactSubtitle")}</label>
+              <input className="dash-input" maxLength={100} value={contactSubtitle} onChange={(e) => setContactSubtitle(e.target.value)} placeholder={t("contact.contactSubtitlePlaceholder")} />
               <CharLimitHint max={100} current={contactSubtitle.length} />
               <TextStyleGroup
-                colorLabel="Subtitle Color" colorValue={contactSubColor} onColorChange={setContactSubColor}
+                colorLabel={t("contact.subtitleColor")} colorValue={contactSubColor} onColorChange={setContactSubColor}
                 fontValue={contactSubFont} onFontChange={setContactSubFont}
                 weightValue={contactSubWeight} onWeightChange={setContactSubWeight}
               />
@@ -231,13 +234,13 @@ export default function ContactPage() {
         {/* Contact Links */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Contact Links</h2>
+            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">{t("contact.contactLinks")}</h2>
             <button onClick={openAdd} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]">
-              <FiPlus size={14} /> Add
+              <FiPlus size={14} /> {t("contact.addLink")}
             </button>
           </div>
           {links.length === 0 ? (
-            <p className="text-[var(--muted-foreground)] text-sm text-center py-8">No contact links yet.</p>
+            <p className="text-[var(--muted-foreground)] text-sm text-center py-8">{t("contact.noLinks")}</p>
           ) : (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <SortableContext items={links.map((l) => l.id)} strategy={verticalListSortingStrategy}>
@@ -254,35 +257,35 @@ export default function ContactPage() {
       {modalOpen && (
         <div className="fixed inset-0 bg-[var(--overlay)] z-50 flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">{editingId ? "Edit Link" : "Add Link"}</h2>
+            <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">{editingId ? t("contact.editLink") : t("contact.addNewLink")}</h2>
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Platform</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("contact.platform")}</label>
                 <select className="dash-input" value={form.platform} onChange={(e) => setForm((f) => ({ ...f, platform: e.target.value }))}>
                   {platforms.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">URL *</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("contact.url")} *</label>
                 <input className="dash-input" value={form.url} onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))} placeholder={urlHints[form.platform] || defaultHint} />
                 <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">{urlHints[form.platform] || defaultHint}</p>
               </div>
               {/* CT-2: Icon & background color */}
-              <ColorPickerField label="Icon Background Color" value={form.iconBgColor} onChange={(v) => setForm((f) => ({ ...f, iconBgColor: v }))} />
-              <ColorPickerField label="Icon Color" value={form.iconColor} onChange={(v) => setForm((f) => ({ ...f, iconColor: v }))} />
+              <ColorPickerField label={t("contact.iconBgColor")} value={form.iconBgColor} onChange={(v) => setForm((f) => ({ ...f, iconBgColor: v }))} />
+              <ColorPickerField label={t("contact.iconColor")} value={form.iconColor} onChange={(v) => setForm((f) => ({ ...f, iconColor: v }))} />
             </div>
             {error && <p className="text-[var(--danger)] text-xs mt-3">{error}</p>}
             <div className="flex justify-end gap-2 mt-5">
-              <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">Cancel</button>
+              <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">{t("common.cancel")}</button>
               <button onClick={handleLinkSave} disabled={linkSaving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
-                {linkSaving ? "Saving..." : editingId ? "Update" : "Create"}
+                {linkSaving ? t("common.saving") : editingId ? t("common.update") : t("common.create")}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      <Toast message="Contact saved!" show={toast} onClose={() => setToast(false)} />
+      <Toast message={t("contact.saved")} show={toast} onClose={() => setToast(false)} />
     </div>
   );
 }

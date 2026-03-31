@@ -5,6 +5,7 @@ import Toast from "@/components/Toast";
 import dynamic from "next/dynamic";
 import ImageUpload from "@/components/ImageUpload";
 import { CharLimitHint } from "@/components/StyleFields";
+import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
 const RgbaColorPicker = dynamic(() => import("@/components/RgbaColorPicker"), {
   ssr: false,
@@ -44,16 +45,17 @@ const fonts = [
   "Space Grotesk", "Outfit", "Manrope", "Archivo", "Barlow",
 ];
 
-const colorFields: { key: keyof ThemeData; label: string }[] = [
-  { key: "accentColor", label: "Accent Color" },
-  { key: "backgroundColor", label: "Background Color" },
-  { key: "surfaceColor", label: "Surface Color" },
-  { key: "textColor", label: "Text Color" },
-  { key: "dangerColor", label: "Danger Color" },
-  { key: "cursorColor", label: "Cursor Color" },
+const colorFieldKeys: { key: keyof ThemeData; tKey: string }[] = [
+  { key: "accentColor", tKey: "appearance.accentColor" },
+  { key: "backgroundColor", tKey: "appearance.backgroundColor" },
+  { key: "surfaceColor", tKey: "appearance.surfaceColor" },
+  { key: "textColor", tKey: "appearance.textColor" },
+  { key: "dangerColor", tKey: "appearance.dangerColor" },
+  { key: "cursorColor", tKey: "appearance.cursorColor" },
 ];
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const [siteTitle, setSiteTitle] = useState("");
   const [theme, setTheme] = useState<ThemeData>(themeDefaults);
 
@@ -118,37 +120,37 @@ export default function SettingsPage() {
     setTheme((t) => ({ ...t, [key]: value }));
   };
 
-  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">{t("common.loading")}</div>;
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Appearance</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("appearance.title")}</h1>
         <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? t("common.saving") : t("common.saveChanges")}
         </button>
       </div>
 
       <div className="space-y-8">
         {/* Website Title */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Website Title</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("appearance.websiteTitle")}</h2>
           <div>
-            <label className="text-xs text-[var(--muted)] mb-1 block">Site Title</label>
-            <input className="dash-input" maxLength={60} value={siteTitle} onChange={(e) => setSiteTitle(e.target.value)} placeholder="My Portfolio" />
+            <label className="text-xs text-[var(--muted)] mb-1 block">{t("appearance.siteTitleLabel")}</label>
+            <input className="dash-input" maxLength={60} value={siteTitle} onChange={(e) => setSiteTitle(e.target.value)} placeholder={t("appearance.siteTitlePlaceholder")} />
             <CharLimitHint max={60} current={siteTitle.length} />
-            <p className="text-[var(--muted)] text-[10px] mt-0.5">Shown in the browser tab and search results.</p>
+            <p className="text-[var(--muted)] text-[10px] mt-0.5">{t("appearance.siteTitleHint")}</p>
           </div>
         </div>
 
         {/* Colors */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-2">Global Color Palette</h2>
-          <p className="text-[var(--muted)] text-[10px] mb-4">These are the default colors used across your entire portfolio. Individual sections can override them.</p>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-2">{t("appearance.colorPalette")}</h2>
+          <p className="text-[var(--muted)] text-[10px] mb-4">{t("appearance.colorPaletteHint")}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {colorFields.map(({ key, label }) => (
+            {colorFieldKeys.map(({ key, tKey }) => (
               <div key={key}>
-                <label className="text-xs text-[var(--muted)] mb-1 block">{label}</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t(tKey)}</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
@@ -167,29 +169,29 @@ export default function SettingsPage() {
             ))}
           </div>
           <div className="mt-4 pt-4 border-t border-[var(--border)]">
-            <label className="text-xs text-[var(--muted)] mb-1 block">Grid Color</label>
+            <label className="text-xs text-[var(--muted)] mb-1 block">{t("appearance.gridColor")}</label>
             <RgbaColorPicker
               value={theme.gridColor}
               onChange={(val) => setTheme((t) => ({ ...t, gridColor: val }))}
               placeholder="rgba(255,255,255,0.03)"
             />
-            <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">Background grid overlay color. Use rgba for transparency.</p>
+            <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">{t("appearance.gridColorHint")}</p>
           </div>
         </div>
 
         {/* Fonts */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-2">Global Default Fonts</h2>
-          <p className="text-[var(--muted)] text-[10px] mb-4">These fonts apply site-wide. Individual elements can override them in their settings pages.</p>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-2">{t("appearance.fonts")}</h2>
+          <p className="text-[var(--muted)] text-[10px] mb-4">{t("appearance.fontsHint")}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Body Font</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">{t("appearance.bodyFont")}</label>
               <select className="dash-input" value={theme.bodyFont} onChange={(e) => setTheme((t) => ({ ...t, bodyFont: e.target.value }))}>
                 {fonts.map((f) => <option key={f} value={f}>{f}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs text-[var(--muted)] mb-1 block">Heading Font</label>
+              <label className="text-xs text-[var(--muted)] mb-1 block">{t("appearance.headingFont")}</label>
               <select className="dash-input" value={theme.headingFont} onChange={(e) => setTheme((t) => ({ ...t, headingFont: e.target.value }))}>
                 {fonts.map((f) => <option key={f} value={f}>{f}</option>)}
               </select>
@@ -199,11 +201,11 @@ export default function SettingsPage() {
 
         {/* Branding */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Branding</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("appearance.branding")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Favicon */}
             <ImageUpload
-              label="Favicon"
+              label={t("appearance.favicon")}
               value={theme.faviconUrl}
               onChange={(url) => setTheme((t) => ({ ...t, faviconUrl: url }))}
               maxSizeMB={0.5}
@@ -214,7 +216,7 @@ export default function SettingsPage() {
 
             {/* OG Image / Webclip */}
             <ImageUpload
-              label="OG Image / Webclip"
+              label={t("appearance.ogImage")}
               value={theme.webclipUrl}
               onChange={(url) => setTheme((t) => ({ ...t, webclipUrl: url }))}
               maxSizeMB={2}
@@ -227,7 +229,7 @@ export default function SettingsPage() {
 
       </div>
 
-      <Toast message="Settings saved!" show={toast} onClose={() => setToast(false)} />
+      <Toast message={t("appearance.saved")} show={toast} onClose={() => setToast(false)} />
     </div>
   );
 }

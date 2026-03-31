@@ -3,8 +3,10 @@
 import { useEffect, useState, useCallback } from "react";
 import Toast from "@/components/Toast";
 import { TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
+import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
 export default function AboutPage() {
+  const { t } = useTranslation();
   const [aboutText, setAboutText] = useState("");
   const [skills, setSkills] = useState("");
   const [loading, setLoading] = useState(true);
@@ -69,25 +71,25 @@ export default function AboutPage() {
 
   const skillCount = skills ? skills.split(",").filter((s) => s.trim()).length : 0;
 
-  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">{t("common.loading")}</div>;
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">About</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("about.title")}</h1>
         <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? t("common.saving") : t("common.saveChanges")}
         </button>
       </div>
 
       <div className="space-y-8">
         {/* Section Heading */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Section Heading</h2>
-          <input className="dash-input" maxLength={40} value={aboutHeading} onChange={(e) => setAboutHeading(e.target.value)} placeholder="About (default)" />
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("about.sectionHeading")}</h2>
+          <input className="dash-input" maxLength={40} value={aboutHeading} onChange={(e) => setAboutHeading(e.target.value)} placeholder={t("about.headingPlaceholder")} />
           <CharLimitHint max={40} current={aboutHeading.length} />
           <TextStyleGroup
-            colorLabel="Heading Color" colorValue={aboutHeadingColor} onColorChange={setAboutHeadingColor}
+            colorLabel={t("about.headingColor")} colorValue={aboutHeadingColor} onColorChange={setAboutHeadingColor}
             fontValue={aboutHeadingFont} onFontChange={setAboutHeadingFont}
             weightValue={aboutHeadingWeight} onWeightChange={setAboutHeadingWeight}
           />
@@ -95,26 +97,26 @@ export default function AboutPage() {
 
         {/* About Text */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">About Text</h2>
-          <textarea className="dash-input min-h-[120px]" maxLength={800} value={aboutText} onChange={(e) => setAboutText(e.target.value)} placeholder="Tell visitors about yourself..." />
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("about.aboutText")}</h2>
+          <textarea className="dash-input min-h-[120px]" maxLength={800} value={aboutText} onChange={(e) => setAboutText(e.target.value)} placeholder={t("about.aboutTextPlaceholder")} />
           <CharLimitHint max={800} current={aboutText.length} />
-          <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">Supports multiple paragraphs. Use line breaks to separate.</p>
+          <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">{t("about.paragraphHint")}</p>
           <TextStyleGroup
-            colorLabel="Text Color" colorValue={aboutTextColor} onColorChange={setAboutTextColor}
+            colorLabel={t("about.textColor")} colorValue={aboutTextColor} onColorChange={setAboutTextColor}
             fontValue={aboutTextFont} onFontChange={setAboutTextFont}
             weightValue={aboutTextWeight} onWeightChange={setAboutTextWeight}
           />
         </div>
 
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Skills</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("about.skills")}</h2>
           <input className="dash-input" value={skills} onChange={(e) => {
             const val = e.target.value;
             const count = val.split(",").filter((s) => s.trim()).length;
             if (count <= 12 || val.length < skills.length) setSkills(val);
-          }} placeholder="React, TypeScript, Product Strategy" />
+          }} placeholder={t("about.skillsPlaceholder")} />
           <p className={`text-[10px] mt-0.5 ${skillCount >= 12 ? "text-[var(--danger)]" : "text-[var(--muted)]"}`}>
-            Comma-separated tags ({skillCount}/12 max){skillCount >= 12 ? " — limit reached" : ""}
+            {t("about.skillsCount").replace("{count}", String(skillCount))}{skillCount >= 12 ? t("about.skillsLimit") : ""}
           </p>
           {/* A-2: Tag appearance preview */}
           {skills && (
@@ -136,24 +138,24 @@ export default function AboutPage() {
             </div>
           )}
           <TextStyleGroup
-            colorLabel="Tag Text Color" colorValue={skillTagColor} onColorChange={setSkillTagColor}
+            colorLabel={t("about.tagTextColor")} colorValue={skillTagColor} onColorChange={setSkillTagColor}
             fontValue={skillTagFont} onFontChange={setSkillTagFont}
             weightValue={skillTagWeight} onWeightChange={setSkillTagWeight}
           />
           <div className="mt-3">
             <label className="text-xs text-[var(--muted)] mb-1 block">
-              Tag Background Color
-              {skillTagBg && <button onClick={() => setSkillTagBg("")} className="ml-2 text-[var(--accent)] text-xs hover:underline">Clear</button>}
+              {t("about.tagBgColor")}
+              {skillTagBg && <button onClick={() => setSkillTagBg("")} className="ml-2 text-[var(--accent)] text-xs hover:underline">{t("common.clear")}</button>}
             </label>
             <div className="flex items-center gap-2">
               <input type="color" value={skillTagBg || "#1a3a10"} onChange={(e) => setSkillTagBg(e.target.value)} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
-              <input className="dash-input" value={skillTagBg} onChange={(e) => setSkillTagBg(e.target.value)} placeholder="Default" />
+              <input className="dash-input" value={skillTagBg} onChange={(e) => setSkillTagBg(e.target.value)} placeholder={t("common.default")} />
             </div>
           </div>
         </div>
       </div>
 
-      <Toast message="About saved!" show={toast} onClose={() => setToast(false)} />
+      <Toast message={t("about.saved")} show={toast} onClose={() => setToast(false)} />
     </div>
   );
 }

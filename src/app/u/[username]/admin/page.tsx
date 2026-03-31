@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { FiZap, FiCopy, FiCheck, FiTrendingUp, FiTrendingDown, FiEye, FiUsers, FiMousePointer } from "react-icons/fi";
+import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
 interface AnalyticsData {
   totalViews: number;
@@ -69,6 +70,7 @@ function MiniLineChart({ data, accent }: { data: { date: string; views: number }
 
 export default function AnalyticsPage() {
   const { data: session } = useSession();
+  const { t } = useTranslation();
   const isAdmin = session?.user?.isAdmin;
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,7 +97,7 @@ export default function AnalyticsPage() {
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">Analytics</h1>
+      <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">{t("analytics.title")}</h1>
 
       {/* Upgrade Banner — shown for unpaid non-admin users */}
       {!hasAccess && (
@@ -104,10 +106,10 @@ export default function AnalyticsPage() {
             <div className="flex-1">
               <h2 className="text-[var(--accent)] font-semibold text-sm flex items-center gap-2">
                 <FiZap size={16} />
-                Activate Portfolio 404 Pro
+                {t("analytics.upgradePro")}
               </h2>
               <p className="text-[var(--muted)] text-xs mt-1">
-                One-time payment of <strong className="text-[var(--foreground)]">$5</strong> — publish your portfolio and unlock all features forever.
+                <span dangerouslySetInnerHTML={{ __html: t("analytics.subscribeDesc") }} />
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -115,10 +117,10 @@ export default function AnalyticsPage() {
                 href={`/u/${session?.user?.username}/admin/billing`}
                 className="px-5 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] transition-colors"
               >
-                Activate Plan — $5
+                {t("analytics.subscribe")}
               </Link>
               <a href="/#pricing" className="text-xs text-[var(--muted)] hover:text-[var(--foreground)] transition-colors">
-                Learn more
+                {t("analytics.learnMore")}
               </a>
             </div>
           </div>
@@ -126,9 +128,9 @@ export default function AnalyticsPage() {
       )}
 
       {loading ? (
-        <div className="text-[var(--muted)] text-sm">Loading analytics...</div>
+        <div className="text-[var(--muted)] text-sm">{t("analytics.loading")}</div>
       ) : !analytics ? (
-        <div className="text-[var(--muted)] text-sm">Could not load analytics.</div>
+        <div className="text-[var(--muted)] text-sm">{t("analytics.error")}</div>
       ) : (
         <>
           {/* Visitor Stats */}
@@ -136,21 +138,21 @@ export default function AnalyticsPage() {
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
               <div className="flex items-center gap-2 mb-2">
                 <FiEye size={14} className="text-[var(--muted)]" />
-                <p className="text-[var(--muted)] text-xs uppercase tracking-wider">Total Views</p>
+                <p className="text-[var(--muted)] text-xs uppercase tracking-wider">{t("analytics.totalViews")}</p>
               </div>
               <p className="text-3xl font-bold text-[var(--accent)]">{analytics.totalViews.toLocaleString()}</p>
             </div>
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
               <div className="flex items-center gap-2 mb-2">
                 <FiUsers size={14} className="text-[var(--muted)]" />
-                <p className="text-[var(--muted)] text-xs uppercase tracking-wider">Unique Days</p>
+                <p className="text-[var(--muted)] text-xs uppercase tracking-wider">{t("analytics.uniqueDays")}</p>
               </div>
               <p className="text-3xl font-bold text-[var(--accent)]">{analytics.uniqueVisitors}</p>
             </div>
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
               <div className="flex items-center gap-2 mb-2">
                 <FiEye size={14} className="text-[var(--muted)]" />
-                <p className="text-[var(--muted)] text-xs uppercase tracking-wider">This Month</p>
+                <p className="text-[var(--muted)] text-xs uppercase tracking-wider">{t("analytics.thisMonth")}</p>
               </div>
               <p className="text-3xl font-bold text-[var(--accent)]">{analytics.viewsThisMonth.toLocaleString()}</p>
               <div className="flex items-center gap-1 mt-1">
@@ -160,14 +162,14 @@ export default function AnalyticsPage() {
                   <FiTrendingDown size={12} className="text-[var(--danger)]" />
                 )}
                 <span className={`text-xs font-medium ${analytics.monthChange >= 0 ? "text-[var(--accent)]" : "text-[var(--danger)]"}`}>
-                  {analytics.monthChange >= 0 ? "+" : ""}{analytics.monthChange}% vs last month
+                  {analytics.monthChange >= 0 ? "+" : ""}{analytics.monthChange}% {t("analytics.vsLastMonth")}
                 </span>
               </div>
             </div>
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
               <div className="flex items-center gap-2 mb-2">
                 <FiEye size={14} className="text-[var(--muted)]" />
-                <p className="text-[var(--muted)] text-xs uppercase tracking-wider">Last Month</p>
+                <p className="text-[var(--muted)] text-xs uppercase tracking-wider">{t("analytics.lastMonth")}</p>
               </div>
               <p className="text-3xl font-bold text-[var(--muted)]">{analytics.viewsLastMonth.toLocaleString()}</p>
             </div>
@@ -175,7 +177,7 @@ export default function AnalyticsPage() {
 
           {/* Daily Chart */}
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 mb-6">
-            <h2 className="text-sm font-semibold text-[var(--foreground)] mb-4 uppercase tracking-wider">Daily Visitors — Last 30 Days</h2>
+            <h2 className="text-sm font-semibold text-[var(--foreground)] mb-4 uppercase tracking-wider">{t("analytics.dailyVisitors")}</h2>
             <MiniLineChart data={analytics.dailyChart} accent="var(--accent)" />
           </div>
 
@@ -184,7 +186,7 @@ export default function AnalyticsPage() {
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5 mb-6">
               <h2 className="text-sm font-semibold text-[var(--foreground)] mb-4 uppercase tracking-wider flex items-center gap-2">
                 <FiMousePointer size={14} />
-                Contact Link Clicks
+                {t("analytics.contactClicks")}
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {analytics.contactStats.map((c) => (
@@ -200,15 +202,15 @@ export default function AnalyticsPage() {
           {/* Content Analytics */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-              <p className="text-[var(--muted)] text-xs uppercase tracking-wider mb-1">Total Sections</p>
+              <p className="text-[var(--muted)] text-xs uppercase tracking-wider mb-1">{t("analytics.totalSections")}</p>
               <p className="text-3xl font-bold text-[var(--accent)]">{analytics.sectionsCount}</p>
             </div>
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-              <p className="text-[var(--muted)] text-xs uppercase tracking-wider mb-1">Total Content Items</p>
+              <p className="text-[var(--muted)] text-xs uppercase tracking-wider mb-1">{t("analytics.totalContent")}</p>
               <p className="text-3xl font-bold text-[var(--accent)]">{analytics.contentCount}</p>
             </div>
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-              <p className="text-[var(--muted)] text-xs uppercase tracking-wider mb-1">Top Section</p>
+              <p className="text-[var(--muted)] text-xs uppercase tracking-wider mb-1">{t("analytics.topSection")}</p>
               <p className="text-lg font-semibold text-[var(--accent)] truncate">{analytics.mostViewedSection || "—"}</p>
             </div>
           </div>
@@ -218,7 +220,7 @@ export default function AnalyticsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-[var(--muted)] text-xs uppercase tracking-wider">Last Updated</span>
+                  <span className="text-[var(--muted)] text-xs uppercase tracking-wider">{t("analytics.lastUpdated")}</span>
                   <span className="text-sm text-[var(--foreground)]">
                     {analytics.lastUpdated
                       ? new Date(analytics.lastUpdated).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
@@ -226,7 +228,7 @@ export default function AnalyticsPage() {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[var(--muted)] text-xs uppercase tracking-wider">Portfolio URL</span>
+                  <span className="text-[var(--muted)] text-xs uppercase tracking-wider">{t("analytics.portfolioUrl")}</span>
                   <a href={analytics.portfolioUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-[var(--accent)] hover:underline truncate max-w-xs break-all">
                     {analytics.portfolioUrl}
                   </a>

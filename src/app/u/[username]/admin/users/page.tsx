@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
 interface User {
   id: string;
@@ -18,6 +19,7 @@ interface User {
 }
 
 export default function ManageUsersPage() {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,11 +63,11 @@ export default function ManageUsersPage() {
   };
 
   if (!session?.user?.isAdmin) {
-    return <div className="text-[var(--muted)] text-sm">Access denied.</div>;
+    return <div className="text-[var(--muted)] text-sm">{t("manageUsers.accessDenied")}</div>;
   }
 
   if (loading) {
-    return <div className="text-[var(--muted)] text-sm">Loading...</div>;
+    return <div className="text-[var(--muted)] text-sm">{t("manageUsers.loading")}</div>;
   }
 
   const isOwnAccount = (userId: string) => userId === adminUserId;
@@ -73,7 +75,7 @@ export default function ManageUsersPage() {
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Manage Users</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("manageUsers.title")}</h1>
       </div>
 
       {/* Desktop table */}
@@ -81,13 +83,13 @@ export default function ManageUsersPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[var(--border)]">
-              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Full Name</th>
-              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Email</th>
-              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Portfolio</th>
-              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Registered</th>
-              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Status</th>
-              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Paid</th>
-              <th className="text-right px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">Actions</th>
+              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">{t("manageUsers.fullName")}</th>
+              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">{t("manageUsers.email")}</th>
+              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">{t("manageUsers.portfolio")}</th>
+              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">{t("manageUsers.registered")}</th>
+              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">{t("manageUsers.status")}</th>
+              <th className="text-left px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">{t("manageUsers.paid")}</th>
+              <th className="text-right px-4 py-3 text-[var(--muted)] font-medium text-xs uppercase tracking-wider">{t("manageUsers.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -111,7 +113,7 @@ export default function ManageUsersPage() {
                       ? "bg-[var(--danger)]/15 text-[var(--danger)]"
                       : "bg-[var(--accent)]/15 text-[var(--accent)]"
                   }`}>
-                    {user.isBlocked ? "Blocked" : "Active"}
+                    {user.isBlocked ? t("manageUsers.blocked") : t("manageUsers.active")}
                   </span>
                 </td>
                 <td className="px-4 py-3">
@@ -120,15 +122,15 @@ export default function ManageUsersPage() {
                       ? "bg-[var(--accent)]/15 text-[var(--accent)]"
                       : "bg-[var(--muted)]/15 text-[var(--muted)]"
                   }`}>
-                    {user.isPaid ? "Paid" : "Free"}
+                    {user.isPaid ? t("manageUsers.paidLabel") : t("manageUsers.freeLabel")}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
                   {deletingId === user.id ? (
                     <div className="flex items-center justify-end gap-2">
-                      <span className="text-[var(--danger)] text-xs">Are you sure?</span>
-                      <button onClick={() => deleteUser(user.id)} className="px-3 py-1 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)]">Delete</button>
-                      <button onClick={() => setDeletingId(null)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">Cancel</button>
+                      <span className="text-[var(--danger)] text-xs">{t("manageUsers.areYouSure")}</span>
+                      <button onClick={() => deleteUser(user.id)} className="px-3 py-1 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)]">{t("manageUsers.delete")}</button>
+                      <button onClick={() => setDeletingId(null)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">{t("manageUsers.cancel")}</button>
                     </div>
                   ) : (
                     <div className="flex items-center justify-end gap-2">
@@ -141,7 +143,7 @@ export default function ManageUsersPage() {
                               : "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
                           }`}
                         >
-                          {user.isPaid ? "Revoke Paid" : "Mark Paid"}
+                          {user.isPaid ? t("manageUsers.revokePaid") : t("manageUsers.markPaid")}
                         </button>
                       )}
                       {!isOwnAccount(user.id) && (
@@ -154,12 +156,12 @@ export default function ManageUsersPage() {
                               : "bg-[var(--danger)]/15 text-[var(--danger)] hover:bg-[var(--danger)]/25"
                           }`}
                         >
-                          {user.isBlocked ? "Unblock" : "Block"}
+                          {user.isBlocked ? t("manageUsers.unblock") : t("manageUsers.block")}
                         </button>
                       )}
                       {!isOwnAccount(user.id) && (
                         <button onClick={() => setDeletingId(user.id)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10">
-                          Delete
+                          {t("manageUsers.delete")}
                         </button>
                       )}
                     </div>
@@ -170,14 +172,14 @@ export default function ManageUsersPage() {
           </tbody>
         </table>
         {users.length === 0 && (
-          <p className="text-[var(--muted)] text-sm text-center py-12">No users found.</p>
+          <p className="text-[var(--muted)] text-sm text-center py-12">{t("manageUsers.noUsers")}</p>
         )}
       </div>
 
       {/* Mobile cards */}
       <div className="md:hidden space-y-3">
         {users.length === 0 && (
-          <p className="text-[var(--muted)] text-sm text-center py-12">No users found.</p>
+          <p className="text-[var(--muted)] text-sm text-center py-12">{t("manageUsers.noUsers")}</p>
         )}
         {users.map((user) => (
           <div key={user.id} className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 space-y-3">
@@ -194,26 +196,26 @@ export default function ManageUsersPage() {
                     ? "bg-[var(--danger)]/15 text-[var(--danger)]"
                     : "bg-[var(--accent)]/15 text-[var(--accent)]"
                 }`}>
-                  {user.isBlocked ? "Blocked" : "Active"}
+                  {user.isBlocked ? t("manageUsers.blocked") : t("manageUsers.active")}
                 </span>
                 {user.isPaid && (
-                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)]">Paid</span>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--accent)]/15 text-[var(--accent)]">{t("manageUsers.paidLabel")}</span>
                 )}
               </div>
             </div>
             <div className="space-y-1">
               <p className="text-[var(--foreground)] text-xs truncate">{user.email}</p>
               <p className="text-[var(--muted)] text-xs">
-                Joined {new Date(user.registeredAt).toLocaleDateString("en-US", {
+                {t("manageUsers.joined")} {new Date(user.registeredAt).toLocaleDateString("en-US", {
                   month: "short", day: "numeric", year: "numeric",
                 })}
               </p>
             </div>
             {deletingId === user.id ? (
               <div className="flex items-center gap-2 pt-1">
-                <span className="text-[var(--danger)] text-xs flex-1">Delete this user?</span>
-                <button onClick={() => deleteUser(user.id)} className="px-3 py-1.5 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)]">Confirm</button>
-                <button onClick={() => setDeletingId(null)} className="px-3 py-1.5 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">Cancel</button>
+                <span className="text-[var(--danger)] text-xs flex-1">{t("manageUsers.deleteUser")}</span>
+                <button onClick={() => deleteUser(user.id)} className="px-3 py-1.5 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)]">{t("manageUsers.confirm")}</button>
+                <button onClick={() => setDeletingId(null)} className="px-3 py-1.5 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">{t("manageUsers.cancel")}</button>
               </div>
             ) : (
               <div className="flex items-center gap-2 pt-1 flex-wrap">
@@ -226,7 +228,7 @@ export default function ManageUsersPage() {
                         : "bg-[var(--accent)]/15 text-[var(--accent)] hover:bg-[var(--accent)]/25"
                     }`}
                   >
-                    {user.isPaid ? "Revoke Paid" : "Mark Paid"}
+                    {user.isPaid ? t("manageUsers.revokePaid") : t("manageUsers.markPaid")}
                   </button>
                 )}
                 {!isOwnAccount(user.id) && (
@@ -239,12 +241,12 @@ export default function ManageUsersPage() {
                         : "bg-[var(--danger)]/15 text-[var(--danger)] hover:bg-[var(--danger)]/25"
                     }`}
                   >
-                    {user.isBlocked ? "Unblock" : "Block"}
+                    {user.isBlocked ? t("manageUsers.unblock") : t("manageUsers.block")}
                   </button>
                 )}
                 {!isOwnAccount(user.id) && (
                   <button onClick={() => setDeletingId(user.id)} className="px-3 py-1.5 rounded text-xs bg-[var(--border)] text-[var(--muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10">
-                    Delete
+                    {t("manageUsers.delete")}
                   </button>
                 )}
               </div>

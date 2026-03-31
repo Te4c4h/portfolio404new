@@ -6,6 +6,7 @@ import { FiX, FiPlus, FiCheck } from "react-icons/fi";
 import Toast from "@/components/Toast";
 import ImageUpload from "@/components/ImageUpload";
 import { ColorPickerField, TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
+import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
 interface NavLink {
   id: string;
@@ -25,6 +26,7 @@ interface Section {
 
 export default function NavbarPage() {
   const { data: session } = useSession();
+  const { t } = useTranslation();
   const isAdmin = session?.user?.isAdmin === true;
   const [logoText, setLogoText] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
@@ -40,7 +42,7 @@ export default function NavbarPage() {
   const [saving, setSaving] = useState(false);
   const [savingLinkId, setSavingLinkId] = useState<string | null>(null);
   const [toast, setToast] = useState(false);
-  const [toastMsg, setToastMsg] = useState("Navbar saved!");
+  const [toastMsg, setToastMsg] = useState("");
   const [newLink, setNewLink] = useState({ label: "", href: "", labelColor: "", labelFont: "", labelWeight: "" });
   const [showAddRow, setShowAddRow] = useState(false);
 
@@ -76,25 +78,25 @@ export default function NavbarPage() {
       body: JSON.stringify({ logoText, logoUrl, useLogoImage, navScrollBg, logoTextColor, logoTextFont, logoTextWeight, hamburgerColor }),
     });
     setSaving(false);
-    setToastMsg("Navbar saved!");
+    setToastMsg(t("navbar.saved"));
     setToast(true);
   };
 
   const navTargetOptions = [
-    { value: "#", label: "Top of page" },
-    { value: "#about", label: "About" },
+    { value: "#", label: t("hero.topOfPage") },
+    { value: "#about", label: t("sidebar.about") },
     ...sections.map((s) => ({ value: `#${s.slug}`, label: s.name })),
     { value: "#contact", label: "Contact" },
   ];
 
   const addNavLink = async () => {
     if (!newLink.label.trim()) {
-      setToastMsg("Please enter a label for the link.");
+      setToastMsg(t("navbar.enterLabel"));
       setToast(true);
       return;
     }
     if (!newLink.href) {
-      setToastMsg("Please select a target for the link.");
+      setToastMsg(t("navbar.selectTargetError"));
       setToast(true);
       return;
     }
@@ -129,7 +131,7 @@ export default function NavbarPage() {
       }),
     });
     setSavingLinkId(null);
-    setToastMsg("Link saved!");
+    setToastMsg(t("navbar.linkSaved"));
     setToast(true);
   };
 
@@ -138,32 +140,32 @@ export default function NavbarPage() {
     setNavLinks((prev) => prev.filter((l) => l.id !== id));
   };
 
-  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">{t("common.loading")}</div>;
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Navigation</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("navbar.title")}</h1>
         <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? t("common.saving") : t("common.saveChanges")}
         </button>
       </div>
 
       <div className="space-y-8">
         {/* Sticky Navbar Background */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Sticky Navbar</h2>
-          <ColorPickerField label="Sticky Navbar Background Color" value={navScrollBg} onChange={setNavScrollBg} />
-          <p className="text-[var(--muted)] text-[10px] mt-1">Background color when navbar sticks to the top on scroll.</p>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("navbar.stickyNavbar")}</h2>
+          <ColorPickerField label={t("navbar.stickyBgColor")} value={navScrollBg} onChange={setNavScrollBg} />
+          <p className="text-[var(--muted)] text-[10px] mt-1">{t("navbar.stickyBgHint")}</p>
           <div className="mt-4">
-            <ColorPickerField label="Hamburger Menu Color (Mobile)" value={hamburgerColor} onChange={setHamburgerColor} />
-            <p className="text-[var(--muted)] text-[10px] mt-1">Color of the hamburger icon on mobile devices.</p>
+            <ColorPickerField label={t("navbar.hamburgerColor")} value={hamburgerColor} onChange={setHamburgerColor} />
+            <p className="text-[var(--muted)] text-[10px] mt-1">{t("navbar.hamburgerHint")}</p>
           </div>
         </div>
 
         {/* Logo / Brand Text */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Logo / Brand Text</h2>
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">{t("navbar.logoBrand")}</h2>
           <div className="flex items-center gap-3 mb-4">
             <button
               type="button"
@@ -172,11 +174,11 @@ export default function NavbarPage() {
             >
               <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${useLogoImage ? "translate-x-[18px]" : "translate-x-[3px]"}`} />
             </button>
-            <span className="text-xs text-[var(--muted)]">{useLogoImage ? "Use logo image" : "Use brand text"}</span>
+            <span className="text-xs text-[var(--muted)]">{useLogoImage ? t("navbar.useLogoImage") : t("navbar.useBrandText")}</span>
           </div>
           {useLogoImage ? (
             <ImageUpload
-              label="Logo Image"
+              label={t("navbar.logoImage")}
               value={logoUrl}
               onChange={(url) => setLogoUrl(url)}
               maxSizeMB={1}
@@ -186,7 +188,7 @@ export default function NavbarPage() {
             />
           ) : (
             <div>
-              <input className="dash-input" maxLength={30} value={logoText} onChange={(e) => setLogoText(e.target.value)} placeholder="Your Name" />
+              <input className="dash-input" maxLength={30} value={logoText} onChange={(e) => setLogoText(e.target.value)} placeholder={t("navbar.brandTextPlaceholder")} />
               <CharLimitHint max={30} current={logoText.length} />
               <TextStyleGroup
                 colorLabel="Text Color"
@@ -204,7 +206,7 @@ export default function NavbarPage() {
         {/* Navigation Links */}
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Navigation Links</h2>
+            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">{t("navbar.navLinks")}</h2>
             <button
               onClick={() => setShowAddRow(true)}
               disabled={!isAdmin && navLinks.length >= 4}
@@ -214,7 +216,7 @@ export default function NavbarPage() {
             </button>
           </div>
           {navLinks.length === 0 && !showAddRow && (
-            <p className="text-[var(--muted)] text-xs text-center py-4">No navigation links yet. Click + to add one.</p>
+            <p className="text-[var(--muted)] text-xs text-center py-4">{t("navbar.noLinks")}</p>
           )}
           <div className="space-y-3">
             {navLinks.map((link) => (
@@ -225,7 +227,7 @@ export default function NavbarPage() {
                     maxLength={30}
                     value={link.label}
                     onChange={(e) => updateNavLink(link.id, { label: e.target.value })}
-                    placeholder="Label"
+                    placeholder={t("navbar.linkLabelPlaceholder")}
                   />
                   <select
                     className="dash-input flex-1"
@@ -240,7 +242,7 @@ export default function NavbarPage() {
                     onClick={() => saveNavLink(link)}
                     disabled={savingLinkId === link.id}
                     className="p-1.5 rounded hover:bg-[var(--border)] text-[var(--accent)] disabled:opacity-40"
-                    title="Save link"
+                    title={t("navbar.saveLink")}
                   >
                     <FiCheck size={14} />
                   </button>
@@ -249,7 +251,7 @@ export default function NavbarPage() {
                   </button>
                 </div>
                 <TextStyleGroup
-                  colorLabel="Label Color"
+                  colorLabel={t("navbar.linkLabelColor")}
                   colorValue={link.labelColor || ""}
                   onColorChange={(v) => updateNavLink(link.id, { labelColor: v })}
                   fontValue={link.labelFont || ""}
@@ -267,14 +269,14 @@ export default function NavbarPage() {
                     maxLength={30}
                     value={newLink.label}
                     onChange={(e) => setNewLink((l) => ({ ...l, label: e.target.value }))}
-                    placeholder="Label"
+                    placeholder={t("navbar.linkLabelPlaceholder")}
                   />
                   <select
                     className="dash-input flex-1"
                     value={newLink.href}
                     onChange={(e) => setNewLink((l) => ({ ...l, href: e.target.value }))}
                   >
-                    <option value="">Select target</option>
+                    <option value="">{t("navbar.selectTarget")}</option>
                     {navTargetOptions.map((o) => (
                       <option key={o.value} value={o.value}>{o.label}</option>
                     ))}
@@ -283,7 +285,7 @@ export default function NavbarPage() {
                     onClick={addNavLink}
                     className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]"
                   >
-                    Add
+                    {t("navbar.addLink")}
                   </button>
                   <button
                     onClick={() => { setShowAddRow(false); setNewLink({ label: "", href: "", labelColor: "", labelFont: "", labelWeight: "" }); }}
@@ -294,7 +296,7 @@ export default function NavbarPage() {
                 </div>
                 <CharLimitHint max={30} current={newLink.label.length} />
                 <TextStyleGroup
-                  colorLabel="Label Color"
+                  colorLabel={t("navbar.linkLabelColor")}
                   colorValue={newLink.labelColor}
                   onColorChange={(v) => setNewLink((l) => ({ ...l, labelColor: v }))}
                   fontValue={newLink.labelFont}
@@ -306,7 +308,7 @@ export default function NavbarPage() {
             )}
           </div>
           {!isAdmin && navLinks.length >= 4 && (
-            <p className="text-[var(--muted)] text-[10px] mt-2">Maximum 4 navigation links reached</p>
+            <p className="text-[var(--muted)] text-[10px] mt-2">{t("navbar.maxLinks")}</p>
           )}
         </div>
       </div>

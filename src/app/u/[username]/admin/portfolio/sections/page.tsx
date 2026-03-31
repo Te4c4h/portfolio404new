@@ -21,6 +21,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { FiMenu, FiEdit2, FiTrash2 } from "react-icons/fi";
 import Toast from "@/components/Toast";
 import { TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
+import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
 interface Section {
   id: string;
@@ -74,6 +75,7 @@ function SortableRow({
   onEdit: (s: Section) => void;
   onDelete: (id: string) => void;
 }) {
+  const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: section.id });
   const style = { transform: CSS.Transform.toString(transform), transition };
   const [confirming, setConfirming] = useState(false);
@@ -93,12 +95,12 @@ function SortableRow({
       </div>
       {confirming ? (
         <div className="flex items-center gap-2">
-          <span className="text-[var(--danger)] text-xs">Are you sure?</span>
+          <span className="text-[var(--danger)] text-xs">{t("sectionsContent.areYouSure")}</span>
           <button onClick={() => { onDelete(section.id); setConfirming(false); }} className="px-3 py-1 rounded text-xs bg-[var(--danger)] text-white hover:bg-[var(--danger-hover)]">
-            Delete
+            {t("common.delete")}
           </button>
           <button onClick={() => setConfirming(false)} className="px-3 py-1 rounded text-xs bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">
-            Cancel
+            {t("common.cancel")}
           </button>
         </div>
       ) : (
@@ -117,6 +119,7 @@ function SortableRow({
 
 export default function SectionsPage() {
   const { data: session } = useSession();
+  const { t } = useTranslation();
   const isAdmin = session?.user?.isAdmin === true;
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(true);
@@ -166,8 +169,8 @@ export default function SectionsPage() {
   };
 
   const handleSave = async () => {
-    if (!form.name.trim()) { setError("Name is required"); return; }
-    if (!form.slug.trim()) { setError("Slug is required"); return; }
+    if (!form.name.trim()) { setError(t("sections.nameRequired")); return; }
+    if (!form.slug.trim()) { setError(t("sections.nameRequired")); return; }
     setSaving(true);
     setError("");
 
@@ -242,26 +245,26 @@ export default function SectionsPage() {
     }
   };
 
-  if (loading) return <div className="text-[var(--muted)] text-sm">Loading...</div>;
+  if (loading) return <div className="text-[var(--muted)] text-sm">{t("common.loading")}</div>;
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--foreground)]">Categories</h1>
+        <h1 className="text-2xl font-bold text-[var(--foreground)]">{t("sections.title")}</h1>
         <button
           onClick={openAdd}
           disabled={!isAdmin && sections.length >= 4}
           className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-30 disabled:cursor-not-allowed"
         >
-          + Add Section
+          + {t("sections.addSection")}
         </button>
       </div>
       {!isAdmin && sections.length >= 4 && (
-        <p className="text-[var(--muted)] text-[10px] mb-4">Maximum 4 sections reached</p>
+        <p className="text-[var(--muted)] text-[10px] mb-4">{t("sections.noSections")}</p>
       )}
 
       {sections.length === 0 ? (
-        <p className="text-[var(--muted)] text-sm text-center py-12">No sections yet.</p>
+        <p className="text-[var(--muted)] text-sm text-center py-12">{t("sections.noSections")}</p>
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
@@ -279,12 +282,12 @@ export default function SectionsPage() {
         <div className="fixed inset-0 bg-[var(--overlay)] z-50 flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-semibold text-[var(--foreground)] mb-4">
-              {editingId ? "Edit Section" : "Add Section"}
+              {editingId ? t("sections.editSection") : t("sections.addSection")}
             </h2>
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Name *</label>
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sections.sectionName")} *</label>
                 <input
                   className="dash-input"
                   maxLength={40}
@@ -297,11 +300,11 @@ export default function SectionsPage() {
                       ...(slugManual ? {} : { slug: autoSlug(name) }),
                     }));
                   }}
-                  placeholder="e.g. Projects"
+                  placeholder={t("sections.sectionNamePlaceholder")}
                 />
                 <CharLimitHint max={40} current={form.name.length} />
                 <TextStyleGroup
-                  colorLabel="Name Color" colorValue={form.nameColor} onColorChange={(v) => setForm((f) => ({ ...f, nameColor: v }))}
+                  colorLabel={t("sections.nameColor")} colorValue={form.nameColor} onColorChange={(v) => setForm((f) => ({ ...f, nameColor: v }))}
                   fontValue={form.nameFont} onFontChange={(v) => setForm((f) => ({ ...f, nameFont: v }))}
                   weightValue={form.nameWeight} onWeightChange={(v) => setForm((f) => ({ ...f, nameWeight: v }))}
                 />
@@ -319,30 +322,30 @@ export default function SectionsPage() {
                 />
               </div>
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Section Label</label>
-                <input className="dash-input" maxLength={30} value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} placeholder="Display label" />
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sections.sectionLabel")}</label>
+                <input className="dash-input" maxLength={30} value={form.label} onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))} placeholder={t("sections.sectionLabelPlaceholder")} />
                 <CharLimitHint max={30} current={form.label.length} />
                 <TextStyleGroup
-                  colorLabel="Label Color" colorValue={form.labelColor} onColorChange={(v) => setForm((f) => ({ ...f, labelColor: v }))}
+                  colorLabel={t("sections.labelColor")} colorValue={form.labelColor} onColorChange={(v) => setForm((f) => ({ ...f, labelColor: v }))}
                   fontValue={form.labelFont} onFontChange={(v) => setForm((f) => ({ ...f, labelFont: v }))}
                   weightValue={form.labelWeight} onWeightChange={(v) => setForm((f) => ({ ...f, labelWeight: v }))}
                 />
               </div>
               <div>
-                <label className="text-xs text-[var(--muted)] mb-1 block">Section Subtitle</label>
-                <input className="dash-input" maxLength={100} value={form.subtitle} onChange={(e) => setForm((f) => ({ ...f, subtitle: e.target.value }))} placeholder="Optional subtitle" />
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sections.sectionSubtitle")}</label>
+                <input className="dash-input" maxLength={100} value={form.subtitle} onChange={(e) => setForm((f) => ({ ...f, subtitle: e.target.value }))} placeholder={t("sections.sectionSubtitlePlaceholder")} />
                 <CharLimitHint max={100} current={form.subtitle.length} />
                 <TextStyleGroup
-                  colorLabel="Subtitle Color" colorValue={form.subtitleColor} onColorChange={(v) => setForm((f) => ({ ...f, subtitleColor: v }))}
+                  colorLabel={t("sections.subtitleColor")} colorValue={form.subtitleColor} onColorChange={(v) => setForm((f) => ({ ...f, subtitleColor: v }))}
                   fontValue={form.subtitleFont} onFontChange={(v) => setForm((f) => ({ ...f, subtitleFont: v }))}
                   weightValue={form.subtitleWeight} onWeightChange={(v) => setForm((f) => ({ ...f, subtitleWeight: v }))}
                 />
               </div>
               <div>
                 <label className="text-xs text-[var(--muted)] mb-1 block">
-                  Background Color
+                  {t("sections.bgColor")}
                   {form.backgroundColor && (
-                    <button onClick={() => setForm((f) => ({ ...f, backgroundColor: "" }))} className="ml-2 text-[var(--accent)] text-xs hover:underline">Clear</button>
+                    <button onClick={() => setForm((f) => ({ ...f, backgroundColor: "" }))} className="ml-2 text-[var(--accent)] text-xs hover:underline">{t("common.clear")}</button>
                   )}
                 </label>
                 <div className="flex items-center gap-2">
@@ -366,10 +369,10 @@ export default function SectionsPage() {
 
             <div className="flex justify-end gap-2 mt-5">
               <button onClick={() => setModalOpen(false)} className="px-4 py-2 rounded-lg text-sm bg-[var(--border)] text-[var(--foreground)] hover:bg-[var(--border)]">
-                Cancel
+                {t("common.cancel")}
               </button>
               <button onClick={handleSave} disabled={saving} className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-50">
-                {saving ? "Saving..." : editingId ? "Update" : "Create"}
+                {saving ? t("common.saving") : editingId ? t("common.update") : t("common.create")}
               </button>
             </div>
           </div>

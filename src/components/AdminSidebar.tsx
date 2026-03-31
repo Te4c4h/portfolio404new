@@ -28,7 +28,7 @@ import {
   FiMonitor,
 } from "react-icons/fi";
 import ThemeToggle from "@/components/ThemeToggle";
-// import LanguageSwitcher from "@/components/LanguageSwitcher";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
 interface AdminSidebarProps {
@@ -240,7 +240,7 @@ export default function AdminSidebar({ username, isAdmin, firstName, lastName }:
 
       {/* Bottom — pinned */}
       <div className="px-3 pb-6 space-y-2">
-        {/* <LanguageSwitcher /> */}
+        <LanguageSwitcher />
         <ThemeToggle />
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
