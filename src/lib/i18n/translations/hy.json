@@ -391,8 +391,18 @@
     "liveBtnColor": "Live կոճակի տեքստ",
     "repoBtnBg": "Կոդի կոճակի ֆոն",
     "repoBtnColor": "Կոդի կոճակի տեքստ",
+    "longDescription": "Երկար նկարագրություն",
+    "longDescriptionPlaceholder": "Երկար նկարագրությունը",
+    "longDescriptionHint": "Երկար նկարագրություն տարրի մասին",
+    "imageDescription": "Նկարի նկարագրություն",
+    "imageDescriptionPlaceholder": "Նկարի նկարագրությունը",
+    "imageDescriptionHint": "Նկարի նկարագրությունը",
+    "videoDescription": "Տեսանյութի նկարագրություն",
+    "videoDescriptionPlaceholder": "Տեսանյութի նկարագրությունը",
+    "videoDescriptionHint": "Տեսանյութի նկարագրությունը",
     "areYouSure": "Վստահ՞ եք",
-    "saved": "Տարրը պահպանվեց՝"
+    "saved": "Տարրը պահպանվեց՝",
+    "duplicateTitle": "Կրկնակի վերնագիր"
   },
   "billing": {
     "title": "Պլան և բաժանորդագրություն",

@@ -12,10 +12,11 @@ interface SectionBlockProps {
   accent: string;
   surface: string;
   defaultBg: string;
-  onCardClick: (item: ContentItemData) => void;
+  username: string;
+  onCardClick?: (item: ContentItemData) => void;
 }
 
-export default function SectionBlock({ section, accent, surface, defaultBg, onCardClick }: SectionBlockProps) {
+export default function SectionBlock({ section, accent, surface, defaultBg, username }: SectionBlockProps) {
   const hasCustomBg = section.backgroundColor && section.backgroundColor !== "#181818" && section.backgroundColor !== "";
   const bg = hasCustomBg ? section.backgroundColor : defaultBg;
 
@@ -90,7 +91,7 @@ export default function SectionBlock({ section, accent, surface, defaultBg, onCa
               className="h-full"
             >
               {(!item.contentType || item.contentType === "project") && (
-                <ProjectCard item={item} accent={accent} surface={surface} onClick={() => onCardClick(item)} />
+                <ProjectCard item={item} accent={accent} surface={surface} username={username} />
               )}
               {item.contentType === "video" && (
                 <VideoCard item={item} accent={accent} surface={surface} />

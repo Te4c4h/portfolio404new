@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { title, description, sectionId, tags, coverImage, image1, image2, image3, liveUrl, repoUrl, contentType, videoUrl, codeContent, codeLanguage, modelUrl,
+  const { title, description, longDescription, sectionId, tags, coverImage, coverImageDesc, image1, image1Desc, image2, image2Desc, image3, image3Desc, liveUrl, repoUrl, contentType, videoUrl, videoDesc, codeContent, codeLanguage, modelUrl,
     cardBg,
     titleColor, titleFont, titleWeight,
     descColor, descFont, descWeight,
@@ -35,6 +35,15 @@ export async function POST(req: NextRequest) {
 
   if (!title) return NextResponse.json({ error: "Title is required" }, { status: 400 });
   if (!sectionId) return NextResponse.json({ error: "Section is required" }, { status: 400 });
+
+  // Generate slug from title
+  let slug = title.toLowerCase().replace(/[^a-z0-9\u0400-\u04ff\u0530-\u058f]+/g, "-").replace(/^-|-$/g, "");
+  if (!slug) slug = "item";
+  // Ensure slug is unique for this user
+  const existing = await prisma.contentItem.findFirst({ where: { userId, slug } });
+  if (existing) {
+    return NextResponse.json({ error: "An item with this name already exists. Please choose a different title." }, { status: 400 });
+  }
 
   const section = await prisma.section.findUnique({ where: { id: sectionId } });
   if (!section || section.userId !== userId) {
@@ -59,17 +68,24 @@ export async function POST(req: NextRequest) {
   const data = {
     userId,
     sectionId,
+    slug,
     contentType: contentType || "project",
     title,
     description: description || "",
+    longDescription: longDescription || "",
     tags: tags || "",
     coverImage: coverImage || "",
+    coverImageDesc: coverImageDesc || "",
     image1: image1 || "",
+    image1Desc: image1Desc || "",
     image2: image2 || "",
+    image2Desc: image2Desc || "",
     image3: image3 || "",
+    image3Desc: image3Desc || "",
     liveUrl: liveUrl || "",
     repoUrl: repoUrl || "",
     videoUrl: videoUrl || "",
+    videoDesc: videoDesc || "",
     codeContent: codeContent || "",
     codeLanguage: codeLanguage || "",
     modelUrl: modelUrl || "",

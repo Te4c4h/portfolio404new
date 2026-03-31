@@ -74,17 +74,24 @@ model ContentItem {
   id            String  @id @default(cuid())
   userId        String
   sectionId     String
+  slug          String  @default("")
   contentType   String  @default("project")
   title         String
   description   String  @default("")
+  longDescription String @default("")
   tags          String  @default("")
   coverImage    String  @default("")
+  coverImageDesc String @default("")
   image1        String  @default("")
+  image1Desc    String  @default("")
   image2        String  @default("")
+  image2Desc    String  @default("")
   image3        String  @default("")
+  image3Desc    String  @default("")
   liveUrl       String  @default("")
   repoUrl       String  @default("")
   videoUrl      String  @default("")
+  videoDesc     String  @default("")
   codeContent   String  @default("")
   codeLanguage  String  @default("")
   modelUrl      String  @default("")
@@ -123,6 +130,8 @@ model ContentItem {
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, slug])
 }
 
 model SiteContent {

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { FiExternalLink, FiGithub } from "react-icons/fi";
 import type { ContentItemData } from "./PortfolioClient";
 
@@ -8,15 +9,17 @@ interface ProjectCardProps {
   item: ContentItemData;
   accent: string;
   surface: string;
-  onClick: () => void;
+  username: string;
+  onClick?: () => void;
 }
 
-export default function ProjectCard({ item, accent, surface, onClick }: ProjectCardProps) {
+export default function ProjectCard({ item, accent, surface, username }: ProjectCardProps) {
+  const itemHref = item.slug ? `/u/${username}/${item.slug}` : undefined;
   const tags = item.tags.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 6);
 
   return (
-    <div
-      onClick={onClick}
+    <Link
+      href={itemHref || "#"}
       data-clickable
       className="group rounded-xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer h-full flex flex-col"
       style={{
@@ -122,6 +125,6 @@ export default function ProjectCard({ item, accent, surface, onClick }: ProjectC
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

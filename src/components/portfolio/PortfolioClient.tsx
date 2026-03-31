@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import LoadingScreen from "./LoadingScreen";
 import CustomCursor from "./CustomCursor";
 import Navbar from "./Navbar";
@@ -9,7 +9,7 @@ import About from "./About";
 import SectionBlock from "./SectionBlock";
 import Contact from "./Contact";
 import Footer from "./Footer";
-import ProjectModal from "./ProjectModal";
+import FaviconSetter from "./FaviconSetter";
 import ResumeSection, { ResumeData } from "./ResumeSection";
 import PricingSection from "@/components/PricingSection";
 
@@ -128,6 +128,7 @@ export interface ContactLinkData {
 
 export interface ContentItemData {
   id: string;
+  slug: string;
   contentType: string;
   title: string;
   description: string;
@@ -200,23 +201,6 @@ const defaults: ThemeData = {
   webclipUrl: "", websiteTitle: "", gridColor: "rgba(255,255,255,0.03)",
 };
 
-function FaviconSetter({ url }: { url: string }) {
-  useEffect(() => {
-    if (!url) return;
-    // Remove any existing favicons
-    const existing = document.querySelectorAll("link[rel='icon'], link[rel='shortcut icon']");
-    existing.forEach((el) => el.remove());
-    // Add new favicon
-    const link = document.createElement("link");
-    link.rel = "icon";
-    link.href = url;
-    if (url.endsWith(".png")) link.type = "image/png";
-    else if (url.endsWith(".ico")) link.type = "image/x-icon";
-    document.head.appendChild(link);
-  }, [url]);
-  return null;
-}
-
 function googleFontUrl(fonts: string[]): string {
   const unique = Array.from(new Set(fonts)).filter(Boolean);
   const families = unique.map((f) => `family=${f.replace(/ /g, "+")}:wght@300;400;500;600;700`).join("&");
@@ -230,7 +214,6 @@ export default function PortfolioClient({
     Object.entries(rawTheme || {}).filter(([, v]) => v !== null && v !== "")
   ) } as ThemeData;
 
-  const [modalItem, setModalItem] = useState<ContentItemData | null>(null);
 
   // Track page view on mount (prevent double-fire in React 18 Strict Mode and across fast refreshes)
   useEffect(() => {
@@ -387,7 +370,7 @@ export default function PortfolioClient({
               accent={theme.accentColor}
               surface={theme.surfaceColor}
               defaultBg={theme.backgroundColor}
-              onCardClick={setModalItem}
+              username={user.username}
             />
           ))}
           {resume && (
@@ -417,11 +400,6 @@ export default function PortfolioClient({
             textColor={siteContent?.footerTextColor}
             textFont={siteContent?.footerTextFont}
             textWeight={siteContent?.footerTextWeight}
-          />
-          <ProjectModal
-            item={modalItem}
-            onClose={() => setModalItem(null)}
-            accent={theme.accentColor}
           />
         </div>
       </div>

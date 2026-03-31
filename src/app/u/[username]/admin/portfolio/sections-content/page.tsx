@@ -23,17 +23,24 @@ interface Section {
 interface ContentItem {
   id: string;
   sectionId: string;
+  slug: string;
   contentType: string;
   title: string;
   description: string;
+  longDescription: string;
   tags: string;
   coverImage: string;
+  coverImageDesc: string;
   image1: string;
+  image1Desc: string;
   image2: string;
+  image2Desc: string;
   image3: string;
+  image3Desc: string;
   liveUrl: string;
   repoUrl: string;
   videoUrl: string;
+  videoDesc: string;
   codeContent: string;
   codeLanguage: string;
   modelUrl: string;
@@ -45,14 +52,20 @@ interface FormData {
   contentType: string;
   title: string;
   description: string;
+  longDescription: string;
   tags: string;
   coverImage: string;
+  coverImageDesc: string;
   image1: string;
+  image1Desc: string;
   image2: string;
+  image2Desc: string;
   image3: string;
+  image3Desc: string;
   liveUrl: string;
   repoUrl: string;
   videoUrl: string;
+  videoDesc: string;
   codeContent: string;
   codeLanguage: string;
   modelUrl: string;
@@ -78,9 +91,9 @@ interface FormData {
 }
 
 const emptyForm: FormData = {
-  sectionId: "", contentType: "project", title: "", description: "", tags: "",
-  coverImage: "", image1: "", image2: "", image3: "",
-  liveUrl: "", repoUrl: "", videoUrl: "", codeContent: "",
+  sectionId: "", contentType: "project", title: "", description: "", longDescription: "", tags: "",
+  coverImage: "", coverImageDesc: "", image1: "", image1Desc: "", image2: "", image2Desc: "", image3: "", image3Desc: "",
+  liveUrl: "", repoUrl: "", videoUrl: "", videoDesc: "", codeContent: "",
   codeLanguage: "", modelUrl: "",
   cardBg: "",
   titleColor: "", titleFont: "", titleWeight: "",
@@ -212,9 +225,15 @@ export default function ContentPage() {
     setForm({
       sectionId: item.sectionId, contentType: item.contentType || "project",
       title: item.title, description: item.description,
-      tags: item.tags, coverImage: item.coverImage, image1: item.image1,
-      image2: item.image2, image3: item.image3, liveUrl: item.liveUrl,
+      longDescription: item.longDescription || "",
+      tags: item.tags, coverImage: item.coverImage,
+      coverImageDesc: item.coverImageDesc || "",
+      image1: item.image1, image1Desc: item.image1Desc || "",
+      image2: item.image2, image2Desc: item.image2Desc || "",
+      image3: item.image3, image3Desc: item.image3Desc || "",
+      liveUrl: item.liveUrl,
       repoUrl: item.repoUrl, videoUrl: item.videoUrl || "",
+      videoDesc: item.videoDesc || "",
       codeContent: item.codeContent || "", codeLanguage: item.codeLanguage || "",
       modelUrl: item.modelUrl || "",
       cardBg: (item as never as Record<string, string>).cardBg || "",
@@ -442,13 +461,26 @@ export default function ContentPage() {
                 />
               </div>
 
+              {/* Long description — detail page */}
+              <div>
+                <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.longDescription")}</label>
+                <textarea className="dash-input min-h-[120px]" value={form.longDescription} onChange={(e) => setForm((f) => ({ ...f, longDescription: e.target.value }))} placeholder={t("sectionsContent.longDescriptionPlaceholder")} />
+                <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">{t("sectionsContent.longDescriptionHint")}</p>
+              </div>
+
               {/* Video fields */}
               {form.contentType === "video" && (
-                <div>
-                  <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.videoUrl")} *</label>
-                  <input className="dash-input" value={form.videoUrl} onChange={(e) => setForm((f) => ({ ...f, videoUrl: e.target.value }))} placeholder={t("sectionsContent.videoUrlPlaceholder")} />
-                  <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">YouTube or Vimeo URL. Will be embedded as a player.</p>
-                </div>
+                <>
+                  <div>
+                    <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.videoUrl")} *</label>
+                    <input className="dash-input" value={form.videoUrl} onChange={(e) => setForm((f) => ({ ...f, videoUrl: e.target.value }))} placeholder={t("sectionsContent.videoUrlPlaceholder")} />
+                    <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">YouTube or Vimeo URL. Will be embedded as a player.</p>
+                  </div>
+                  <div>
+                    <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.videoDescription")}</label>
+                    <input className="dash-input" value={form.videoDesc} onChange={(e) => setForm((f) => ({ ...f, videoDesc: e.target.value }))} placeholder={t("sectionsContent.videoDescriptionPlaceholder")} />
+                  </div>
+                </>
               )}
 
               {/* Code fields */}
@@ -495,31 +527,46 @@ export default function ContentPage() {
                     acceptedFormats={["JPG", "PNG", "WEBP"]}
                     folder="content"
                   />
+                  {form.coverImage && (
+                    <div>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.imageDescription")}</label>
+                      <input className="dash-input" value={form.coverImageDesc} onChange={(e) => setForm((f) => ({ ...f, coverImageDesc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />
+                    </div>
+                  )}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <ImageUpload
-                      label="Image 2"
-                      value={form.image1}
-                      onChange={(url) => setForm((f) => ({ ...f, image1: url }))}
-                      maxSizeMB={3}
-                      acceptedFormats={["JPG", "PNG", "WEBP"]}
-                      folder="content"
-                    />
-                    <ImageUpload
-                      label="Image 3"
-                      value={form.image2}
-                      onChange={(url) => setForm((f) => ({ ...f, image2: url }))}
-                      maxSizeMB={3}
-                      acceptedFormats={["JPG", "PNG", "WEBP"]}
-                      folder="content"
-                    />
-                    <ImageUpload
-                      label="Image 4"
-                      value={form.image3}
-                      onChange={(url) => setForm((f) => ({ ...f, image3: url }))}
-                      maxSizeMB={3}
-                      acceptedFormats={["JPG", "PNG", "WEBP"]}
-                      folder="content"
-                    />
+                    <div>
+                      <ImageUpload
+                        label="Image 2"
+                        value={form.image1}
+                        onChange={(url) => setForm((f) => ({ ...f, image1: url }))}
+                        maxSizeMB={3}
+                        acceptedFormats={["JPG", "PNG", "WEBP"]}
+                        folder="content"
+                      />
+                      {form.image1 && <input className="dash-input mt-1 text-xs" value={form.image1Desc} onChange={(e) => setForm((f) => ({ ...f, image1Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
+                    </div>
+                    <div>
+                      <ImageUpload
+                        label="Image 3"
+                        value={form.image2}
+                        onChange={(url) => setForm((f) => ({ ...f, image2: url }))}
+                        maxSizeMB={3}
+                        acceptedFormats={["JPG", "PNG", "WEBP"]}
+                        folder="content"
+                      />
+                      {form.image2 && <input className="dash-input mt-1 text-xs" value={form.image2Desc} onChange={(e) => setForm((f) => ({ ...f, image2Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
+                    </div>
+                    <div>
+                      <ImageUpload
+                        label="Image 4"
+                        value={form.image3}
+                        onChange={(url) => setForm((f) => ({ ...f, image3: url }))}
+                        maxSizeMB={3}
+                        acceptedFormats={["JPG", "PNG", "WEBP"]}
+                        folder="content"
+                      />
+                      {form.image3 && <input className="dash-input mt-1 text-xs" value={form.image3Desc} onChange={(e) => setForm((f) => ({ ...f, image3Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
+                    </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div>

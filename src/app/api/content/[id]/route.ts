@@ -15,7 +15,7 @@ export async function PUT(
   }
 
   const body = await req.json();
-  const { title, description, tags, coverImage, image1, image2, image3, liveUrl, repoUrl, sectionId, contentType, videoUrl, codeContent, codeLanguage, modelUrl,
+  const { title, description, longDescription, tags, coverImage, coverImageDesc, image1, image1Desc, image2, image2Desc, image3, image3Desc, liveUrl, repoUrl, sectionId, contentType, videoUrl, videoDesc, codeContent, codeLanguage, modelUrl,
     cardBg,
     titleColor, titleFont, titleWeight,
     descColor, descFont, descWeight,
@@ -24,19 +24,38 @@ export async function PUT(
     repoBtnBg, repoBtnColor, repoBtnFont, repoBtnWeight,
   } = body;
 
-  const data: Record<string, string> = {};
-  if (title !== undefined) data.title = title;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data: Record<string, any> = {};
+
+  // Regenerate slug when title changes
+  if (title !== undefined) {
+    data.title = title;
+    let slug = title.toLowerCase().replace(/[^a-z0-9\u0400-\u04ff\u0530-\u058f]+/g, "-").replace(/^-|-$/g, "");
+    if (!slug) slug = "item";
+    const existing = await prisma.contentItem.findFirst({ where: { userId, slug, NOT: { id: params.id } } });
+    if (existing) {
+      return NextResponse.json({ error: "An item with this name already exists. Please choose a different title." }, { status: 400 });
+    }
+    data.slug = slug;
+  }
+
   if (description !== undefined) data.description = description;
+  if (longDescription !== undefined) data.longDescription = longDescription;
   if (tags !== undefined) data.tags = tags;
   if (coverImage !== undefined) data.coverImage = coverImage;
+  if (coverImageDesc !== undefined) data.coverImageDesc = coverImageDesc;
   if (image1 !== undefined) data.image1 = image1;
+  if (image1Desc !== undefined) data.image1Desc = image1Desc;
   if (image2 !== undefined) data.image2 = image2;
+  if (image2Desc !== undefined) data.image2Desc = image2Desc;
   if (image3 !== undefined) data.image3 = image3;
+  if (image3Desc !== undefined) data.image3Desc = image3Desc;
   if (liveUrl !== undefined) data.liveUrl = liveUrl;
   if (repoUrl !== undefined) data.repoUrl = repoUrl;
   if (sectionId !== undefined) data.sectionId = sectionId;
   if (contentType !== undefined) data.contentType = contentType;
   if (videoUrl !== undefined) data.videoUrl = videoUrl;
+  if (videoDesc !== undefined) data.videoDesc = videoDesc;
   if (codeContent !== undefined) data.codeContent = codeContent;
   if (codeLanguage !== undefined) data.codeLanguage = codeLanguage;
   if (modelUrl !== undefined) data.modelUrl = modelUrl;
