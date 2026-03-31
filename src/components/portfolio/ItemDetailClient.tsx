@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { FiExternalLink, FiGithub, FiArrowLeft } from "react-icons/fi";
+import { FiExternalLink, FiGithub } from "react-icons/fi";
 import CustomCursor from "./CustomCursor";
 import Navbar from "./Navbar";
 import Contact from "./Contact";
@@ -58,6 +58,12 @@ interface ItemData {
   repoBtnColor?: string;
   repoBtnFont?: string;
   repoBtnWeight?: string;
+  longDescColor?: string;
+  longDescFont?: string;
+  longDescWeight?: string;
+  imgDescColor?: string;
+  imgDescFont?: string;
+  imgDescWeight?: string;
   section: { name: string; slug: string };
 }
 
@@ -184,22 +190,6 @@ export default function ItemDetailClient({
           {/* Item Detail Section */}
           <section className="pt-32 pb-24 px-6">
             <div className="max-w-4xl mx-auto">
-              {/* Back link */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                <a
-                  href={`/u/${user.username}`}
-                  className="inline-flex items-center gap-2 text-sm mb-8 transition-colors hover:opacity-80"
-                  style={{ color: theme.accentColor }}
-                >
-                  <FiArrowLeft size={16} />
-                  Back to Portfolio
-                </a>
-              </motion.div>
-
               {/* Title */}
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
@@ -321,7 +311,12 @@ export default function ItemDetailClient({
                     />
                   </div>
                   {images[0].desc && (
-                    <p className="text-sm mt-3 text-center" style={{ color: "var(--text)", opacity: 0.6 }}>
+                    <p className="text-sm mt-3 text-center" style={{
+                      color: item.imgDescColor || "var(--text)",
+                      opacity: item.imgDescColor ? 1 : 0.6,
+                      fontFamily: item.imgDescFont ? item.imgDescFont + ", sans-serif" : undefined,
+                      fontWeight: item.imgDescWeight || undefined,
+                    }}>
                       {images[0].desc}
                     </p>
                   )}
@@ -338,7 +333,12 @@ export default function ItemDetailClient({
                 >
                   <div
                     className="text-sm sm:text-base leading-relaxed whitespace-pre-line"
-                    style={{ color: "var(--text)", opacity: 0.85 }}
+                    style={{
+                      color: item.longDescColor || "var(--text)",
+                      opacity: item.longDescColor ? 1 : 0.85,
+                      fontFamily: item.longDescFont ? item.longDescFont + ", sans-serif" : undefined,
+                      fontWeight: item.longDescWeight || undefined,
+                    }}
                   >
                     {item.longDescription}
                   </div>
@@ -363,7 +363,12 @@ export default function ItemDetailClient({
                     />
                   </div>
                   {item.videoDesc && (
-                    <p className="text-sm mt-3 text-center" style={{ color: "var(--text)", opacity: 0.6 }}>
+                    <p className="text-sm mt-3 text-center" style={{
+                      color: item.imgDescColor || "var(--text)",
+                      opacity: item.imgDescColor ? 1 : 0.6,
+                      fontFamily: item.imgDescFont ? item.imgDescFont + ", sans-serif" : undefined,
+                      fontWeight: item.imgDescWeight || undefined,
+                    }}>
                       {item.videoDesc}
                     </p>
                   )}
@@ -391,7 +396,12 @@ export default function ItemDetailClient({
                         />
                       </div>
                       {img.desc && (
-                        <p className="text-sm mt-2 text-center" style={{ color: "var(--text)", opacity: 0.6 }}>
+                        <p className="text-sm mt-2 text-center" style={{
+                          color: item.imgDescColor || "var(--text)",
+                          opacity: item.imgDescColor ? 1 : 0.6,
+                          fontFamily: item.imgDescFont ? item.imgDescFont + ", sans-serif" : undefined,
+                          fontWeight: item.imgDescWeight || undefined,
+                        }}>
                           {img.desc}
                         </p>
                       )}

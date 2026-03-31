@@ -31,6 +31,8 @@ export async function POST(req: NextRequest) {
     tagBg, tagColor, tagFont, tagWeight,
     liveBtnBg, liveBtnColor, liveBtnFont, liveBtnWeight,
     repoBtnBg, repoBtnColor, repoBtnFont, repoBtnWeight,
+    longDescColor, longDescFont, longDescWeight,
+    imgDescColor, imgDescFont, imgDescWeight,
   } = body;
 
   if (!title) return NextResponse.json({ error: "Title is required" }, { status: 400 });
@@ -109,6 +111,12 @@ export async function POST(req: NextRequest) {
     ...(repoBtnColor !== undefined && { repoBtnColor }),
     ...(repoBtnFont !== undefined && { repoBtnFont }),
     ...(repoBtnWeight !== undefined && { repoBtnWeight }),
+    ...(longDescColor !== undefined && { longDescColor }),
+    ...(longDescFont !== undefined && { longDescFont }),
+    ...(longDescWeight !== undefined && { longDescWeight }),
+    ...(imgDescColor !== undefined && { imgDescColor }),
+    ...(imgDescFont !== undefined && { imgDescFont }),
+    ...(imgDescWeight !== undefined && { imgDescWeight }),
   };
 
   const item = await prisma.contentItem.create({ data: data as Parameters<typeof prisma.contentItem.create>[0]["data"] });

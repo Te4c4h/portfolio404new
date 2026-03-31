@@ -22,6 +22,8 @@ export async function PUT(
     tagBg, tagColor, tagFont, tagWeight,
     liveBtnBg, liveBtnColor, liveBtnFont, liveBtnWeight,
     repoBtnBg, repoBtnColor, repoBtnFont, repoBtnWeight,
+    longDescColor, longDescFont, longDescWeight,
+    imgDescColor, imgDescFont, imgDescWeight,
   } = body;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -78,6 +80,12 @@ export async function PUT(
   if (repoBtnColor !== undefined) data.repoBtnColor = repoBtnColor;
   if (repoBtnFont !== undefined) data.repoBtnFont = repoBtnFont;
   if (repoBtnWeight !== undefined) data.repoBtnWeight = repoBtnWeight;
+  if (longDescColor !== undefined) data.longDescColor = longDescColor;
+  if (longDescFont !== undefined) data.longDescFont = longDescFont;
+  if (longDescWeight !== undefined) data.longDescWeight = longDescWeight;
+  if (imgDescColor !== undefined) data.imgDescColor = imgDescColor;
+  if (imgDescFont !== undefined) data.imgDescFont = imgDescFont;
+  if (imgDescWeight !== undefined) data.imgDescWeight = imgDescWeight;
 
   const updated = await prisma.contentItem.update({
     where: { id: params.id },

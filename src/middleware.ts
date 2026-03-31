@@ -46,7 +46,12 @@ export async function middleware(req: NextRequest) {
       if (data.username) {
         // Rewrite the request to the portfolio page
         const url = req.nextUrl.clone();
-        url.pathname = `/u/${data.username}${pathname === "/" ? "" : pathname}`;
+        // If path already starts with /u/{username}, use it as-is (e.g. item detail links)
+        if (pathname.startsWith(`/u/${data.username}`)) {
+          url.pathname = pathname;
+        } else {
+          url.pathname = `/u/${data.username}${pathname === "/" ? "" : pathname}`;
+        }
         return NextResponse.rewrite(url);
       }
     } catch (e) {

@@ -116,6 +116,16 @@ model ContentItem {
   tagFont         String @default("")
   tagWeight       String @default("")
 
+  // Long description styling
+  longDescColor   String @default("")
+  longDescFont    String @default("")
+  longDescWeight  String @default("")
+
+  // Image description styling
+  imgDescColor    String @default("")
+  imgDescFont     String @default("")
+  imgDescWeight   String @default("")
+
   // P-2: Live URL button styling
   liveBtnBg       String @default("")
   liveBtnColor    String @default("")

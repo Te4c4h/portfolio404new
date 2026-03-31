@@ -438,6 +438,7 @@ export default function AccountSettingsPage() {
                   {t("accountSettings.dnsDesc")}
                 </p>
                 <div className="space-y-1.5 text-xs">
+                  <p className="text-[var(--muted)] font-semibold mt-1">{t("accountSettings.dnsStep1")}</p>
                   <div className="flex items-start gap-2">
                     <span className="text-[var(--accent)] font-mono font-medium mt-0.5">A</span>
                     <div>
@@ -451,6 +452,21 @@ export default function AccountSettingsPage() {
                       <p className="text-[var(--foreground)]">Point <code className="bg-[var(--border)] px-1 rounded">@</code> to <code className="bg-[var(--border)] px-1 rounded">portfolio404.site</code></p>
                     </div>
                   </div>
+                  <p className="text-[var(--muted)] font-semibold mt-3">{t("accountSettings.dnsStep2")}</p>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[var(--accent)] font-mono font-medium mt-0.5">A</span>
+                    <div>
+                      <p className="text-[var(--foreground)]">Point <code className="bg-[var(--border)] px-1 rounded">www</code> to <code className="bg-[var(--border)] px-1 rounded">109.75.40.220</code></p>
+                    </div>
+                  </div>
+                  <p className="text-[var(--muted)] text-center">{t("accountSettings.dnsOrSeparator")}</p>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[var(--accent)] font-mono font-medium mt-0.5">CNAME</span>
+                    <div>
+                      <p className="text-[var(--foreground)]">Point <code className="bg-[var(--border)] px-1 rounded">www</code> to <code className="bg-[var(--border)] px-1 rounded">{profile.customDomain}</code></p>
+                    </div>
+                  </div>
+                  <p className="text-[var(--muted)] text-[10px] mt-1">{t("accountSettings.wwwNote")}</p>
                 </div>
                 <p className="text-xs text-[var(--muted)] mt-2">{t("accountSettings.dnsPropagation")}</p>
               </div>

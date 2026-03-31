@@ -88,6 +88,12 @@ interface FormData {
   repoBtnColor: string;
   repoBtnFont: string;
   repoBtnWeight: string;
+  longDescColor: string;
+  longDescFont: string;
+  longDescWeight: string;
+  imgDescColor: string;
+  imgDescFont: string;
+  imgDescWeight: string;
 }
 
 const emptyForm: FormData = {
@@ -101,6 +107,8 @@ const emptyForm: FormData = {
   tagBg: "", tagColor: "", tagFont: "", tagWeight: "",
   liveBtnBg: "", liveBtnColor: "", liveBtnFont: "", liveBtnWeight: "",
   repoBtnBg: "", repoBtnColor: "", repoBtnFont: "", repoBtnWeight: "",
+  longDescColor: "", longDescFont: "", longDescWeight: "",
+  imgDescColor: "", imgDescFont: "", imgDescWeight: "",
 };
 
 const contentTypes = [
@@ -255,6 +263,12 @@ export default function ContentPage() {
       repoBtnColor: (item as never as Record<string, string>).repoBtnColor || "",
       repoBtnFont: (item as never as Record<string, string>).repoBtnFont || "",
       repoBtnWeight: (item as never as Record<string, string>).repoBtnWeight || "",
+      longDescColor: (item as never as Record<string, string>).longDescColor || "",
+      longDescFont: (item as never as Record<string, string>).longDescFont || "",
+      longDescWeight: (item as never as Record<string, string>).longDescWeight || "",
+      imgDescColor: (item as never as Record<string, string>).imgDescColor || "",
+      imgDescFont: (item as never as Record<string, string>).imgDescFont || "",
+      imgDescWeight: (item as never as Record<string, string>).imgDescWeight || "",
     });
     setError("");
     setModalOpen(true);
@@ -476,6 +490,11 @@ export default function ContentPage() {
                 <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.longDescription")}</label>
                 <textarea className="dash-input min-h-[120px]" value={form.longDescription} onChange={(e) => setForm((f) => ({ ...f, longDescription: e.target.value }))} placeholder={t("sectionsContent.longDescriptionPlaceholder")} />
                 <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">{t("sectionsContent.longDescriptionHint")}</p>
+                <TextStyleGroup
+                  colorLabel={t("sectionsContent.longDescColor")} colorValue={form.longDescColor} onColorChange={(v) => setForm((f) => ({ ...f, longDescColor: v }))}
+                  fontValue={form.longDescFont} onFontChange={(v) => setForm((f) => ({ ...f, longDescFont: v }))}
+                  weightValue={form.longDescWeight} onWeightChange={(v) => setForm((f) => ({ ...f, longDescWeight: v }))}
+                />
               </div>
 
               {/* Video fields */}
@@ -541,6 +560,11 @@ export default function ContentPage() {
                     <div>
                       <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.imageDescription")}</label>
                       <input className="dash-input" value={form.coverImageDesc} onChange={(e) => setForm((f) => ({ ...f, coverImageDesc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />
+                      <TextStyleGroup
+                        colorLabel={t("sectionsContent.imgDescColor")} colorValue={form.imgDescColor} onColorChange={(v) => setForm((f) => ({ ...f, imgDescColor: v }))}
+                        fontValue={form.imgDescFont} onFontChange={(v) => setForm((f) => ({ ...f, imgDescFont: v }))}
+                        weightValue={form.imgDescWeight} onWeightChange={(v) => setForm((f) => ({ ...f, imgDescWeight: v }))}
+                      />
                     </div>
                   )}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -580,11 +604,11 @@ export default function ContentPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div>
-                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.liveUrl")}</label>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.link1")}</label>
                       <input className="dash-input" value={form.liveUrl} onChange={(e) => setForm((f) => ({ ...f, liveUrl: e.target.value }))} placeholder={t("sectionsContent.liveUrlPlaceholder")} />
                     </div>
                     <div>
-                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.repoUrl")}</label>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.link2")}</label>
                       <input className="dash-input" value={form.repoUrl} onChange={(e) => setForm((f) => ({ ...f, repoUrl: e.target.value }))} placeholder={t("sectionsContent.repoUrlPlaceholder")} />
                     </div>
                   </div>
