@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { FiExternalLink, FiGithub, FiArrowLeft } from "react-icons/fi";
 import CustomCursor from "./CustomCursor";
@@ -179,6 +178,7 @@ export default function ItemDetailClient({
             logoTextFont={siteContent?.logoTextFont}
             logoTextWeight={siteContent?.logoTextWeight}
             hamburgerColor={siteContent?.hamburgerColor}
+            homeHref={`/u/${user.username}`}
           />
 
           {/* Item Detail Section */}
@@ -190,14 +190,14 @@ export default function ItemDetailClient({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4 }}
               >
-                <Link
-                  href={`/u/${user.username}#${item.section.slug}`}
+                <a
+                  href={`/u/${user.username}`}
                   className="inline-flex items-center gap-2 text-sm mb-8 transition-colors hover:opacity-80"
                   style={{ color: theme.accentColor }}
                 >
                   <FiArrowLeft size={16} />
-                  {item.section.name}
-                </Link>
+                  Back to Portfolio
+                </a>
               </motion.div>
 
               {/* Title */}

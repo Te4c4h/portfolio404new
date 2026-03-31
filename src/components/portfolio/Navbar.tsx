@@ -16,9 +16,10 @@ interface NavbarProps {
   logoTextFont?: string;
   logoTextWeight?: string;
   hamburgerColor?: string;
+  homeHref?: string;
 }
 
-export default function Navbar({ logoUrl, logoText, navLinks, accent, navScrollBg, logoTextColor, logoTextFont, logoTextWeight, hamburgerColor }: NavbarProps) {
+export default function Navbar({ logoUrl, logoText, navLinks, accent, navScrollBg, logoTextColor, logoTextFont, logoTextWeight, hamburgerColor, homeHref }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -29,6 +30,12 @@ export default function Navbar({ logoUrl, logoText, navLinks, accent, navScrollB
   }, []);
 
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // If we're on a sub-page (homeHref set), let hash links navigate to the home page with hash
+    if (homeHref && href.startsWith("#")) {
+      e.preventDefault();
+      window.location.href = homeHref + href;
+      return;
+    }
     if (href.startsWith("#")) {
       e.preventDefault();
       const id = href.slice(1);
@@ -45,7 +52,7 @@ export default function Navbar({ logoUrl, logoText, navLinks, accent, navScrollB
       style={scrolled ? { backgroundColor: navScrollBg || "rgba(19, 19, 19, 0.9)" } : undefined}
     >
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
-        <a href="#" className="flex items-center gap-2">
+        <a href={homeHref || "#"} className="flex items-center gap-2">
           {logoUrl ? (
             <Image
               src={logoUrl}
@@ -129,6 +136,10 @@ export default function Navbar({ logoUrl, logoText, navLinks, accent, navScrollB
                     setMenuOpen(false);
                     const href = link.href;
                     setTimeout(() => {
+                      if (homeHref && href.startsWith("#")) {
+                        window.location.href = homeHref + href;
+                        return;
+                      }
                       if (href.startsWith("#")) {
                         const id = href.slice(1);
                         if (!id) { window.scrollTo({ top: 0, behavior: "smooth" }); return; }

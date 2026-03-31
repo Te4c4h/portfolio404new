@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { FiExternalLink, FiGithub } from "react-icons/fi";
 import type { ContentItemData } from "./PortfolioClient";
 
@@ -18,7 +17,7 @@ export default function ProjectCard({ item, accent, surface, username }: Project
   const tags = item.tags.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 6);
 
   return (
-    <Link
+    <a
       href={itemHref || "#"}
       data-clickable
       className="group rounded-xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer h-full flex flex-col"
@@ -125,6 +124,6 @@ export default function ProjectCard({ item, accent, surface, username }: Project
           )}
         </div>
       </div>
-    </Link>
+    </a>
   );
 }

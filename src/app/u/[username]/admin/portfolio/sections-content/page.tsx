@@ -459,6 +459,16 @@ export default function ContentPage() {
                   fontValue={form.tagFont} onFontChange={(v) => setForm((f) => ({ ...f, tagFont: v }))}
                   weightValue={form.tagWeight} onWeightChange={(v) => setForm((f) => ({ ...f, tagWeight: v }))}
                 />
+                <div className="mt-2">
+                  <label className="text-xs text-[var(--muted)] mb-1 block">
+                    {t("sectionsContent.tagBgColor")}
+                    {form.tagBg && <button onClick={() => setForm((f) => ({ ...f, tagBg: "" }))} className="ml-2 text-[var(--accent)] text-xs hover:underline">{t("common.clear")}</button>}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input type="color" value={form.tagBg || "#1a1a2e"} onChange={(e) => setForm((f) => ({ ...f, tagBg: e.target.value }))} className="w-9 h-9 rounded border border-[var(--border)] bg-transparent cursor-pointer" />
+                    <input className="dash-input" value={form.tagBg} onChange={(e) => setForm((f) => ({ ...f, tagBg: e.target.value }))} placeholder={t("common.default")} />
+                  </div>
+                </div>
               </div>
 
               {/* Long description — detail page */}
