@@ -382,6 +382,8 @@
     "videoUrl": "Ссылка на видео",
     "videoUrlHint": "Ссылка на YouTube или Vimeo",
     "videoUrlPlaceholder": "https://youtube.com/...",
+    "videoUpload": "Видео проекта",
+    "videoUploadHint": "Загружается на сервер и показывается первым на странице проекта. Макс. 100МБ — MP4, WEBM, MOV.",
     "codeContent": "Фрагмент кода",
     "codeContentHint": "Вставьте код для отображения на карточке",
     "codeLanguage": "Язык программирования",

@@ -2,9 +2,6 @@
 
 import { motion } from "framer-motion";
 import ProjectCard from "./ProjectCard";
-import VideoCard from "./VideoCard";
-import CodeCard from "./CodeCard";
-import ModelCard from "./ModelCard";
 import type { SectionData, ContentItemData } from "./PortfolioClient";
 
 interface SectionBlockProps {
@@ -90,18 +87,7 @@ export default function SectionBlock({ section, accent, surface, defaultBg, user
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="h-full"
             >
-              {(!item.contentType || item.contentType === "project") && (
-                <ProjectCard item={item} accent={accent} surface={surface} username={username} />
-              )}
-              {item.contentType === "video" && (
-                <VideoCard item={item} accent={accent} surface={surface} />
-              )}
-              {item.contentType === "code" && (
-                <CodeCard item={item} accent={accent} surface={surface} />
-              )}
-              {item.contentType === "model3d" && (
-                <ModelCard item={item} accent={accent} surface={surface} />
-              )}
+              <ProjectCard item={item} accent={accent} surface={surface} username={username} />
             </motion.div>
           ))}
         </div>

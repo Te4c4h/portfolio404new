@@ -382,6 +382,8 @@
     "videoUrl": "Video Link",
     "videoUrlHint": "YouTube or Vimeo video link",
     "videoUrlPlaceholder": "https://youtube.com/...",
+    "videoUpload": "Project Video",
+    "videoUploadHint": "Uploaded to the server and shown first on the project page. Max 100MB — MP4, WEBM, MOV.",
     "codeContent": "Code Snippet",
     "codeContentHint": "Paste your code here to display it on the card",
     "codeLanguage": "Programming Language",

@@ -12,6 +12,7 @@ import { FiMenu, FiEdit2, FiTrash2, FiPlus } from "react-icons/fi";
 import Image from "next/image";
 import Toast from "@/components/Toast";
 import ImageUpload from "@/components/ImageUpload";
+import VideoUpload from "@/components/VideoUpload";
 import { TextStyleGroup, CharLimitHint } from "@/components/StyleFields";
 import { useTranslation } from "@/lib/i18n/LanguageProvider";
 
@@ -41,9 +42,6 @@ interface ContentItem {
   repoUrl: string;
   videoUrl: string;
   videoDesc: string;
-  codeContent: string;
-  codeLanguage: string;
-  modelUrl: string;
   order: number;
 }
 
@@ -66,9 +64,6 @@ interface FormData {
   repoUrl: string;
   videoUrl: string;
   videoDesc: string;
-  codeContent: string;
-  codeLanguage: string;
-  modelUrl: string;
   cardBg: string;
   titleColor: string;
   titleFont: string;
@@ -101,8 +96,7 @@ interface FormData {
 const emptyForm: FormData = {
   sectionId: "", contentType: "project", title: "", description: "", longDescription: "", tags: "",
   coverImage: "", coverImageDesc: "", image1: "", image1Desc: "", image2: "", image2Desc: "", image3: "", image3Desc: "",
-  liveUrl: "", repoUrl: "", videoUrl: "", videoDesc: "", codeContent: "",
-  codeLanguage: "", modelUrl: "",
+  liveUrl: "", repoUrl: "", videoUrl: "", videoDesc: "",
   cardBg: "",
   titleColor: "", titleFont: "", titleWeight: "",
   descColor: "", descFont: "", descWeight: "",
@@ -112,19 +106,6 @@ const emptyForm: FormData = {
   longDescColor: "", longDescFont: "", longDescWeight: "",
   imgDescColor: "", imgDescFont: "", imgDescWeight: "",
 };
-
-const contentTypes = [
-  { value: "project", label: "Project" },
-  { value: "video", label: "Video" },
-  { value: "code", label: "Code Block" },
-  { value: "model3d", label: "3D Model" },
-];
-
-const codeLanguages = [
-  "javascript", "typescript", "python", "java", "c", "cpp", "csharp",
-  "go", "rust", "ruby", "php", "swift", "kotlin", "html", "css",
-  "sql", "bash", "json", "yaml", "markdown",
-];
 
 function SortableRow({
   item, sectionName, onEdit, onDelete, deletingId, setDeletingId,
@@ -246,8 +227,6 @@ export default function ContentPage() {
       liveUrl: item.liveUrl,
       repoUrl: item.repoUrl, videoUrl: item.videoUrl || "",
       videoDesc: item.videoDesc || "",
-      codeContent: item.codeContent || "", codeLanguage: item.codeLanguage || "",
-      modelUrl: item.modelUrl || "",
       cardBg: (item as never as Record<string, string>).cardBg || "",
       titleColor: (item as never as Record<string, string>).titleColor || "",
       titleFont: (item as never as Record<string, string>).titleFont || "",
@@ -449,20 +428,12 @@ export default function ContentPage() {
                 {/* ── CONTENT TAB ── */}
                 {activeTab === "content" && (
                   <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.section")} *</label>
-                        <select className="dash-input" value={form.sectionId} onChange={(e) => setForm((f) => ({ ...f, sectionId: e.target.value }))}>
-                          <option value="">{t("sectionsContent.section")}</option>
-                          {sections.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.contentType")} *</label>
-                        <select className="dash-input" value={form.contentType} onChange={(e) => setForm((f) => ({ ...f, contentType: e.target.value }))}>
-                          {contentTypes.map((ct) => <option key={ct.value} value={ct.value}>{ct.label}</option>)}
-                        </select>
-                      </div>
+                    <div>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.section")} *</label>
+                      <select className="dash-input" value={form.sectionId} onChange={(e) => setForm((f) => ({ ...f, sectionId: e.target.value }))}>
+                        <option value="">{t("sectionsContent.section")}</option>
+                        {sections.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                      </select>
                     </div>
                     <div>
                       <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.itemTitle")} *</label>
@@ -470,7 +441,7 @@ export default function ContentPage() {
                       <CharLimitHint max={60} current={form.title.length} />
                     </div>
                     <div>
-                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.description")}{form.contentType === "project" ? " *" : ""}</label>
+                      <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.description")} *</label>
                       <textarea className="dash-input min-h-[80px]" maxLength={300} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder={t("sectionsContent.descriptionPlaceholder")} />
                       <CharLimitHint max={300} current={form.description.length} />
                     </div>
@@ -490,88 +461,60 @@ export default function ContentPage() {
                       <textarea className="dash-input min-h-[120px]" value={form.longDescription} onChange={(e) => setForm((f) => ({ ...f, longDescription: e.target.value }))} placeholder={t("sectionsContent.longDescriptionPlaceholder")} />
                       <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">{t("sectionsContent.longDescriptionHint")}</p>
                     </div>
-
-                    {/* Video fields */}
-                    {form.contentType === "video" && (
-                      <>
-                        <div>
-                          <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.videoUrl")} *</label>
-                          <input className="dash-input" value={form.videoUrl} onChange={(e) => setForm((f) => ({ ...f, videoUrl: e.target.value }))} placeholder={t("sectionsContent.videoUrlPlaceholder")} />
-                          <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">YouTube or Vimeo URL</p>
-                        </div>
-                        <div>
-                          <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.videoDescription")}</label>
-                          <input className="dash-input" value={form.videoDesc} onChange={(e) => setForm((f) => ({ ...f, videoDesc: e.target.value }))} placeholder={t("sectionsContent.videoDescriptionPlaceholder")} />
-                        </div>
-                      </>
-                    )}
-
-                    {/* Code fields */}
-                    {form.contentType === "code" && (
-                      <>
-                        <div>
-                          <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.codeLanguage")}</label>
-                          <select className="dash-input" value={form.codeLanguage} onChange={(e) => setForm((f) => ({ ...f, codeLanguage: e.target.value }))}>
-                            <option value="">Auto-detect</option>
-                            {codeLanguages.map((l) => <option key={l} value={l}>{l}</option>)}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.codeContent")} *</label>
-                          <textarea className="dash-input min-h-[160px] font-mono text-xs" value={form.codeContent} onChange={(e) => setForm((f) => ({ ...f, codeContent: e.target.value }))} placeholder="Paste your code here..." spellCheck={false} />
-                        </div>
-                      </>
-                    )}
-
-                    {/* 3D Model fields */}
-                    {form.contentType === "model3d" && (
-                      <div>
-                        <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.modelUrl")} *</label>
-                        <input className="dash-input" value={form.modelUrl} onChange={(e) => setForm((f) => ({ ...f, modelUrl: e.target.value }))} placeholder={t("sectionsContent.modelUrlPlaceholder")} />
-                        <p className="text-[var(--muted-foreground)] text-[10px] mt-0.5">URL to a .glb or .gltf file</p>
-                      </div>
-                    )}
                   </>
                 )}
 
                 {/* ── MEDIA TAB ── */}
                 {activeTab === "media" && (
                   <>
-                    {form.contentType === "project" ? (
-                      <>
-                        <ImageUpload
-                          label={t("sectionsContent.coverImage")}
-                          value={form.coverImage}
-                          onChange={(url) => setForm((f) => ({ ...f, coverImage: url }))}
-                          maxSizeMB={3}
-                          recommendedDimensions={{ width: 1200, height: 675 }}
-                          acceptedFormats={["JPG", "PNG", "WEBP"]}
-                          folder="content"
-                        />
-                        {form.coverImage && (
-                          <div>
-                            <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.imageDescription")}</label>
-                            <input className="dash-input" value={form.coverImageDesc} onChange={(e) => setForm((f) => ({ ...f, coverImageDesc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />
-                          </div>
-                        )}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
-                          <div>
-                            <ImageUpload label="Image 2" value={form.image1} onChange={(url) => setForm((f) => ({ ...f, image1: url }))} maxSizeMB={3} acceptedFormats={["JPG", "PNG", "WEBP"]} folder="content" />
-                            {form.image1 && <input className="dash-input mt-1 text-xs" value={form.image1Desc} onChange={(e) => setForm((f) => ({ ...f, image1Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
-                          </div>
-                          <div>
-                            <ImageUpload label="Image 3" value={form.image2} onChange={(url) => setForm((f) => ({ ...f, image2: url }))} maxSizeMB={3} acceptedFormats={["JPG", "PNG", "WEBP"]} folder="content" />
-                            {form.image2 && <input className="dash-input mt-1 text-xs" value={form.image2Desc} onChange={(e) => setForm((f) => ({ ...f, image2Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
-                          </div>
-                          <div>
-                            <ImageUpload label="Image 4" value={form.image3} onChange={(url) => setForm((f) => ({ ...f, image3: url }))} maxSizeMB={3} acceptedFormats={["JPG", "PNG", "WEBP"]} folder="content" />
-                            {form.image3 && <input className="dash-input mt-1 text-xs" value={form.image3Desc} onChange={(e) => setForm((f) => ({ ...f, image3Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <p className="text-sm text-[var(--muted)] text-center py-8">Media options are available for Project type items. Switch to Content tab to change the type.</p>
+                    <ImageUpload
+                      label={t("sectionsContent.coverImage")}
+                      value={form.coverImage}
+                      onChange={(url) => setForm((f) => ({ ...f, coverImage: url }))}
+                      maxSizeMB={3}
+                      recommendedDimensions={{ width: 1200, height: 675 }}
+                      acceptedFormats={["JPG", "PNG", "WEBP"]}
+                      folder="content"
+                    />
+                    {form.coverImage && (
+                      <div>
+                        <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.imageDescription")}</label>
+                        <input className="dash-input" value={form.coverImageDesc} onChange={(e) => setForm((f) => ({ ...f, coverImageDesc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />
+                      </div>
                     )}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
+                      <div>
+                        <ImageUpload label="Image 2" value={form.image1} onChange={(url) => setForm((f) => ({ ...f, image1: url }))} maxSizeMB={3} acceptedFormats={["JPG", "PNG", "WEBP"]} folder="content" />
+                        {form.image1 && <input className="dash-input mt-1 text-xs" value={form.image1Desc} onChange={(e) => setForm((f) => ({ ...f, image1Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
+                      </div>
+                      <div>
+                        <ImageUpload label="Image 3" value={form.image2} onChange={(url) => setForm((f) => ({ ...f, image2: url }))} maxSizeMB={3} acceptedFormats={["JPG", "PNG", "WEBP"]} folder="content" />
+                        {form.image2 && <input className="dash-input mt-1 text-xs" value={form.image2Desc} onChange={(e) => setForm((f) => ({ ...f, image2Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
+                      </div>
+                      <div>
+                        <ImageUpload label="Image 4" value={form.image3} onChange={(url) => setForm((f) => ({ ...f, image3: url }))} maxSizeMB={3} acceptedFormats={["JPG", "PNG", "WEBP"]} folder="content" />
+                        {form.image3 && <input className="dash-input mt-1 text-xs" value={form.image3Desc} onChange={(e) => setForm((f) => ({ ...f, image3Desc: e.target.value }))} placeholder={t("sectionsContent.imageDescriptionPlaceholder")} />}
+                      </div>
+                    </div>
+
+                    {/* Video upload */}
+                    <div className="border-t border-[var(--border)] pt-4 mt-4">
+                      <VideoUpload
+                        label={t("sectionsContent.videoUpload")}
+                        value={form.videoUrl}
+                        onChange={(url) => setForm((f) => ({ ...f, videoUrl: url }))}
+                        maxSizeMB={100}
+                        acceptedFormats={["MP4", "WEBM", "MOV"]}
+                        folder="content"
+                      />
+                      <p className="text-[var(--muted-foreground)] text-[10px] mt-1">{t("sectionsContent.videoUploadHint")}</p>
+                      {form.videoUrl && (
+                        <div className="mt-2">
+                          <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.videoDescription")}</label>
+                          <input className="dash-input" value={form.videoDesc} onChange={(e) => setForm((f) => ({ ...f, videoDesc: e.target.value }))} placeholder={t("sectionsContent.videoDescriptionPlaceholder")} />
+                        </div>
+                      )}
+                    </div>
                   </>
                 )}
 

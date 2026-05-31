@@ -294,6 +294,37 @@ export default function ItemDetailClient({
                 </motion.div>
               )}
 
+              {/* Video (uploaded, plays first) */}
+              {item.videoUrl && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.22 }}
+                  className="mb-12"
+                >
+                  <div className="relative rounded-xl overflow-hidden border bg-black" style={{ borderColor: theme.surfaceColor }}>
+                    <video
+                      src={item.videoUrl}
+                      controls
+                      playsInline
+                      preload="metadata"
+                      poster={item.coverImage || undefined}
+                      className="w-full max-h-[70vh] object-contain bg-black"
+                    />
+                  </div>
+                  {item.videoDesc && (
+                    <p className="text-sm mt-3 text-center" style={{
+                      color: item.imgDescColor || "var(--text)",
+                      opacity: item.imgDescColor ? 1 : 0.6,
+                      fontFamily: item.imgDescFont ? item.imgDescFont + ", sans-serif" : undefined,
+                      fontWeight: item.imgDescWeight || undefined,
+                    }}>
+                      {item.videoDesc}
+                    </p>
+                  )}
+                </motion.div>
+              )}
+
               {/* Cover image (large) */}
               {images.length > 0 && (
                 <motion.div
@@ -347,36 +378,6 @@ export default function ItemDetailClient({
                 </motion.div>
               )}
 
-              {/* Video */}
-              {item.videoUrl && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="mb-12"
-                >
-                  <div className="aspect-video rounded-xl overflow-hidden border" style={{ borderColor: theme.surfaceColor }}>
-                    <iframe
-                      src={item.videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                  {item.videoDesc && (
-                    <p className="text-sm mt-3 text-center" style={{
-                      color: item.imgDescColor || "var(--text)",
-                      opacity: item.imgDescColor ? 1 : 0.6,
-                      fontFamily: item.imgDescFont ? item.imgDescFont + ", sans-serif" : undefined,
-                      fontWeight: item.imgDescWeight || undefined,
-                    }}>
-                      {item.videoDesc}
-                    </p>
-                  )}
-                </motion.div>
-              )}
-
               {/* Additional images */}
               {images.length > 1 && (
                 <motion.div
@@ -412,23 +413,6 @@ export default function ItemDetailClient({
                 </motion.div>
               )}
 
-              {/* Code snippet */}
-              {item.codeContent && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="mb-12"
-                >
-                  <pre
-                    className="rounded-xl p-6 overflow-x-auto text-sm border"
-                    style={{ backgroundColor: theme.surfaceColor, borderColor: theme.surfaceColor }}
-                  >
-                    <code>{item.codeContent}</code>
-                  </pre>
-                </motion.div>
-              )}
             </div>
           </section>
 

@@ -386,6 +386,8 @@
     "videoUrl": "Տեսանյութի հղում",
     "videoUrlHint": "YouTube կամ Vimeo տեսանյութի հղում",
     "videoUrlPlaceholder": "https://youtube.com/...",
+    "videoUpload": "Նախագծի տեսանյութ",
+    "videoUploadHint": "Վերբեռնվում է սերվեր և ցուցադրվում է առաջինը նախագծի էջում։ Առավելագույնը 100ՄԲ — MP4, WEBM, MOV։",
     "codeContent": "Կոդի հատված",
     "codeContentHint": "Տեղադրեք կոդը այստեղ քարտի վրա ցուցադրելու համար",
     "codeLanguage": "Ծրագրավորման լեզու",
