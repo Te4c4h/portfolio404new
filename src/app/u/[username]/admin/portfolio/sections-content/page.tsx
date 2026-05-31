@@ -335,8 +335,7 @@ export default function ContentPage() {
         {sections.length > 0 && (
           <button
             onClick={openAdd}
-            disabled={filtered.length >= 6}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)] disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]"
           >
             <FiPlus size={16} /> {t("sectionsContent.addItem")}
           </button>
@@ -361,9 +360,6 @@ export default function ContentPage() {
           </button>
         ))}
       </div>
-      {filtered.length >= 6 && (
-        <p className="text-[var(--muted)] text-[10px] mb-4">Maximum 6 items in this section</p>
-      )}
 
       {filtered.length === 0 ? (
         <p className="text-[var(--muted-foreground)] text-sm text-center py-12">{t("sectionsContent.noContent")}</p>

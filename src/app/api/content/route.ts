@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getEffectiveUserId, getSessionUser } from "@/lib/api-auth";
+import { getEffectiveUserId } from "@/lib/api-auth";
 
 export async function GET(req: NextRequest) {
   const userId = await getEffectiveUserId();
@@ -50,15 +50,6 @@ export async function POST(req: NextRequest) {
   const section = await prisma.section.findUnique({ where: { id: sectionId } });
   if (!section || section.userId !== userId) {
     return NextResponse.json({ error: "Section not found" }, { status: 404 });
-  }
-
-  // Enforce max 6 items per section (admins are exempt)
-  const sessionUser = await getSessionUser();
-  if (!sessionUser?.isAdmin) {
-    const itemCount = await prisma.contentItem.count({ where: { sectionId } });
-    if (itemCount >= 6) {
-      return NextResponse.json({ error: "Maximum 6 items per section" }, { status: 400 });
-    }
   }
 
   const maxOrder = await prisma.contentItem.findFirst({
