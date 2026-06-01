@@ -84,7 +84,7 @@ export default function SectionBlock({ section, accent, surface, defaultBg, user
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
+              transition={{ duration: 0.4, delay: (i % 3) * 0.08 }}
               className="h-full"
             >
               <ProjectCard item={item} accent={accent} surface={surface} username={username} />

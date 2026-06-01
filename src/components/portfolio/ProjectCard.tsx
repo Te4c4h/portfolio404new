@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { FiExternalLink, FiGithub } from "react-icons/fi";
 import type { ContentItemData } from "./PortfolioClient";
@@ -16,8 +17,30 @@ export default function ProjectCard({ item, accent, surface, username }: Project
   const itemHref = item.slug ? `/u/${username}/${item.slug}` : undefined;
   const tags = item.tags.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 6);
 
+  const cardRef = useRef<HTMLAnchorElement>(null);
+  const usesVideoCover = !item.coverImage && !!item.videoUrl;
+  const [showVideoCover, setShowVideoCover] = useState(false);
+
+  useEffect(() => {
+    if (!usesVideoCover) return;
+    const el = cardRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setShowVideoCover(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "300px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [usesVideoCover]);
+
   return (
     <a
+      ref={cardRef}
       href={itemHref || "#"}
       data-clickable
       className="group rounded-xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer h-full flex flex-col"
@@ -38,7 +61,7 @@ export default function ProjectCard({ item, accent, surface, username }: Project
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
-        ) : item.videoUrl ? (
+        ) : usesVideoCover && showVideoCover ? (
           <video
             src={`${item.videoUrl}#t=0.1`}
             muted
