@@ -15,7 +15,7 @@ export async function PUT(
   }
 
   const body = await req.json();
-  const { title, description, longDescription, tags, coverImage, coverImageDesc, image1, image1Desc, image2, image2Desc, image3, image3Desc, liveUrl, repoUrl, sectionId, contentType, videoUrl, videoDesc, codeContent, codeLanguage, modelUrl,
+  const { title, description, longDescription, tags, coverImage, coverImageDesc, image1, image1Desc, image2, image2Desc, image3, image3Desc, liveUrl, repoUrl, sectionId, contentType, videoUrl, videoDesc, video1Url, video1Desc, video2Url, video2Desc, video3Url, video3Desc, codeContent, codeLanguage, modelUrl,
     cardBg,
     titleColor, titleFont, titleWeight,
     descColor, descFont, descWeight,
@@ -58,6 +58,12 @@ export async function PUT(
   if (contentType !== undefined) data.contentType = contentType;
   if (videoUrl !== undefined) data.videoUrl = videoUrl;
   if (videoDesc !== undefined) data.videoDesc = videoDesc;
+  if (video1Url !== undefined) data.video1Url = video1Url;
+  if (video1Desc !== undefined) data.video1Desc = video1Desc;
+  if (video2Url !== undefined) data.video2Url = video2Url;
+  if (video2Desc !== undefined) data.video2Desc = video2Desc;
+  if (video3Url !== undefined) data.video3Url = video3Url;
+  if (video3Desc !== undefined) data.video3Desc = video3Desc;
   if (codeContent !== undefined) data.codeContent = codeContent;
   if (codeLanguage !== undefined) data.codeLanguage = codeLanguage;
   if (modelUrl !== undefined) data.modelUrl = modelUrl;

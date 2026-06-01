@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { FiExternalLink, FiGithub } from "react-icons/fi";
+import { FiExternalLink, FiGithub, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import CustomCursor from "./CustomCursor";
 import Navbar from "./Navbar";
 import Contact from "./Contact";
@@ -36,6 +36,12 @@ interface ItemData {
   repoUrl: string;
   videoUrl: string;
   videoDesc: string;
+  video1Url: string;
+  video1Desc: string;
+  video2Url: string;
+  video2Desc: string;
+  video3Url: string;
+  video3Desc: string;
   codeContent: string;
   codeLanguage: string;
   modelUrl: string;
@@ -136,6 +142,38 @@ export default function ItemDetailClient({
     { src: item.image2, desc: item.image2Desc },
     { src: item.image3, desc: item.image3Desc },
   ].filter((img) => img.src);
+  const videos = [
+    { src: item.videoUrl, desc: item.videoDesc },
+    { src: item.video1Url, desc: item.video1Desc },
+    { src: item.video2Url, desc: item.video2Desc },
+    { src: item.video3Url, desc: item.video3Desc },
+  ].filter((v) => v.src);
+
+  const [lightbox, setLightbox] = useState<number | null>(null);
+  const closeLightbox = useCallback(() => setLightbox(null), []);
+  const showPrev = useCallback(
+    () => setLightbox((c) => (c === null ? c : (c - 1 + images.length) % images.length)),
+    [images.length]
+  );
+  const showNext = useCallback(
+    () => setLightbox((c) => (c === null ? c : (c + 1) % images.length)),
+    [images.length]
+  );
+
+  useEffect(() => {
+    if (lightbox === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      else if (e.key === "ArrowLeft") showPrev();
+      else if (e.key === "ArrowRight") showNext();
+    };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [lightbox, closeLightbox, showPrev, showNext]);
 
   return (
     <>
@@ -294,34 +332,38 @@ export default function ItemDetailClient({
                 </motion.div>
               )}
 
-              {/* Video (uploaded, plays first) */}
-              {item.videoUrl && (
+              {/* Videos (uploaded, play first) */}
+              {videos.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.22 }}
-                  className="mb-12"
+                  className="space-y-8 mb-12"
                 >
-                  <div className="relative rounded-xl overflow-hidden border bg-black" style={{ borderColor: theme.surfaceColor }}>
-                    <video
-                      src={item.videoUrl}
-                      controls
-                      playsInline
-                      preload="metadata"
-                      poster={item.coverImage || undefined}
-                      className="w-full max-h-[70vh] object-contain bg-black"
-                    />
-                  </div>
-                  {item.videoDesc && (
-                    <p className="text-sm mt-3 text-center" style={{
-                      color: item.imgDescColor || "var(--text)",
-                      opacity: item.imgDescColor ? 1 : 0.6,
-                      fontFamily: item.imgDescFont ? item.imgDescFont + ", sans-serif" : undefined,
-                      fontWeight: item.imgDescWeight || undefined,
-                    }}>
-                      {item.videoDesc}
-                    </p>
-                  )}
+                  {videos.map((v, i) => (
+                    <div key={i}>
+                      <div className="relative rounded-xl overflow-hidden border bg-black" style={{ borderColor: theme.surfaceColor }}>
+                        <video
+                          src={v.src}
+                          controls
+                          playsInline
+                          preload="metadata"
+                          poster={i === 0 ? (item.coverImage || undefined) : undefined}
+                          className="w-full max-h-[70vh] object-contain bg-black"
+                        />
+                      </div>
+                      {v.desc && (
+                        <p className="text-sm mt-3 text-center" style={{
+                          color: item.imgDescColor || "var(--text)",
+                          opacity: item.imgDescColor ? 1 : 0.6,
+                          fontFamily: item.imgDescFont ? item.imgDescFont + ", sans-serif" : undefined,
+                          fontWeight: item.imgDescWeight || undefined,
+                        }}>
+                          {v.desc}
+                        </p>
+                      )}
+                    </div>
+                  ))}
                 </motion.div>
               )}
 
@@ -333,16 +375,22 @@ export default function ItemDetailClient({
                   transition={{ duration: 0.6, delay: 0.25 }}
                   className="mb-12"
                 >
-                  <div className="relative aspect-video rounded-xl overflow-hidden border" style={{ borderColor: theme.surfaceColor }}>
+                  <button
+                    type="button"
+                    onClick={() => setLightbox(0)}
+                    aria-label="View image full screen"
+                    className="group relative block w-full aspect-video rounded-xl overflow-hidden border cursor-zoom-in"
+                    style={{ borderColor: theme.surfaceColor }}
+                  >
                     <Image
                       src={images[0].src}
                       alt={images[0].desc || item.title}
                       fill
                       sizes="(max-width: 768px) 100vw, 896px"
-                      className="object-cover"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
                       priority
                     />
-                  </div>
+                  </button>
                   {images[0].desc && (
                     <p className="text-sm mt-3 text-center" style={{
                       color: item.imgDescColor || "var(--text)",
@@ -389,15 +437,21 @@ export default function ItemDetailClient({
                 >
                   {images.slice(1).map((img, i) => (
                     <div key={i}>
-                      <div className="relative aspect-video rounded-xl overflow-hidden border" style={{ borderColor: theme.surfaceColor }}>
+                      <button
+                        type="button"
+                        onClick={() => setLightbox(i + 1)}
+                        aria-label="View image full screen"
+                        className="group relative block w-full aspect-video rounded-xl overflow-hidden border cursor-zoom-in"
+                        style={{ borderColor: theme.surfaceColor }}
+                      >
                         <Image
                           src={img.src}
                           alt={img.desc || `${item.title} — image ${i + 2}`}
                           fill
                           sizes="(max-width: 640px) 100vw, 448px"
-                          className="object-cover"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
-                      </div>
+                      </button>
                       {img.desc && (
                         <p className="text-sm mt-2 text-center" style={{
                           color: item.imgDescColor || "var(--text)",
@@ -415,6 +469,53 @@ export default function ItemDetailClient({
 
             </div>
           </section>
+
+          {/* Image lightbox */}
+          {lightbox !== null && images[lightbox] && (
+            <div
+              className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+              onClick={closeLightbox}
+              role="dialog"
+              aria-modal="true"
+            >
+              <button
+                onClick={closeLightbox}
+                aria-label="Close"
+                className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              >
+                <FiX size={22} />
+              </button>
+              {images.length > 1 && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); showPrev(); }}
+                  aria-label="Previous image"
+                  className="absolute left-2 sm:left-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                >
+                  <FiChevronLeft size={26} />
+                </button>
+              )}
+              <div className="flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={images[lightbox].src}
+                  alt={images[lightbox].desc || item.title}
+                  className="max-w-[92vw] max-h-[82vh] object-contain rounded-lg"
+                />
+                {images[lightbox].desc && (
+                  <p className="text-sm mt-3 text-center text-white/80">{images[lightbox].desc}</p>
+                )}
+              </div>
+              {images.length > 1 && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); showNext(); }}
+                  aria-label="Next image"
+                  className="absolute right-2 sm:right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                >
+                  <FiChevronRight size={26} />
+                </button>
+              )}
+            </div>
+          )}
 
           <Contact
             title={siteContent?.contactTitle || "Get in Touch"}

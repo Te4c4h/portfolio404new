@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { title, description, longDescription, sectionId, tags, coverImage, coverImageDesc, image1, image1Desc, image2, image2Desc, image3, image3Desc, liveUrl, repoUrl, contentType, videoUrl, videoDesc, codeContent, codeLanguage, modelUrl,
+  const { title, description, longDescription, sectionId, tags, coverImage, coverImageDesc, image1, image1Desc, image2, image2Desc, image3, image3Desc, liveUrl, repoUrl, contentType, videoUrl, videoDesc, video1Url, video1Desc, video2Url, video2Desc, video3Url, video3Desc, codeContent, codeLanguage, modelUrl,
     cardBg,
     titleColor, titleFont, titleWeight,
     descColor, descFont, descWeight,
@@ -79,6 +79,12 @@ export async function POST(req: NextRequest) {
     repoUrl: repoUrl || "",
     videoUrl: videoUrl || "",
     videoDesc: videoDesc || "",
+    video1Url: video1Url || "",
+    video1Desc: video1Desc || "",
+    video2Url: video2Url || "",
+    video2Desc: video2Desc || "",
+    video3Url: video3Url || "",
+    video3Desc: video3Desc || "",
     codeContent: codeContent || "",
     codeLanguage: codeLanguage || "",
     modelUrl: modelUrl || "",

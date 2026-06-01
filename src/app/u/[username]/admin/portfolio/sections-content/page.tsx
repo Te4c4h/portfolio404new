@@ -42,6 +42,12 @@ interface ContentItem {
   repoUrl: string;
   videoUrl: string;
   videoDesc: string;
+  video1Url: string;
+  video1Desc: string;
+  video2Url: string;
+  video2Desc: string;
+  video3Url: string;
+  video3Desc: string;
   order: number;
 }
 
@@ -64,6 +70,12 @@ interface FormData {
   repoUrl: string;
   videoUrl: string;
   videoDesc: string;
+  video1Url: string;
+  video1Desc: string;
+  video2Url: string;
+  video2Desc: string;
+  video3Url: string;
+  video3Desc: string;
   cardBg: string;
   titleColor: string;
   titleFont: string;
@@ -97,6 +109,7 @@ const emptyForm: FormData = {
   sectionId: "", contentType: "project", title: "", description: "", longDescription: "", tags: "",
   coverImage: "", coverImageDesc: "", image1: "", image1Desc: "", image2: "", image2Desc: "", image3: "", image3Desc: "",
   liveUrl: "", repoUrl: "", videoUrl: "", videoDesc: "",
+  video1Url: "", video1Desc: "", video2Url: "", video2Desc: "", video3Url: "", video3Desc: "",
   cardBg: "",
   titleColor: "", titleFont: "", titleWeight: "",
   descColor: "", descFont: "", descWeight: "",
@@ -227,6 +240,9 @@ export default function ContentPage() {
       liveUrl: item.liveUrl,
       repoUrl: item.repoUrl, videoUrl: item.videoUrl || "",
       videoDesc: item.videoDesc || "",
+      video1Url: item.video1Url || "", video1Desc: item.video1Desc || "",
+      video2Url: item.video2Url || "", video2Desc: item.video2Desc || "",
+      video3Url: item.video3Url || "", video3Desc: item.video3Desc || "",
       cardBg: (item as never as Record<string, string>).cardBg || "",
       titleColor: (item as never as Record<string, string>).titleColor || "",
       titleFont: (item as never as Record<string, string>).titleFont || "",
@@ -493,23 +509,32 @@ export default function ContentPage() {
                       </div>
                     </div>
 
-                    {/* Video upload */}
-                    <div className="border-t border-[var(--border)] pt-4 mt-4">
-                      <VideoUpload
-                        label={t("sectionsContent.videoUpload")}
-                        value={form.videoUrl}
-                        onChange={(url) => setForm((f) => ({ ...f, videoUrl: url }))}
-                        maxSizeMB={100}
-                        acceptedFormats={["MP4", "WEBM", "MOV"]}
-                        folder="content"
-                      />
-                      <p className="text-[var(--muted-foreground)] text-[10px] mt-1">{t("sectionsContent.videoUploadHint")}</p>
-                      {form.videoUrl && (
-                        <div className="mt-2">
-                          <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.videoDescription")}</label>
-                          <input className="dash-input" value={form.videoDesc} onChange={(e) => setForm((f) => ({ ...f, videoDesc: e.target.value }))} placeholder={t("sectionsContent.videoDescriptionPlaceholder")} />
+                    {/* Videos (up to 4) */}
+                    <div className="border-t border-[var(--border)] pt-4 mt-4 space-y-5">
+                      <p className="text-[var(--muted-foreground)] text-[10px]">{t("sectionsContent.videoUploadHint")}</p>
+                      {([
+                        { u: "videoUrl", d: "videoDesc" },
+                        { u: "video1Url", d: "video1Desc" },
+                        { u: "video2Url", d: "video2Desc" },
+                        { u: "video3Url", d: "video3Desc" },
+                      ] as const).map((v, i) => (
+                        <div key={v.u}>
+                          <VideoUpload
+                            label={`${t("sectionsContent.videoUpload")} ${i + 1}`}
+                            value={form[v.u]}
+                            onChange={(url) => setForm((f) => ({ ...f, [v.u]: url }))}
+                            maxSizeMB={100}
+                            acceptedFormats={["MP4", "WEBM", "MOV"]}
+                            folder="content"
+                          />
+                          {form[v.u] && (
+                            <div className="mt-2">
+                              <label className="text-xs text-[var(--muted)] mb-1 block">{t("sectionsContent.videoDescription")}</label>
+                              <input className="dash-input" value={form[v.d]} onChange={(e) => setForm((f) => ({ ...f, [v.d]: e.target.value }))} placeholder={t("sectionsContent.videoDescriptionPlaceholder")} />
+                            </div>
+                          )}
                         </div>
-                      )}
+                      ))}
                     </div>
                   </>
                 )}

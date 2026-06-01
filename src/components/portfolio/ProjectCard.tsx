@@ -28,7 +28,7 @@ export default function ProjectCard({ item, accent, surface, username }: Project
       onMouseEnter={(e) => (e.currentTarget.style.borderColor = accent)}
       onMouseLeave={(e) => (e.currentTarget.style.borderColor = item.cardBg || surface)}
     >
-      {/* Cover image */}
+      {/* Cover image (or first video frame as fallback) */}
       <div className="relative overflow-hidden aspect-video bg-black/20">
         {item.coverImage ? (
           <Image
@@ -37,6 +37,15 @@ export default function ProjectCard({ item, accent, surface, username }: Project
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : item.videoUrl ? (
+          <video
+            src={`${item.videoUrl}#t=0.1`}
+            muted
+            playsInline
+            preload="metadata"
+            aria-label={`Video preview for ${item.title}`}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="w-full h-full" style={{ backgroundColor: surface }} />
