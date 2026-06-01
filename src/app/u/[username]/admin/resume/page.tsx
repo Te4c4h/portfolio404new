@@ -236,8 +236,8 @@ export default function ResumePage() {
         if (y + needed > pageHeight - 14) { doc.addPage(); y = 18; }
       };
 
-      const drawSectionHeading = (title: string) => {
-        checkPage(16);
+      const drawSectionHeading = (title: string, reserve = 22) => {
+        checkPage(reserve);
         y += 5;
         doc.setFontSize(9.5);
         if (resume.templateId === "classic") {
@@ -266,11 +266,11 @@ export default function ResumePage() {
       };
 
       // ── Header block ──
-      // If photo exists, load it
+      // If photo exists, load it (preserving aspect ratio so the face isn't distorted)
       let photoLoaded = false;
-      const photoX = resume.templateId === "classic" ? pageWidth / 2 - 14 : pageWidth - mR - 28;
-      const photoY = y - 2;
-      
+      let photoBoxW = 0;
+      const photoTop = y - 2;
+
       if (resume.photoUrl) {
         try {
           const resp = await fetch(resume.photoUrl);
@@ -280,13 +280,26 @@ export default function ResumePage() {
             reader.onload = () => res(reader.result as string);
             reader.readAsDataURL(blob);
           });
-          doc.addImage(dataUrl, "JPEG", photoX, photoY, 28, 28);
+          const dims = await new Promise<{ w: number; h: number }>((res) => {
+            const img = new window.Image();
+            img.onload = () => res({ w: img.naturalWidth || 1, h: img.naturalHeight || 1 });
+            img.onerror = () => res({ w: 1, h: 1 });
+            img.src = dataUrl;
+          });
+          const ar = dims.w / dims.h;
+          const maxW = 26, maxH = 30;
+          let drawW = maxW, drawH = maxW / ar;
+          if (drawH > maxH) { drawH = maxH; drawW = maxH * ar; }
+          const fmt = dataUrl.substring(11, dataUrl.indexOf(";")).toUpperCase().includes("PNG") ? "PNG" : "JPEG";
+          const px = resume.templateId === "classic" ? (pageWidth - drawW) / 2 : pageWidth - mR - drawW;
+          doc.addImage(dataUrl, fmt, px, photoTop, drawW, drawH);
           photoLoaded = true;
-          if (resume.templateId === "classic") y += 32; // shift down if centered photo
+          photoBoxW = drawW;
+          if (resume.templateId === "classic") y += drawH + 4; // shift down if centered photo
         } catch { /* skip photo if fails */ }
       }
 
-      const nameWidth = photoLoaded && resume.templateId !== "classic" ? contentWidth - 32 : contentWidth;
+      const nameWidth = photoLoaded && resume.templateId !== "classic" ? contentWidth - photoBoxW - 6 : contentWidth;
 
       if (resume.templateId === "classic") {
         doc.setFontSize(24);
@@ -395,7 +408,7 @@ export default function ResumePage() {
 
       // ── Experience ──
       if (resume.showExperience && resume.experiences.length > 0) {
-        drawSectionHeading("Experience");
+        drawSectionHeading("Experience", 38);
         resume.experiences.forEach((exp, idx) => {
           checkPage(22);
           doc.setFontSize(10);
@@ -433,7 +446,7 @@ export default function ResumePage() {
 
       // ── Education ──
       if (resume.showEducation && resume.educations.length > 0) {
-        drawSectionHeading("Education");
+        drawSectionHeading("Education", 32);
         resume.educations.forEach((edu, idx) => {
           checkPage(18);
           doc.setFontSize(10);
