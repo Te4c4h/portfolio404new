@@ -27,6 +27,29 @@ interface Skill {
   id: string;
   name: string;
   level: string;
+  percent?: number;
+}
+
+interface Language {
+  id: string;
+  name: string;
+  level: string;
+}
+
+interface Certification {
+  id: string;
+  name: string;
+  issuer: string;
+  date: string;
+  url: string;
+}
+
+interface Award {
+  id: string;
+  title: string;
+  issuer: string;
+  date: string;
+  description: string;
 }
 
 export interface ResumeData {
@@ -40,13 +63,37 @@ export interface ResumeData {
   summary: string;
   photoUrl?: string;
   accentColor?: string;
+  interests?: string;
   showSummary?: boolean;
   showExperience?: boolean;
   showEducation?: boolean;
   showSkills?: boolean;
+  showLanguages?: boolean;
+  showCertifications?: boolean;
+  showAwards?: boolean;
+  showInterests?: boolean;
   experiences: Experience[];
   educations: Education[];
   skills: Skill[];
+  languages?: Language[];
+  certifications?: Certification[];
+  awards?: Award[];
+}
+
+// Resolve a skill's percentage: explicit percent wins, else map legacy level text.
+function skillPct(skill: Skill): number {
+  if (typeof skill.percent === "number" && skill.percent > 0) return Math.min(100, skill.percent);
+  switch (skill.level) {
+    case "Expert": return 100;
+    case "Advanced": return 80;
+    case "Intermediate": return 60;
+    case "Beginner": return 40;
+    default: return 0;
+  }
+}
+
+function interestList(interests?: string): string[] {
+  return (interests || "").split(",").map((s) => s.trim()).filter(Boolean);
 }
 
 interface ResumeSectionProps {
@@ -61,6 +108,11 @@ function ClassicTemplate({ resume, accent, surface }: ResumeSectionProps) {
   const showExp = resume.showExperience !== false;
   const showEdu = resume.showEducation !== false;
   const showSkills = resume.showSkills !== false;
+  const showLang = resume.showLanguages !== false;
+  const showCerts = resume.showCertifications !== false;
+  const showAwards = resume.showAwards !== false;
+  const showInterests = resume.showInterests !== false;
+  const interests = interestList(resume.interests);
   return (
     <div className="rounded-xl overflow-hidden" style={{ backgroundColor: surface }}>
       {/* Header */}
@@ -152,11 +204,83 @@ function ClassicTemplate({ resume, accent, surface }: ResumeSectionProps) {
         {showSkills && resume.skills.length > 0 && (
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: a }}>Skills</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
+              {resume.skills.map((skill) => {
+                const pct = skillPct(skill);
+                return (
+                  <div key={skill.id}>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span style={{ color: "var(--text)" }}>{skill.name}</span>
+                      {pct > 0 && <span style={{ color: "var(--text)", opacity: 0.5 }}>{pct}%</span>}
+                    </div>
+                    <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: `${a}20` }}>
+                      <div className="h-full rounded-full" style={{ backgroundColor: a, width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {showLang && (resume.languages?.length ?? 0) > 0 && (
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: a }}>Languages</h3>
             <div className="flex flex-wrap gap-2">
-              {resume.skills.map((skill) => (
-                <span key={skill.id} className="px-3 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: `${a}15`, color: a }}>
-                  {skill.name}{skill.level ? ` · ${skill.level}` : ""}
+              {resume.languages!.map((lang) => (
+                <span key={lang.id} className="px-3 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: `${a}15`, color: a }}>
+                  {lang.name}{lang.level ? ` · ${lang.level}` : ""}
                 </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {showCerts && (resume.certifications?.length ?? 0) > 0 && (
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: a }}>Certifications</h3>
+            <div className="space-y-2">
+              {resume.certifications!.map((c) => (
+                <div key={c.id} className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: "var(--text)" }}>
+                      {c.url ? <a href={c.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{c.name}</a> : c.name}
+                    </p>
+                    {c.issuer && <p className="text-xs" style={{ color: a }}>{c.issuer}</p>}
+                  </div>
+                  {c.date && <p className="text-xs shrink-0" style={{ color: "var(--text)", opacity: 0.5 }}>{c.date}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {showAwards && (resume.awards?.length ?? 0) > 0 && (
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: a }}>Awards</h3>
+            <div className="space-y-3">
+              {resume.awards!.map((aw) => (
+                <div key={aw.id}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-sm" style={{ color: "var(--text)" }}>{aw.title}</p>
+                      {aw.issuer && <p className="text-xs" style={{ color: a }}>{aw.issuer}</p>}
+                    </div>
+                    {aw.date && <p className="text-xs shrink-0" style={{ color: "var(--text)", opacity: 0.5 }}>{aw.date}</p>}
+                  </div>
+                  {aw.description && <p className="text-xs leading-relaxed mt-1 whitespace-pre-line" style={{ color: "var(--text)", opacity: 0.7 }}>{aw.description}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {showInterests && interests.length > 0 && (
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: a }}>Interests</h3>
+            <div className="flex flex-wrap gap-2">
+              {interests.map((it) => (
+                <span key={it} className="px-3 py-1 rounded-full text-xs" style={{ backgroundColor: `${a}10`, color: "var(--text)", opacity: 0.85 }}>{it}</span>
               ))}
             </div>
           </div>
@@ -172,6 +296,11 @@ function ModernTemplate({ resume, accent, surface }: ResumeSectionProps) {
   const showExp = resume.showExperience !== false;
   const showEdu = resume.showEducation !== false;
   const showSkills = resume.showSkills !== false;
+  const showLang = resume.showLanguages !== false;
+  const showCerts = resume.showCertifications !== false;
+  const showAwards = resume.showAwards !== false;
+  const showInterests = resume.showInterests !== false;
+  const interests = interestList(resume.interests);
   return (
     <div className="rounded-xl overflow-hidden grid grid-cols-1 md:grid-cols-[220px_1fr]" style={{ backgroundColor: surface }}>
       {/* Sidebar */}
@@ -194,16 +323,44 @@ function ModernTemplate({ resume, accent, surface }: ResumeSectionProps) {
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: a }}>Skills</h3>
             <div className="space-y-2">
-              {resume.skills.map((skill) => (
-                <div key={skill.id}>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span style={{ color: "var(--text)" }}>{skill.name}</span>
-                    {skill.level && <span style={{ color: "var(--text)", opacity: 0.5 }}>{skill.level}</span>}
+              {resume.skills.map((skill) => {
+                const pct = skillPct(skill);
+                return (
+                  <div key={skill.id}>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span style={{ color: "var(--text)" }}>{skill.name}</span>
+                      {pct > 0 && <span style={{ color: "var(--text)", opacity: 0.5 }}>{pct}%</span>}
+                    </div>
+                    <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: `${a}20` }}>
+                      <div className="h-full rounded-full" style={{ backgroundColor: a, width: `${pct}%` }} />
+                    </div>
                   </div>
-                  <div className="h-1.5 rounded-full" style={{ backgroundColor: `${a}20` }}>
-                    <div className="h-full rounded-full" style={{ backgroundColor: a, width: skill.level === "Expert" ? "100%" : skill.level === "Advanced" ? "80%" : skill.level === "Intermediate" ? "60%" : "40%" }} />
-                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {showLang && (resume.languages?.length ?? 0) > 0 && (
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: a }}>Languages</h3>
+            <div className="space-y-1.5 text-xs" style={{ color: "var(--text)" }}>
+              {resume.languages!.map((lang) => (
+                <div key={lang.id} className="flex justify-between gap-2">
+                  <span>{lang.name}</span>
+                  {lang.level && <span style={{ opacity: 0.5 }}>{lang.level}</span>}
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {showInterests && interests.length > 0 && (
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: a }}>Interests</h3>
+            <div className="flex flex-wrap gap-1.5">
+              {interests.map((it) => (
+                <span key={it} className="px-2 py-0.5 rounded text-[10px]" style={{ backgroundColor: `${a}15`, color: "var(--text)", opacity: 0.85 }}>{it}</span>
               ))}
             </div>
           </div>
@@ -251,6 +408,43 @@ function ModernTemplate({ resume, accent, surface }: ResumeSectionProps) {
             </div>
           </div>
         )}
+
+        {showCerts && (resume.certifications?.length ?? 0) > 0 && (
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: a }}>Certifications</h3>
+            <div className="space-y-2">
+              {resume.certifications!.map((c) => (
+                <div key={c.id} className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: "var(--text)" }}>
+                      {c.url ? <a href={c.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{c.name}</a> : c.name}
+                    </p>
+                    {c.issuer && <p className="text-xs" style={{ color: a }}>{c.issuer}</p>}
+                  </div>
+                  {c.date && <p className="text-[10px] shrink-0" style={{ color: "var(--text)", opacity: 0.5 }}>{c.date}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {showAwards && (resume.awards?.length ?? 0) > 0 && (
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: a }}>Awards</h3>
+            <div className="space-y-3">
+              {resume.awards!.map((aw) => (
+                <div key={aw.id}>
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="font-semibold text-sm" style={{ color: "var(--text)" }}>{aw.title}</p>
+                    {aw.date && <p className="text-[10px] shrink-0" style={{ color: "var(--text)", opacity: 0.5 }}>{aw.date}</p>}
+                  </div>
+                  {aw.issuer && <p className="text-xs" style={{ color: a }}>{aw.issuer}</p>}
+                  {aw.description && <p className="text-xs leading-relaxed mt-1 whitespace-pre-line" style={{ color: "var(--text)", opacity: 0.7 }}>{aw.description}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -262,6 +456,11 @@ function MinimalTemplate({ resume, accent }: ResumeSectionProps) {
   const showExp = resume.showExperience !== false;
   const showEdu = resume.showEducation !== false;
   const showSkills = resume.showSkills !== false;
+  const showLang = resume.showLanguages !== false;
+  const showCerts = resume.showCertifications !== false;
+  const showAwards = resume.showAwards !== false;
+  const showInterests = resume.showInterests !== false;
+  const interests = interestList(resume.interests);
   return (
     <div className="max-w-2xl mx-auto">
       <div className="flex items-start gap-5 mb-7">
@@ -323,13 +522,73 @@ function MinimalTemplate({ resume, accent }: ResumeSectionProps) {
       )}
 
       {showSkills && resume.skills.length > 0 && (
-        <div>
+        <div className="mb-7">
           <div className="border-b mb-4 pb-1" style={{ borderColor: `${a}30` }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: a }}>Skills</h3>
           </div>
           <p className="text-xs leading-relaxed" style={{ color: "var(--text)", opacity: 0.7 }}>
-            {resume.skills.map((s) => s.level ? `${s.name} (${s.level})` : s.name).join(" · ")}
+            {resume.skills.map((s) => { const p = skillPct(s); return p > 0 ? `${s.name} (${p}%)` : s.name; }).join(" · ")}
           </p>
+        </div>
+      )}
+
+      {showLang && (resume.languages?.length ?? 0) > 0 && (
+        <div className="mb-7">
+          <div className="border-b mb-4 pb-1" style={{ borderColor: `${a}30` }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: a }}>Languages</h3>
+          </div>
+          <p className="text-xs leading-relaxed" style={{ color: "var(--text)", opacity: 0.7 }}>
+            {resume.languages!.map((l) => l.level ? `${l.name} (${l.level})` : l.name).join(" · ")}
+          </p>
+        </div>
+      )}
+
+      {showCerts && (resume.certifications?.length ?? 0) > 0 && (
+        <div className="mb-7">
+          <div className="border-b mb-4 pb-1" style={{ borderColor: `${a}30` }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: a }}>Certifications</h3>
+          </div>
+          <div className="space-y-1.5">
+            {resume.certifications!.map((c) => (
+              <div key={c.id} className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
+                <p className="text-sm" style={{ color: "var(--text)" }}>
+                  <span className="font-semibold">{c.url ? <a href={c.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{c.name}</a> : c.name}</span>
+                  {c.issuer ? <span style={{ opacity: 0.6 }}> — {c.issuer}</span> : ""}
+                </p>
+                {c.date && <p className="text-[10px] shrink-0" style={{ color: "var(--text)", opacity: 0.4 }}>{c.date}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {showAwards && (resume.awards?.length ?? 0) > 0 && (
+        <div className="mb-7">
+          <div className="border-b mb-4 pb-1" style={{ borderColor: `${a}30` }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: a }}>Awards</h3>
+          </div>
+          <div className="space-y-2">
+            {resume.awards!.map((aw) => (
+              <div key={aw.id}>
+                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-0.5">
+                  <p className="text-sm" style={{ color: "var(--text)" }}>
+                    <span className="font-semibold">{aw.title}</span>{aw.issuer ? <span style={{ opacity: 0.6 }}> — {aw.issuer}</span> : ""}
+                  </p>
+                  {aw.date && <p className="text-[10px] shrink-0" style={{ color: "var(--text)", opacity: 0.4 }}>{aw.date}</p>}
+                </div>
+                {aw.description && <p className="text-xs leading-relaxed mt-0.5 whitespace-pre-line" style={{ color: "var(--text)", opacity: 0.6 }}>{aw.description}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {showInterests && interests.length > 0 && (
+        <div>
+          <div className="border-b mb-4 pb-1" style={{ borderColor: `${a}30` }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: a }}>Interests</h3>
+          </div>
+          <p className="text-xs leading-relaxed" style={{ color: "var(--text)", opacity: 0.7 }}>{interests.join(" · ")}</p>
         </div>
       )}
     </div>

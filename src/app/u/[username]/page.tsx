@@ -47,6 +47,9 @@ async function getPortfolioData(username: string) {
       experiences: { orderBy: { order: "asc" } },
       educations: { orderBy: { order: "asc" } },
       skills: { orderBy: { order: "asc" } },
+      languages: { orderBy: { order: "asc" } },
+      certifications: { orderBy: { order: "asc" } },
+      awards: { orderBy: { order: "asc" } },
     },
   });
 

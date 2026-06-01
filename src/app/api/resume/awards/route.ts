@@ -13,23 +13,24 @@ export async function POST(req: NextRequest) {
   if (!resume) return NextResponse.json({ error: "Resume not found" }, { status: 404 });
 
   const body = await req.json();
-  const { name, level, percent } = body;
+  const { title, issuer, date, description } = body;
 
-  const maxOrder = await prisma.resumeSkill.findFirst({
+  const maxOrder = await prisma.resumeAward.findFirst({
     where: { resumeId: resume.id },
     orderBy: { order: "desc" },
     select: { order: true },
   });
 
-  const skill = await prisma.resumeSkill.create({
+  const award = await prisma.resumeAward.create({
     data: {
       resumeId: resume.id,
-      name: name || "",
-      level: level || "",
-      percent: typeof percent === "number" ? percent : 0,
+      title: title || "",
+      issuer: issuer || "",
+      date: date || "",
+      description: description || "",
       order: (maxOrder?.order ?? -1) + 1,
     },
   });
 
-  return NextResponse.json(skill, { status: 201 });
+  return NextResponse.json(award, { status: 201 });
 }

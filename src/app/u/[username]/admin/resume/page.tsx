@@ -34,6 +34,32 @@ interface Skill {
   id: string;
   name: string;
   level: string;
+  percent: number;
+  order: number;
+}
+
+interface Language {
+  id: string;
+  name: string;
+  level: string;
+  order: number;
+}
+
+interface Certification {
+  id: string;
+  name: string;
+  issuer: string;
+  date: string;
+  url: string;
+  order: number;
+}
+
+interface Award {
+  id: string;
+  title: string;
+  issuer: string;
+  date: string;
+  description: string;
   order: number;
 }
 
@@ -49,15 +75,26 @@ interface ResumeData {
   summary: string;
   photoUrl: string;
   accentColor: string;
+  interests: string;
   showSummary: boolean;
   showExperience: boolean;
   showEducation: boolean;
   showSkills: boolean;
+  showLanguages: boolean;
+  showCertifications: boolean;
+  showAwards: boolean;
+  showInterests: boolean;
   showOnPortfolio: boolean;
   experiences: Experience[];
   educations: Education[];
   skills: Skill[];
+  languages: Language[];
+  certifications: Certification[];
+  awards: Award[];
 }
+
+const skillPercents = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+const languageLevels = ["Native", "Fluent", "Advanced", "Intermediate", "Basic"];
 
 const templates = [
   { id: "classic", label: "Classic" },
@@ -114,10 +151,15 @@ export default function ResumePage() {
         summary: resume.summary,
         photoUrl: resume.photoUrl,
         accentColor: resume.accentColor,
+        interests: resume.interests,
         showSummary: resume.showSummary,
         showExperience: resume.showExperience,
         showEducation: resume.showEducation,
         showSkills: resume.showSkills,
+        showLanguages: resume.showLanguages,
+        showCertifications: resume.showCertifications,
+        showAwards: resume.showAwards,
+        showInterests: resume.showInterests,
         showOnPortfolio: resume.showOnPortfolio,
       }),
     });
@@ -187,13 +229,27 @@ export default function ResumePage() {
         checkPage(16);
         y += 5;
         doc.setFontSize(9.5);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(accent.r, accent.g, accent.b);
-        doc.text(title.toUpperCase(), mL, y);
-        y += 3;
-        doc.setDrawColor(accent.r, accent.g, accent.b);
-        doc.setLineWidth(0.35);
-        doc.line(mL, y, pageWidth - mR, y);
+        if (resume.templateId === "classic") {
+          doc.setFont("times", "bold");
+          doc.setTextColor(body.r, body.g, body.b);
+          doc.text(title.toUpperCase(), pageWidth / 2, y, { align: "center" });
+          y += 3;
+          doc.setDrawColor(body.r, body.g, body.b);
+          doc.setLineWidth(0.2);
+          doc.line(mL, y, pageWidth - mR, y);
+        } else if (resume.templateId === "minimal") {
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(muted.r, muted.g, muted.b);
+          doc.text(title.toUpperCase(), mL, y);
+        } else {
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(accent.r, accent.g, accent.b);
+          doc.text(title.toUpperCase(), mL, y);
+          y += 3;
+          doc.setDrawColor(accent.r, accent.g, accent.b);
+          doc.setLineWidth(0.35);
+          doc.line(mL, y, pageWidth - mR, y);
+        }
         y += 5;
         doc.setTextColor(body.r, body.g, body.b);
       };
@@ -201,7 +257,9 @@ export default function ResumePage() {
       // ── Header block ──
       // If photo exists, load it
       let photoLoaded = false;
-      const photoX = pageWidth - mR - 28;
+      const photoX = resume.templateId === "classic" ? pageWidth / 2 - 14 : pageWidth - mR - 28;
+      const photoY = y - 2;
+      
       if (resume.photoUrl) {
         try {
           const resp = await fetch(resume.photoUrl);
@@ -211,46 +269,105 @@ export default function ResumePage() {
             reader.onload = () => res(reader.result as string);
             reader.readAsDataURL(blob);
           });
-          doc.addImage(dataUrl, "JPEG", photoX, y - 2, 28, 28);
+          doc.addImage(dataUrl, "JPEG", photoX, photoY, 28, 28);
           photoLoaded = true;
+          if (resume.templateId === "classic") y += 32; // shift down if centered photo
         } catch { /* skip photo if fails */ }
       }
 
-      const nameWidth = photoLoaded ? contentWidth - 32 : contentWidth;
+      const nameWidth = photoLoaded && resume.templateId !== "classic" ? contentWidth - 32 : contentWidth;
 
-      doc.setFontSize(24);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(body.r, body.g, body.b);
-      doc.text(resume.fullName || "Resume", mL, y);
-      y += 8;
+      if (resume.templateId === "classic") {
+        doc.setFontSize(24);
+        doc.setFont("times", "bold");
+        doc.setTextColor(body.r, body.g, body.b);
+        doc.text(resume.fullName || "Resume", pageWidth / 2, y, { align: "center" });
+        y += 8;
 
-      if (resume.jobTitle) {
-        doc.setFontSize(12);
+        if (resume.jobTitle) {
+          doc.setFontSize(12);
+          doc.setFont("times", "italic");
+          doc.setTextColor(body.r, body.g, body.b);
+          doc.text(resume.jobTitle, pageWidth / 2, y, { align: "center" });
+          y += 6;
+        }
+
+        const contactParts = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean);
+        if (contactParts.length) {
+          doc.setFontSize(9);
+          doc.setFont("times", "normal");
+          doc.setTextColor(muted.r, muted.g, muted.b);
+          const cText = contactParts.join("  |  ");
+          doc.text(cText, pageWidth / 2, y, { align: "center" });
+          y += 6;
+        }
+        y += 2;
+        doc.setDrawColor(body.r, body.g, body.b);
+        doc.setLineWidth(0.5);
+        doc.line(mL, y, pageWidth - mR, y);
+        y += 8;
+      } else if (resume.templateId === "minimal") {
+        doc.setFontSize(20);
         doc.setFont("helvetica", "normal");
-        doc.setTextColor(accent.r, accent.g, accent.b);
-        doc.text(resume.jobTitle, mL, y);
-        y += 6;
+        doc.setTextColor(body.r, body.g, body.b);
+        doc.text(resume.fullName || "Resume", mL, y);
+        y += 8;
+
+        if (resume.jobTitle) {
+          doc.setFontSize(11);
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(muted.r, muted.g, muted.b);
+          doc.text(resume.jobTitle, mL, y);
+          y += 6;
+        }
+        
+        const contactParts = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean);
+        if (contactParts.length) {
+          doc.setFontSize(8);
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(light.r, light.g, light.b);
+          const cText = contactParts.join("  \u2022  ");
+          const cLines = doc.splitTextToSize(cText, nameWidth);
+          doc.text(cLines, mL, y);
+          y += cLines.length * 4.5;
+        }
+        if (photoLoaded) y = Math.max(y, 44);
+        y += 4; // no line
+      } else {
+        // Modern (default)
+        doc.setFontSize(24);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(body.r, body.g, body.b);
+        doc.text(resume.fullName || "Resume", mL, y);
+        y += 8;
+
+        if (resume.jobTitle) {
+          doc.setFontSize(12);
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(accent.r, accent.g, accent.b);
+          doc.text(resume.jobTitle, mL, y);
+          y += 6;
+        }
+
+        const contactParts = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean);
+        if (contactParts.length) {
+          doc.setFontSize(8);
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(light.r, light.g, light.b);
+          const cText = contactParts.join("  \u2022  ");
+          const cLines = doc.splitTextToSize(cText, nameWidth);
+          doc.text(cLines, mL, y);
+          y += cLines.length * 4.5;
+        }
+
+        if (photoLoaded) y = Math.max(y, 44);
+
+        y += 2;
+        doc.setDrawColor(accent.r, accent.g, accent.b);
+        doc.setLineWidth(0.6);
+        doc.line(mL, y, pageWidth - mR, y);
+        y += 8;
       }
-
-      const contactParts = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean);
-      if (contactParts.length) {
-        doc.setFontSize(8);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(light.r, light.g, light.b);
-        // Wrap contact if needed
-        const cText = contactParts.join("  \u2022  ");
-        const cLines = doc.splitTextToSize(cText, nameWidth);
-        doc.text(cLines, mL, y);
-        y += cLines.length * 4.5;
-      }
-
-      if (photoLoaded) y = Math.max(y, 44); // ensure we're past photo
-
-      y += 2;
-      doc.setDrawColor(accent.r, accent.g, accent.b);
-      doc.setLineWidth(0.6);
-      doc.line(mL, y, pageWidth - mR, y);
-      y += 8;
 
       // ── Summary ──
       if (resume.showSummary && resume.summary) {
@@ -339,38 +456,102 @@ export default function ResumePage() {
         y += 2;
       }
 
+      const lhBody = 9.5 * 0.352778 * lineH;
+      const inlineList = (text: string) => {
+        doc.setFontSize(9.5);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(body.r, body.g, body.b);
+        const lines = doc.splitTextToSize(text, contentWidth);
+        checkPage(lines.length * lhBody);
+        doc.text(lines, mL, y, { lineHeightFactor: lineH });
+        y += lines.length * lhBody + 2;
+      };
+
       // ── Skills ──
       if (resume.showSkills && resume.skills.length > 0) {
         drawSectionHeading("Skills");
-        // Group by level
-        const grouped: Record<string, string[]> = {};
-        resume.skills.forEach((s) => {
-          const key = s.level || "Other";
-          if (!grouped[key]) grouped[key] = [];
-          grouped[key].push(s.name);
-        });
-        const hasLevels = resume.skills.some((s) => s.level);
-        if (hasLevels) {
-          Object.entries(grouped).forEach(([level, names]) => {
-            checkPage(10);
-            doc.setFontSize(9);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor(muted.r, muted.g, muted.b);
-            doc.text(`${level}:`, mL, y);
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(body.r, body.g, body.b);
-            doc.text(names.join(" \u2022 "), mL + 18, y);
-            y += 5;
-          });
-        } else {
-          doc.setFontSize(9.5);
-          doc.setFont("helvetica", "normal");
+        inlineList(resume.skills.map((s) => {
+          const p = s.percent || 0;
+          return p > 0 ? `${s.name} \u2014 ${p}%` : s.name;
+        }).join("   \u2022   "));
+      }
+
+      // ── Languages ──
+      if (resume.showLanguages && resume.languages.length > 0) {
+        drawSectionHeading("Languages");
+        inlineList(resume.languages.map((l) => l.level ? `${l.name} (${l.level})` : l.name).join("   \u2022   "));
+      }
+
+      // ── Certifications ──
+      if (resume.showCertifications && resume.certifications.length > 0) {
+        drawSectionHeading("Certifications");
+        resume.certifications.forEach((c, idx) => {
+          checkPage(11);
+          doc.setFontSize(10);
+          doc.setFont("helvetica", "bold");
           doc.setTextColor(body.r, body.g, body.b);
-          const skillsText = resume.skills.map((s) => s.name).join("  \u2022  ");
-          const sLines = doc.splitTextToSize(skillsText, contentWidth);
-          doc.text(sLines, mL, y, { lineHeightFactor: lineH });
-          y += sLines.length * (9.5 * 0.352778 * lineH);
-        }
+          doc.text(c.name || "Certification", mL, y);
+          if (c.date) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8.5);
+            doc.setTextColor(light.r, light.g, light.b);
+            doc.text(c.date, pageWidth - mR, y, { align: "right" });
+          }
+          y += 4.5;
+          if (c.issuer) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(muted.r, muted.g, muted.b);
+            doc.text(c.issuer, mL, y);
+            y += 4.5;
+          }
+          y += idx < resume.certifications.length - 1 ? 2 : 1;
+        });
+        y += 2;
+      }
+
+      // ── Awards ──
+      if (resume.showAwards && resume.awards.length > 0) {
+        drawSectionHeading("Awards & Achievements");
+        resume.awards.forEach((aw, idx) => {
+          checkPage(14);
+          doc.setFontSize(10);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(body.r, body.g, body.b);
+          doc.text(aw.title || "Award", mL, y);
+          if (aw.date) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8.5);
+            doc.setTextColor(light.r, light.g, light.b);
+            doc.text(aw.date, pageWidth - mR, y, { align: "right" });
+          }
+          y += 4.5;
+          if (aw.issuer) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(muted.r, muted.g, muted.b);
+            doc.text(aw.issuer, mL, y);
+            y += 4.5;
+          }
+          if (aw.description) {
+            doc.setFontSize(9);
+            doc.setTextColor(body.r, body.g, body.b);
+            const dLines = doc.splitTextToSize(aw.description, contentWidth - 2);
+            const lhPx = 9 * 0.352778 * 1.4;
+            checkPage(dLines.length * lhPx);
+            doc.text(dLines, mL + 2, y, { lineHeightFactor: 1.4 });
+            y += dLines.length * lhPx;
+          }
+          y += idx < resume.awards.length - 1 ? 4 : 2;
+        });
+        y += 2;
+      }
+
+      // ── Interests ──
+      const pdfInterests = (resume.interests || "").split(",").map((s) => s.trim()).filter(Boolean);
+      if (resume.showInterests && pdfInterests.length > 0) {
+        drawSectionHeading("Interests");
+        inlineList(pdfInterests.join("   \u2022   "));
       }
 
       doc.save(`${resume.fullName || "resume"}.pdf`);
@@ -399,41 +580,97 @@ export default function ResumePage() {
       const lightGray = "999999";
       const pageWidthDxa = 9360; // ~6.5 inches in twips
 
-      const sectionHeading = (title: string) => new Paragraph({
-        children: [new TextRun({ text: title.toUpperCase(), bold: true, size: 20, font: "Calibri", color: accentHex, characterSpacing: 40 })],
-        spacing: { before: 300, after: 100 },
-        border: { bottom: { style: "single" as const, size: 6, color: accentHex, space: 4 } },
-      });
+      const docFont = resume.templateId === "classic" ? "Times New Roman" : (resume.templateId === "minimal" ? "Arial" : "Calibri");
 
-      // Name
-      children.push(new Paragraph({
-        children: [new TextRun({ text: resume.fullName || "Resume", bold: true, size: 52, font: "Calibri" })],
-        spacing: { after: 40 },
-      }));
+      const sectionHeading = (title: string) => {
+        if (resume.templateId === "classic") {
+          return new Paragraph({
+            children: [new TextRun({ text: title.toUpperCase(), bold: true, size: 22, font: docFont, color: "000000" })],
+            spacing: { before: 300, after: 100 },
+            border: { bottom: { style: "single" as const, size: 6, color: "000000", space: 4 }, top: { style: "single" as const, size: 6, color: "000000", space: 4 } },
+            alignment: "center",
+          });
+        }
+        if (resume.templateId === "minimal") {
+          return new Paragraph({
+            children: [new TextRun({ text: title.toUpperCase(), bold: true, size: 20, font: docFont, color: grayHex, characterSpacing: 20 })],
+            spacing: { before: 300, after: 100 },
+          });
+        }
+        return new Paragraph({
+          children: [new TextRun({ text: title.toUpperCase(), bold: true, size: 20, font: docFont, color: accentHex, characterSpacing: 40 })],
+          spacing: { before: 300, after: 100 },
+          border: { bottom: { style: "single" as const, size: 6, color: accentHex, space: 4 } },
+        });
+      };
 
-      // Job Title
-      if (resume.jobTitle) {
+      // Header Block
+      if (resume.templateId === "classic") {
         children.push(new Paragraph({
-          children: [new TextRun({ text: resume.jobTitle, size: 26, color: accentHex, font: "Calibri" })],
-          spacing: { after: 60 },
+          children: [new TextRun({ text: resume.fullName || "Resume", bold: true, size: 52, font: docFont })],
+          spacing: { after: 40 },
+          alignment: "center",
         }));
-      }
-
-      // Contact
-      const contact = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean).join("   \u2022   ");
-      if (contact) {
+        if (resume.jobTitle) {
+          children.push(new Paragraph({
+            children: [new TextRun({ text: resume.jobTitle, size: 26, color: "000000", font: docFont, italics: true })],
+            spacing: { after: 60 },
+            alignment: "center",
+          }));
+        }
+        const contact = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean).join("   |   ");
+        if (contact) {
+          children.push(new Paragraph({
+            children: [new TextRun({ text: contact, size: 18, color: grayHex, font: docFont })],
+            spacing: { after: 120 },
+            alignment: "center",
+            border: { bottom: { style: "single" as const, size: 8, color: "000000", space: 8 } },
+          }));
+        }
+      } else if (resume.templateId === "minimal") {
         children.push(new Paragraph({
-          children: [new TextRun({ text: contact, size: 18, color: lightGray, font: "Calibri" })],
-          spacing: { after: 120 },
-          border: { bottom: { style: "single" as const, size: 8, color: accentHex, space: 8 } },
+          children: [new TextRun({ text: resume.fullName || "Resume", bold: true, size: 48, font: docFont })],
+          spacing: { after: 20 },
         }));
+        if (resume.jobTitle) {
+          children.push(new Paragraph({
+            children: [new TextRun({ text: resume.jobTitle, size: 22, color: grayHex, font: docFont })],
+            spacing: { after: 40 },
+          }));
+        }
+        const contact = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean).join("   \u2022   ");
+        if (contact) {
+          children.push(new Paragraph({
+            children: [new TextRun({ text: contact, size: 18, color: lightGray, font: docFont })],
+            spacing: { after: 120 },
+          }));
+        }
+      } else {
+        children.push(new Paragraph({
+          children: [new TextRun({ text: resume.fullName || "Resume", bold: true, size: 52, font: docFont })],
+          spacing: { after: 40 },
+        }));
+        if (resume.jobTitle) {
+          children.push(new Paragraph({
+            children: [new TextRun({ text: resume.jobTitle, size: 26, color: accentHex, font: docFont })],
+            spacing: { after: 60 },
+          }));
+        }
+        const contact = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean).join("   \u2022   ");
+        if (contact) {
+          children.push(new Paragraph({
+            children: [new TextRun({ text: contact, size: 18, color: lightGray, font: docFont })],
+            spacing: { after: 120 },
+            border: { bottom: { style: "single" as const, size: 8, color: accentHex, space: 8 } },
+          }));
+        }
       }
 
       // Summary
       if (resume.showSummary && resume.summary) {
         children.push(sectionHeading("Professional Summary"));
         children.push(new Paragraph({
-          children: [new TextRun({ text: resume.summary, size: 20, font: "Calibri" })],
+          children: [new TextRun({ text: resume.summary, size: 20, font: docFont })],
           spacing: { after: 100 },
         }));
       }
@@ -445,14 +682,14 @@ export default function ResumePage() {
           const dateStr = [exp.startDate, exp.endDate].filter(Boolean).join(" \u2013 ");
           children.push(new Paragraph({
             children: [
-              new TextRun({ text: exp.position || "Position", bold: true, size: 22, font: "Calibri" }),
-              ...(dateStr ? [new TextRun({ text: `\t${dateStr}`, size: 18, color: lightGray, font: "Calibri" })] : []),
+              new TextRun({ text: exp.position || "Position", bold: true, size: 22, font: docFont }),
+              ...(dateStr ? [new TextRun({ text: `\t${dateStr}`, size: 18, color: lightGray, font: docFont })] : []),
             ],
             tabStops: [{ type: TabStopType.RIGHT, position: pageWidthDxa }],
             spacing: { before: idx > 0 ? 160 : 0 },
           }));
           children.push(new Paragraph({
-            children: [new TextRun({ text: [exp.company, exp.location].filter(Boolean).join(" \u00B7 "), size: 20, color: accentHex, font: "Calibri", italics: true })],
+            children: [new TextRun({ text: [exp.company, exp.location].filter(Boolean).join(" \u00B7 "), size: 20, color: accentHex, font: docFont, italics: true })],
             spacing: { after: 40 },
           }));
           if (exp.description) {
@@ -460,7 +697,7 @@ export default function ResumePage() {
             exp.description.split("\n").filter(Boolean).forEach((line) => {
               const isBullet = /^[-*]/.test(line.trim());
               children.push(new Paragraph({
-                children: [new TextRun({ text: isBullet ? line.replace(/^[-*]\s*/, "") : line, size: 20, font: "Calibri" })],
+                children: [new TextRun({ text: isBullet ? line.replace(/^[-*]\s*/, "") : line, size: 20, font: docFont })],
                 bullet: isBullet ? { level: 0 } : undefined,
                 spacing: { after: 20 },
                 indent: { left: 200 },
@@ -478,19 +715,19 @@ export default function ResumePage() {
           const dateStr = [edu.startDate, edu.endDate].filter(Boolean).join(" \u2013 ");
           children.push(new Paragraph({
             children: [
-              new TextRun({ text: [edu.degree, edu.field].filter(Boolean).join(" in ") || "Degree", bold: true, size: 22, font: "Calibri" }),
-              ...(dateStr ? [new TextRun({ text: `\t${dateStr}`, size: 18, color: lightGray, font: "Calibri" })] : []),
+              new TextRun({ text: [edu.degree, edu.field].filter(Boolean).join(" in ") || "Degree", bold: true, size: 22, font: docFont }),
+              ...(dateStr ? [new TextRun({ text: `\t${dateStr}`, size: 18, color: lightGray, font: docFont })] : []),
             ],
             tabStops: [{ type: TabStopType.RIGHT, position: pageWidthDxa }],
             spacing: { before: idx > 0 ? 160 : 0 },
           }));
           children.push(new Paragraph({
-            children: [new TextRun({ text: edu.school || "", size: 20, color: accentHex, font: "Calibri", italics: true })],
+            children: [new TextRun({ text: edu.school || "", size: 20, color: accentHex, font: docFont, italics: true })],
             spacing: { after: 40 },
           }));
           if (edu.description) {
             children.push(new Paragraph({
-              children: [new TextRun({ text: edu.description, size: 20, font: "Calibri" })],
+              children: [new TextRun({ text: edu.description, size: 20, font: docFont })],
               spacing: { after: 80 },
             }));
           }
@@ -500,36 +737,88 @@ export default function ResumePage() {
       // Skills
       if (resume.showSkills && resume.skills.length > 0) {
         children.push(sectionHeading("Skills"));
-        const hasLevels = resume.skills.some((s) => s.level);
-        if (hasLevels) {
-          const grouped: Record<string, string[]> = {};
-          resume.skills.forEach((s) => {
-            const key = s.level || "Other";
-            if (!grouped[key]) grouped[key] = [];
-            grouped[key].push(s.name);
-          });
-          Object.entries(grouped).forEach(([level, names]) => {
-            children.push(new Paragraph({
-              children: [
-                new TextRun({ text: `${level}: `, bold: true, size: 20, font: "Calibri", color: grayHex }),
-                new TextRun({ text: names.join(" \u2022 "), size: 20, font: "Calibri" }),
-              ],
-              spacing: { after: 60 },
-            }));
-          });
-        } else {
-          const skillsText = resume.skills.map((s) => s.name).join("   \u2022   ");
+        const skillsText = resume.skills.map((s) => {
+          const p = s.percent || 0;
+          return p > 0 ? `${s.name} \u2014 ${p}%` : s.name;
+        }).join("   \u2022   ");
+        children.push(new Paragraph({
+          children: [new TextRun({ text: skillsText, size: 20, font: docFont })],
+          spacing: { after: 120 },
+        }));
+      }
+
+      // Languages
+      if (resume.showLanguages && resume.languages.length > 0) {
+        children.push(sectionHeading("Languages"));
+        const langText = resume.languages.map((l) => l.level ? `${l.name} (${l.level})` : l.name).join("   \u2022   ");
+        children.push(new Paragraph({
+          children: [new TextRun({ text: langText, size: 20, font: docFont })],
+          spacing: { after: 120 },
+        }));
+      }
+
+      // Certifications
+      if (resume.showCertifications && resume.certifications.length > 0) {
+        children.push(sectionHeading("Certifications"));
+        resume.certifications.forEach((c) => {
           children.push(new Paragraph({
-            children: [new TextRun({ text: skillsText, size: 20, font: "Calibri" })],
-            spacing: { after: 120 },
+            children: [
+              new TextRun({ text: c.name || "Certification", bold: true, size: 22, font: docFont }),
+              ...(c.date ? [new TextRun({ text: `\t${c.date}`, size: 18, color: lightGray, font: docFont })] : []),
+            ],
+            tabStops: [{ type: TabStopType.RIGHT, position: pageWidthDxa }],
+            spacing: { before: 80 },
           }));
-        }
+          if (c.issuer) {
+            children.push(new Paragraph({
+              children: [new TextRun({ text: c.issuer, size: 20, color: accentHex, font: docFont, italics: true })],
+              spacing: { after: 40 },
+            }));
+          }
+        });
+      }
+
+      // Awards
+      if (resume.showAwards && resume.awards.length > 0) {
+        children.push(sectionHeading("Awards & Achievements"));
+        resume.awards.forEach((aw) => {
+          children.push(new Paragraph({
+            children: [
+              new TextRun({ text: aw.title || "Award", bold: true, size: 22, font: docFont }),
+              ...(aw.date ? [new TextRun({ text: `\t${aw.date}`, size: 18, color: lightGray, font: docFont })] : []),
+            ],
+            tabStops: [{ type: TabStopType.RIGHT, position: pageWidthDxa }],
+            spacing: { before: 80 },
+          }));
+          if (aw.issuer) {
+            children.push(new Paragraph({
+              children: [new TextRun({ text: aw.issuer, size: 20, color: accentHex, font: docFont, italics: true })],
+              spacing: { after: 40 },
+            }));
+          }
+          if (aw.description) {
+            children.push(new Paragraph({
+              children: [new TextRun({ text: aw.description, size: 20, font: docFont })],
+              spacing: { after: 80 },
+            }));
+          }
+        });
+      }
+
+      // Interests
+      const docxInterests = (resume.interests || "").split(",").map((s) => s.trim()).filter(Boolean);
+      if (resume.showInterests && docxInterests.length > 0) {
+        children.push(sectionHeading("Interests"));
+        children.push(new Paragraph({
+          children: [new TextRun({ text: docxInterests.join("   \u2022   "), size: 20, font: docFont })],
+          spacing: { after: 120 },
+        }));
       }
 
       const doc = new Document({
         styles: {
           default: {
-            document: { run: { font: "Calibri", size: 20 } },
+            document: { run: { font: docFont, size: 20 } },
           },
         },
         sections: [{ children }],
@@ -612,6 +901,54 @@ export default function ResumePage() {
 
   const deleteSkill = async (id: string) => {
     await fetch(`/api/resume/skills/${id}`, { method: "DELETE" });
+    load();
+  };
+
+  const addLanguage = async () => {
+    const r = await fetch("/api/resume/languages", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}),
+    });
+    if (r.ok) load();
+  };
+  const updateLanguage = async (id: string, data: Partial<Language>) => {
+    await fetch(`/api/resume/languages/${id}`, {
+      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data),
+    });
+  };
+  const deleteLanguage = async (id: string) => {
+    await fetch(`/api/resume/languages/${id}`, { method: "DELETE" });
+    load();
+  };
+
+  const addCertification = async () => {
+    const r = await fetch("/api/resume/certifications", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}),
+    });
+    if (r.ok) load();
+  };
+  const updateCertification = async (id: string, data: Partial<Certification>) => {
+    await fetch(`/api/resume/certifications/${id}`, {
+      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data),
+    });
+  };
+  const deleteCertification = async (id: string) => {
+    await fetch(`/api/resume/certifications/${id}`, { method: "DELETE" });
+    load();
+  };
+
+  const addAward = async () => {
+    const r = await fetch("/api/resume/awards", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}),
+    });
+    if (r.ok) load();
+  };
+  const updateAward = async (id: string, data: Partial<Award>) => {
+    await fetch(`/api/resume/awards/${id}`, {
+      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data),
+    });
+  };
+  const deleteAward = async (id: string) => {
+    await fetch(`/api/resume/awards/${id}`, { method: "DELETE" });
     load();
   };
 
@@ -721,6 +1058,10 @@ export default function ResumePage() {
                 ["showExperience", t("resume.experience")],
                 ["showEducation", t("resume.education")],
                 ["showSkills", t("resume.skills")],
+                ["showLanguages", "Languages"],
+                ["showCertifications", "Certifications"],
+                ["showAwards", "Awards"],
+                ["showInterests", "Interests"],
               ] as [keyof ResumeData, string][]).map(([key, label]) => (
                 <button
                   key={key}
@@ -881,22 +1222,119 @@ export default function ResumePage() {
             <p className="text-[var(--muted-foreground)] text-sm text-center py-4">{t("resume.noSkills")}</p>
           )}
           <div className="space-y-2">
-            {resume.skills.map((skill) => (
-              <div key={skill.id} className="flex items-center gap-2">
-                <input className="dash-input flex-1" defaultValue={skill.name} onBlur={(e) => updateSkill(skill.id, { name: e.target.value })} placeholder={t("resume.skillName")} />
-                <select className="dash-input w-32" defaultValue={skill.level} onChange={(e) => updateSkill(skill.id, { level: e.target.value })}>
-                  <option value="">{t("resume.level")}</option>
-                  <option value="Beginner">{t("resume.beginner")}</option>
-                  <option value="Intermediate">{t("resume.intermediate")}</option>
-                  <option value="Advanced">{t("resume.advanced")}</option>
-                  <option value="Expert">{t("resume.expert")}</option>
+            {resume.skills.map((skill) => {
+              const pct = skill.percent || 0;
+              return (
+                <div key={skill.id} className="flex items-center gap-2">
+                  <input className="dash-input flex-1" defaultValue={skill.name} onBlur={(e) => updateSkill(skill.id, { name: e.target.value })} placeholder={t("resume.skillName")} />
+                  <div className="hidden sm:block w-24 h-1.5 rounded-full overflow-hidden bg-[var(--border)]">
+                    <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${pct}%` }} />
+                  </div>
+                  <select className="dash-input w-28" defaultValue={skill.percent || ""} onChange={(e) => updateSkill(skill.id, { percent: parseInt(e.target.value, 10) || 0 })}>
+                    <option value="">Level %</option>
+                    {skillPercents.map((p) => <option key={p} value={p}>{p}%</option>)}
+                  </select>
+                  <button onClick={() => deleteSkill(skill.id)} className="p-1.5 text-[var(--muted)] hover:text-[var(--danger)] transition-colors">
+                    <FiTrash2 size={14} />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Languages */}
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Languages</h2>
+            <button onClick={addLanguage} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]">
+              <FiPlus size={12} /> {t("common.add")}
+            </button>
+          </div>
+          {resume.languages.length === 0 && (
+            <p className="text-[var(--muted-foreground)] text-sm text-center py-4">No languages added yet.</p>
+          )}
+          <div className="space-y-2">
+            {resume.languages.map((lang) => (
+              <div key={lang.id} className="flex items-center gap-2">
+                <input className="dash-input flex-1" defaultValue={lang.name} onBlur={(e) => updateLanguage(lang.id, { name: e.target.value })} placeholder="Language (e.g. English)" />
+                <select className="dash-input w-36" defaultValue={lang.level} onChange={(e) => updateLanguage(lang.id, { level: e.target.value })}>
+                  <option value="">Proficiency</option>
+                  {languageLevels.map((l) => <option key={l} value={l}>{l}</option>)}
                 </select>
-                <button onClick={() => deleteSkill(skill.id)} className="p-1.5 text-[var(--muted)] hover:text-[var(--danger)] transition-colors">
+                <button onClick={() => deleteLanguage(lang.id)} className="p-1.5 text-[var(--muted)] hover:text-[var(--danger)] transition-colors">
                   <FiTrash2 size={14} />
                 </button>
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Certifications */}
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Certifications</h2>
+            <button onClick={addCertification} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]">
+              <FiPlus size={12} /> {t("common.add")}
+            </button>
+          </div>
+          {resume.certifications.length === 0 && (
+            <p className="text-[var(--muted-foreground)] text-sm text-center py-4">No certifications added yet.</p>
+          )}
+          <div className="space-y-3">
+            {resume.certifications.map((c) => (
+              <div key={c.id} className="border border-[var(--border)] rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <input className="dash-input flex-1" defaultValue={c.name} onBlur={(e) => updateCertification(c.id, { name: e.target.value })} placeholder="Certification name" />
+                  <button onClick={() => deleteCertification(c.id)} className="p-1.5 text-[var(--muted)] hover:text-[var(--danger)] transition-colors">
+                    <FiTrash2 size={14} />
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <input className="dash-input" defaultValue={c.issuer} onBlur={(e) => updateCertification(c.id, { issuer: e.target.value })} placeholder="Issuer" />
+                  <input className="dash-input" defaultValue={c.date} onBlur={(e) => updateCertification(c.id, { date: e.target.value })} placeholder="Date (e.g. 2024)" />
+                  <input className="dash-input" defaultValue={c.url} onBlur={(e) => updateCertification(c.id, { url: e.target.value })} placeholder="Credential URL" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Awards */}
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider">Awards &amp; Achievements</h2>
+            <button onClick={addAward} className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--accent)] text-[var(--background)] hover:bg-[var(--accent-hover)]">
+              <FiPlus size={12} /> {t("common.add")}
+            </button>
+          </div>
+          {resume.awards.length === 0 && (
+            <p className="text-[var(--muted-foreground)] text-sm text-center py-4">No awards added yet.</p>
+          )}
+          <div className="space-y-3">
+            {resume.awards.map((aw) => (
+              <div key={aw.id} className="border border-[var(--border)] rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <input className="dash-input flex-1" defaultValue={aw.title} onBlur={(e) => updateAward(aw.id, { title: e.target.value })} placeholder="Award title" />
+                  <button onClick={() => deleteAward(aw.id)} className="p-1.5 text-[var(--muted)] hover:text-[var(--danger)] transition-colors">
+                    <FiTrash2 size={14} />
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <input className="dash-input" defaultValue={aw.issuer} onBlur={(e) => updateAward(aw.id, { issuer: e.target.value })} placeholder="Issuer / organization" />
+                  <input className="dash-input" defaultValue={aw.date} onBlur={(e) => updateAward(aw.id, { date: e.target.value })} placeholder="Date (e.g. 2024)" />
+                </div>
+                <textarea className="dash-input min-h-[60px]" defaultValue={aw.description} onBlur={(e) => updateAward(aw.id, { description: e.target.value })} placeholder="Short description (optional)" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Interests */}
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-3">Interests &amp; Hobbies</h2>
+          <label className="text-xs text-[var(--muted)] mb-1 block">Comma-separated list (saved with the Save button)</label>
+          <input className="dash-input" value={resume.interests} onChange={(e) => update("interests", e.target.value)} placeholder="Photography, Hiking, Chess, Open-source" />
         </div>
       </div>
 

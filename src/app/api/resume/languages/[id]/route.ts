@@ -10,14 +10,13 @@ export async function PUT(
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { name, level, percent } = body;
+  const { name, level } = body;
 
-  const data: Record<string, string | number> = {};
+  const data: Record<string, string> = {};
   if (name !== undefined) data.name = name;
   if (level !== undefined) data.level = level;
-  if (percent !== undefined) data.percent = typeof percent === "number" ? percent : parseInt(percent, 10) || 0;
 
-  const updated = await prisma.resumeSkill.update({
+  const updated = await prisma.resumeLanguage.update({
     where: { id: params.id },
     data,
   });
@@ -32,6 +31,6 @@ export async function DELETE(
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  await prisma.resumeSkill.delete({ where: { id: params.id } });
+  await prisma.resumeLanguage.delete({ where: { id: params.id } });
   return NextResponse.json({ success: true });
 }

@@ -380,17 +380,25 @@ model Resume {
   summary         String   @default("")
   photoUrl        String   @default("")
   accentColor     String   @default("")
+  interests       String   @default("")
   showSummary     Boolean  @default(true)
   showExperience  Boolean  @default(true)
   showEducation   Boolean  @default(true)
   showSkills      Boolean  @default(true)
+  showLanguages   Boolean  @default(true)
+  showCertifications Boolean @default(true)
+  showAwards      Boolean  @default(true)
+  showInterests   Boolean  @default(true)
   showOnPortfolio Boolean  @default(false)
   updatedAt       DateTime @updatedAt
 
-  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  experiences ResumeExperience[]
-  educations  ResumeEducation[]
-  skills      ResumeSkill[]
+  user           User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experiences    ResumeExperience[]
+  educations     ResumeEducation[]
+  skills         ResumeSkill[]
+  languages      ResumeLanguage[]
+  certifications ResumeCertification[]
+  awards         ResumeAward[]
 }
 
 model ResumeExperience {
@@ -426,7 +434,42 @@ model ResumeSkill {
   resumeId String
   name     String @default("")
   level    String @default("")
+  percent  Int    @default(0)
   order    Int    @default(0)
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+}
+
+model ResumeLanguage {
+  id       String @id @default(cuid())
+  resumeId String
+  name     String @default("")
+  level    String @default("")
+  order    Int    @default(0)
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+}
+
+model ResumeCertification {
+  id       String @id @default(cuid())
+  resumeId String
+  name     String @default("")
+  issuer   String @default("")
+  date     String @default("")
+  url      String @default("")
+  order    Int    @default(0)
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+}
+
+model ResumeAward {
+  id          String @id @default(cuid())
+  resumeId    String
+  title       String @default("")
+  issuer      String @default("")
+  date        String @default("")
+  description String @default("")
+  order       Int    @default(0)
 
   resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
 }
