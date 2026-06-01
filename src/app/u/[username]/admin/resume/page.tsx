@@ -202,12 +202,8 @@ export default function ResumePage() {
     try {
       const { jsPDF } = await import("jspdf");
       const doc = new jsPDF({ format: "a4" });
-      const mL = 16;
-      const mR = 16;
-      let y = 18;
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
-      const contentWidth = pageWidth - mL - mR;
       const lineH = 1.45;
 
       // jsPDF standard fonts only render WinAnsi/ASCII; convert smart punctuation
@@ -232,44 +228,55 @@ export default function ResumePage() {
       const muted = { r: 100, g: 100, b: 100 };
       const light = { r: 150, g: 150, b: 150 };
 
+      // ── Two-column layout geometry ──
+      const SB_W = 66;                 // colored sidebar width
+      const sPad = 11;
+      const sX = sPad;                 // sidebar content left
+      const sW = SB_W - sPad * 2;      // sidebar content width
+      const mL = SB_W + 12;            // main content left
+      const mR = 14;                   // right page margin
+      const contentWidth = pageWidth - mL - mR;
+      let y = 18;                      // main column cursor
+
+      // Sidebar theme: white text on a dark accent, dark text on a light accent.
+      const luminance = (c: { r: number; g: number; b: number }) => 0.299 * c.r + 0.587 * c.g + 0.114 * c.b;
+      const mix = (c1: { r: number; g: number; b: number }, c2: { r: number; g: number; b: number }, t: number) => ({
+        r: Math.round(c1.r + (c2.r - c1.r) * t),
+        g: Math.round(c1.g + (c2.g - c1.g) * t),
+        b: Math.round(c1.b + (c2.b - c1.b) * t),
+      });
+      const sideBg = accent;
+      const sideDark = luminance(sideBg) < 150;
+      const sideText = sideDark ? { r: 255, g: 255, b: 255 } : { r: 30, g: 41, b: 59 };
+      const sideMuted = mix(sideBg, sideText, 0.6);
+      const barTrack = mix(sideBg, sideText, 0.3);
+      const setFill = (c: { r: number; g: number; b: number }) => doc.setFillColor(c.r, c.g, c.b);
+      const setStroke = (c: { r: number; g: number; b: number }) => doc.setDrawColor(c.r, c.g, c.b);
+      const setInk = (c: { r: number; g: number; b: number }) => doc.setTextColor(c.r, c.g, c.b);
+      const drawSidebarBg = () => { setFill(sideBg); doc.rect(0, 0, SB_W, pageHeight, "F"); };
+
       const checkPage = (needed: number) => {
-        if (y + needed > pageHeight - 14) { doc.addPage(); y = 18; }
+        if (y + needed > pageHeight - 14) { doc.addPage(); drawSidebarBg(); y = 18; }
       };
 
       const drawSectionHeading = (title: string, reserve = 22) => {
         checkPage(reserve);
-        y += 5;
-        doc.setFontSize(9.5);
-        if (resume.templateId === "classic") {
-          doc.setFont("times", "bold");
-          doc.setTextColor(body.r, body.g, body.b);
-          doc.text(title.toUpperCase(), pageWidth / 2, y, { align: "center" });
-          y += 3;
-          doc.setDrawColor(body.r, body.g, body.b);
-          doc.setLineWidth(0.2);
-          doc.line(mL, y, pageWidth - mR, y);
-        } else if (resume.templateId === "minimal") {
-          doc.setFont("helvetica", "bold");
-          doc.setTextColor(muted.r, muted.g, muted.b);
-          doc.text(title.toUpperCase(), mL, y);
-        } else {
-          doc.setFont("helvetica", "bold");
-          doc.setTextColor(accent.r, accent.g, accent.b);
-          doc.text(title.toUpperCase(), mL, y);
-          y += 3;
-          doc.setDrawColor(accent.r, accent.g, accent.b);
-          doc.setLineWidth(0.35);
-          doc.line(mL, y, pageWidth - mR, y);
-        }
+        y += 3;
+        doc.setFontSize(10.5);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(accent.r, accent.g, accent.b);
+        doc.text(ascii(title).toUpperCase(), mL, y);
+        y += 1.8;
+        doc.setDrawColor(accent.r, accent.g, accent.b);
+        doc.setLineWidth(0.4);
+        doc.line(mL, y, pageWidth - mR, y);
         y += 5;
         doc.setTextColor(body.r, body.g, body.b);
       };
 
-      // ── Header block ──
-      // If photo exists, load it (preserving aspect ratio so the face isn't distorted)
-      let photoLoaded = false;
-      let photoBoxW = 0;
-      const photoTop = y - 2;
+      // ── Sidebar (colored column): photo, contact, skill bars, languages, interests ──
+      drawSidebarBg();
+      let ys = 14;
 
       if (resume.photoUrl) {
         try {
@@ -287,111 +294,109 @@ export default function ResumePage() {
             img.src = dataUrl;
           });
           const ar = dims.w / dims.h;
-          const maxW = 26, maxH = 30;
-          let drawW = maxW, drawH = maxW / ar;
-          if (drawH > maxH) { drawH = maxH; drawW = maxH * ar; }
+          let pw = sW, ph = sW / ar;
+          const maxPh = 44;
+          if (ph > maxPh) { ph = maxPh; pw = maxPh * ar; }
           const fmt = dataUrl.substring(11, dataUrl.indexOf(";")).toUpperCase().includes("PNG") ? "PNG" : "JPEG";
-          const px = resume.templateId === "classic" ? (pageWidth - drawW) / 2 : pageWidth - mR - drawW;
-          doc.addImage(dataUrl, fmt, px, photoTop, drawW, drawH);
-          photoLoaded = true;
-          photoBoxW = drawW;
-          if (resume.templateId === "classic") y += drawH + 4; // shift down if centered photo
-        } catch { /* skip photo if fails */ }
+          doc.addImage(dataUrl, fmt, sX + (sW - pw) / 2, ys, pw, ph);
+          ys += ph + 6;
+        } catch { /* skip photo if it fails */ }
       }
 
-      const nameWidth = photoLoaded && resume.templateId !== "classic" ? contentWidth - photoBoxW - 6 : contentWidth;
-
-      if (resume.templateId === "classic") {
-        doc.setFontSize(24);
-        doc.setFont("times", "bold");
-        doc.setTextColor(body.r, body.g, body.b);
-        doc.text(ascii(resume.fullName) || "Resume", pageWidth / 2, y, { align: "center" });
-        y += 8;
-
-        if (resume.jobTitle) {
-          doc.setFontSize(12);
-          doc.setFont("times", "italic");
-          doc.setTextColor(body.r, body.g, body.b);
-          doc.text(ascii(resume.jobTitle), pageWidth / 2, y, { align: "center" });
-          y += 6;
-        }
-
-        const contactParts = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean);
-        if (contactParts.length) {
-          doc.setFontSize(9);
-          doc.setFont("times", "normal");
-          doc.setTextColor(muted.r, muted.g, muted.b);
-          const cText = ascii(contactParts.join("  |  "));
-          doc.text(cText, pageWidth / 2, y, { align: "center" });
-          y += 6;
-        }
-        y += 2;
-        doc.setDrawColor(body.r, body.g, body.b);
-        doc.setLineWidth(0.5);
-        doc.line(mL, y, pageWidth - mR, y);
-        y += 8;
-      } else if (resume.templateId === "minimal") {
-        doc.setFontSize(20);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(body.r, body.g, body.b);
-        doc.text(ascii(resume.fullName) || "Resume", mL, y);
-        y += 8;
-
-        if (resume.jobTitle) {
-          doc.setFontSize(11);
-          doc.setFont("helvetica", "normal");
-          doc.setTextColor(muted.r, muted.g, muted.b);
-          doc.text(ascii(resume.jobTitle), mL, y);
-          y += 6;
-        }
-        
-        const contactParts = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean);
-        if (contactParts.length) {
-          doc.setFontSize(8);
-          doc.setFont("helvetica", "normal");
-          doc.setTextColor(light.r, light.g, light.b);
-          const cText = ascii(contactParts.join("  |  "));
-          const cLines = doc.splitTextToSize(cText, nameWidth);
-          doc.text(cLines, mL, y);
-          y += cLines.length * 4.5;
-        }
-        if (photoLoaded) y = Math.max(y, 44);
-        y += 4; // no line
-      } else {
-        // Modern (default)
-        doc.setFontSize(24);
+      const sideHeading = (title: string) => {
+        ys += 2;
         doc.setFont("helvetica", "bold");
-        doc.setTextColor(body.r, body.g, body.b);
-        doc.text(ascii(resume.fullName) || "Resume", mL, y);
-        y += 8;
+        doc.setFontSize(9);
+        setInk(sideText);
+        doc.text(ascii(title).toUpperCase(), sX, ys);
+        ys += 1.6;
+        setStroke(sideMuted);
+        doc.setLineWidth(0.3);
+        doc.line(sX, ys, sX + sW, ys);
+        ys += 4.5;
+      };
 
-        if (resume.jobTitle) {
-          doc.setFontSize(12);
-          doc.setFont("helvetica", "normal");
-          doc.setTextColor(accent.r, accent.g, accent.b);
-          doc.text(ascii(resume.jobTitle), mL, y);
-          y += 6;
-        }
-
-        const contactParts = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean);
-        if (contactParts.length) {
-          doc.setFontSize(8);
-          doc.setFont("helvetica", "normal");
-          doc.setTextColor(light.r, light.g, light.b);
-          const cText = ascii(contactParts.join("  |  "));
-          const cLines = doc.splitTextToSize(cText, nameWidth);
-          doc.text(cLines, mL, y);
-          y += cLines.length * 4.5;
-        }
-
-        if (photoLoaded) y = Math.max(y, 44);
-
-        y += 2;
-        doc.setDrawColor(accent.r, accent.g, accent.b);
-        doc.setLineWidth(0.6);
-        doc.line(mL, y, pageWidth - mR, y);
-        y += 8;
+      const sideContact = [resume.email, resume.phone, resume.location, resume.website].filter(Boolean) as string[];
+      if (sideContact.length) {
+        sideHeading("Contact");
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        setInk(sideText);
+        sideContact.forEach((raw) => {
+          const lines = doc.splitTextToSize(ascii(raw), sW);
+          doc.text(lines, sX, ys);
+          ys += lines.length * 3.6 + 1.8;
+        });
+        ys += 2;
       }
+
+      const sideSkills = resume.skills.filter((s) => s.name.trim());
+      if (resume.showSkills && sideSkills.length) {
+        sideHeading("Skills");
+        sideSkills.forEach((s) => {
+          const p = Math.max(0, Math.min(100, s.percent || 0));
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(7.8);
+          setInk(sideText);
+          doc.text(ascii(s.name), sX, ys);
+          ys += 2.3;
+          setFill(barTrack);
+          doc.roundedRect(sX, ys, sW, 1.5, 0.75, 0.75, "F");
+          if (p > 0) {
+            setFill(sideText);
+            doc.roundedRect(sX, ys, (sW * p) / 100, 1.5, 0.75, 0.75, "F");
+          }
+          ys += 5;
+        });
+        ys += 1;
+      }
+
+      const sideLangs = resume.languages.filter((l) => l.name.trim());
+      if (resume.showLanguages && sideLangs.length) {
+        sideHeading("Languages");
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        sideLangs.forEach((l) => {
+          setInk(sideText);
+          doc.text(ascii(l.name), sX, ys);
+          if (l.level) {
+            setInk(sideMuted);
+            doc.text(ascii(l.level), sX + sW, ys, { align: "right" });
+          }
+          ys += 4.4;
+        });
+        ys += 2;
+      }
+
+      const sideInterests = (resume.interests || "").split(",").map((s) => ascii(s.trim())).filter(Boolean);
+      if (resume.showInterests && sideInterests.length) {
+        sideHeading("Interests");
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        setInk(sideText);
+        const il = doc.splitTextToSize(sideInterests.join(", "), sW);
+        doc.text(il, sX, ys);
+        ys += il.length * 3.8 + 2;
+      }
+
+      // ── Main column: name + title ──
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(22);
+      setInk({ r: 31, g: 41, b: 55 });
+      const nameLines = doc.splitTextToSize(ascii(resume.fullName) || "Resume", contentWidth);
+      doc.text(nameLines, mL, y + 4);
+      y += nameLines.length * 8 + 1;
+      if (resume.jobTitle) {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11.5);
+        setInk(accent);
+        doc.text(ascii(resume.jobTitle), mL, y + 2);
+        y += 7;
+      }
+      y += 3;
+
+      // Keep the main column below the name even if the sidebar is taller.
+      y = Math.max(y, 30);
 
       // ── Summary ──
       if (resume.showSummary && resume.summary) {
@@ -480,32 +485,6 @@ export default function ResumePage() {
         y += 2;
       }
 
-      const lhBody = 9.5 * 0.352778 * lineH;
-      const inlineList = (text: string) => {
-        doc.setFontSize(9.5);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(body.r, body.g, body.b);
-        const lines = doc.splitTextToSize(text, contentWidth);
-        checkPage(lines.length * lhBody);
-        doc.text(lines, mL, y, { lineHeightFactor: lineH });
-        y += lines.length * lhBody + 2;
-      };
-
-      // ── Skills ──
-      if (resume.showSkills && resume.skills.length > 0) {
-        drawSectionHeading("Skills");
-        inlineList(resume.skills.filter((s) => s.name.trim()).map((s) => {
-          const p = s.percent || 0;
-          return p > 0 ? `${ascii(s.name)} (${p}%)` : ascii(s.name);
-        }).join("   |   "));
-      }
-
-      // ── Languages ──
-      if (resume.showLanguages && resume.languages.length > 0) {
-        drawSectionHeading("Languages");
-        inlineList(resume.languages.filter((l) => l.name.trim()).map((l) => l.level ? `${ascii(l.name)} (${l.level})` : ascii(l.name)).join("   |   "));
-      }
-
       // ── Certifications ──
       if (resume.showCertifications && resume.certifications.length > 0) {
         drawSectionHeading("Certifications");
@@ -569,13 +548,6 @@ export default function ResumePage() {
           y += idx < resume.awards.length - 1 ? 4 : 2;
         });
         y += 2;
-      }
-
-      // ── Interests ──
-      const pdfInterests = (resume.interests || "").split(",").map((s) => s.trim()).filter(Boolean);
-      if (resume.showInterests && pdfInterests.length > 0) {
-        drawSectionHeading("Interests");
-        inlineList(pdfInterests.map(ascii).join("   |   "));
       }
 
       doc.save(`${resume.fullName || "resume"}.pdf`);
