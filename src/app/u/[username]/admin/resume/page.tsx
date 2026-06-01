@@ -1141,7 +1141,7 @@ export default function ResumePage() {
               </div>
               <div>
                 <label className="text-xs text-[var(--muted)] mb-1 block">{t("resume.website")}</label>
-                <input className="dash-input" value={resume.website} onChange={(e) => update("website", e.target.value)} placeholder="https://..." />
+                <input className="dash-input" value={resume.website} onChange={(e) => update("website", e.target.value)} placeholder="https://yourwebsite.com" />
               </div>
             </div>
           </div>
