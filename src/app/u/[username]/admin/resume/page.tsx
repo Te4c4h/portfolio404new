@@ -210,6 +210,17 @@ export default function ResumePage() {
       const contentWidth = pageWidth - mL - mR;
       const lineH = 1.45;
 
+      // jsPDF standard fonts only render WinAnsi/ASCII; convert smart punctuation
+      // to safe ASCII so glyphs render correctly and width/alignment stays accurate.
+      const ascii = (str: string): string => (str || "")
+        .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+        .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+        .replace(/[\u2013\u2014\u2015\u2212]/g, "-")
+        .replace(/[\u2022\u00B7\u2023\u2043\u25E6\u2219]/g, "-")
+        .replace(/\u2026/g, "...")
+        .replace(/[\u00A0\u2007\u2009\u200A\u202F]/g, " ")
+        .replace(/[\u200B\uFEFF]/g, "");
+
       // Parse accent color
       const parseHex = (hex: string): {r:number;g:number;b:number} => {
         const h = hex.replace("#","");
@@ -281,14 +292,14 @@ export default function ResumePage() {
         doc.setFontSize(24);
         doc.setFont("times", "bold");
         doc.setTextColor(body.r, body.g, body.b);
-        doc.text(resume.fullName || "Resume", pageWidth / 2, y, { align: "center" });
+        doc.text(ascii(resume.fullName) || "Resume", pageWidth / 2, y, { align: "center" });
         y += 8;
 
         if (resume.jobTitle) {
           doc.setFontSize(12);
           doc.setFont("times", "italic");
           doc.setTextColor(body.r, body.g, body.b);
-          doc.text(resume.jobTitle, pageWidth / 2, y, { align: "center" });
+          doc.text(ascii(resume.jobTitle), pageWidth / 2, y, { align: "center" });
           y += 6;
         }
 
@@ -297,7 +308,7 @@ export default function ResumePage() {
           doc.setFontSize(9);
           doc.setFont("times", "normal");
           doc.setTextColor(muted.r, muted.g, muted.b);
-          const cText = contactParts.join("  |  ");
+          const cText = ascii(contactParts.join("  |  "));
           doc.text(cText, pageWidth / 2, y, { align: "center" });
           y += 6;
         }
@@ -310,14 +321,14 @@ export default function ResumePage() {
         doc.setFontSize(20);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(body.r, body.g, body.b);
-        doc.text(resume.fullName || "Resume", mL, y);
+        doc.text(ascii(resume.fullName) || "Resume", mL, y);
         y += 8;
 
         if (resume.jobTitle) {
           doc.setFontSize(11);
           doc.setFont("helvetica", "normal");
           doc.setTextColor(muted.r, muted.g, muted.b);
-          doc.text(resume.jobTitle, mL, y);
+          doc.text(ascii(resume.jobTitle), mL, y);
           y += 6;
         }
         
@@ -326,7 +337,7 @@ export default function ResumePage() {
           doc.setFontSize(8);
           doc.setFont("helvetica", "normal");
           doc.setTextColor(light.r, light.g, light.b);
-          const cText = contactParts.join("  \u2022  ");
+          const cText = ascii(contactParts.join("  |  "));
           const cLines = doc.splitTextToSize(cText, nameWidth);
           doc.text(cLines, mL, y);
           y += cLines.length * 4.5;
@@ -338,14 +349,14 @@ export default function ResumePage() {
         doc.setFontSize(24);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(body.r, body.g, body.b);
-        doc.text(resume.fullName || "Resume", mL, y);
+        doc.text(ascii(resume.fullName) || "Resume", mL, y);
         y += 8;
 
         if (resume.jobTitle) {
           doc.setFontSize(12);
           doc.setFont("helvetica", "normal");
           doc.setTextColor(accent.r, accent.g, accent.b);
-          doc.text(resume.jobTitle, mL, y);
+          doc.text(ascii(resume.jobTitle), mL, y);
           y += 6;
         }
 
@@ -354,7 +365,7 @@ export default function ResumePage() {
           doc.setFontSize(8);
           doc.setFont("helvetica", "normal");
           doc.setTextColor(light.r, light.g, light.b);
-          const cText = contactParts.join("  \u2022  ");
+          const cText = ascii(contactParts.join("  |  "));
           const cLines = doc.splitTextToSize(cText, nameWidth);
           doc.text(cLines, mL, y);
           y += cLines.length * 4.5;
@@ -375,7 +386,7 @@ export default function ResumePage() {
         doc.setFont("helvetica", "normal");
         doc.setFontSize(9.5);
         doc.setTextColor(body.r, body.g, body.b);
-        const lines = doc.splitTextToSize(resume.summary, contentWidth);
+        const lines = doc.splitTextToSize(ascii(resume.summary), contentWidth);
         const lhPx = 9.5 * 0.352778 * lineH;
         checkPage(lines.length * lhPx);
         doc.text(lines, mL, y, { lineHeightFactor: lineH });
@@ -390,8 +401,8 @@ export default function ResumePage() {
           doc.setFontSize(10);
           doc.setFont("helvetica", "bold");
           doc.setTextColor(body.r, body.g, body.b);
-          doc.text(exp.position || "Position", mL, y);
-          const dateStr = [exp.startDate, exp.endDate].filter(Boolean).join(" \u2013 ");
+          doc.text(ascii(exp.position) || "Position", mL, y);
+          const dateStr = ascii([exp.startDate, exp.endDate].filter(Boolean).join(" - "));
           if (dateStr) {
             doc.setFont("helvetica", "normal");
             doc.setFontSize(8.5);
@@ -402,13 +413,13 @@ export default function ResumePage() {
           doc.setFont("helvetica", "normal");
           doc.setFontSize(9);
           doc.setTextColor(muted.r, muted.g, muted.b);
-          doc.text([exp.company, exp.location].filter(Boolean).join(" \u00B7 "), mL, y);
+          doc.text(ascii([exp.company, exp.location].filter(Boolean).join("  |  ")), mL, y);
           y += 4.5;
           if (exp.description) {
             doc.setFontSize(9);
             doc.setTextColor(body.r, body.g, body.b);
             // Convert bullet points
-            const desc = exp.description.replace(/^[-*]\s+/gm, "\u2022 ");
+            const desc = ascii(exp.description).replace(/^[-*]\s+/gm, "- ");
             const dLines = doc.splitTextToSize(desc, contentWidth - 2);
             const lhPx = 9 * 0.352778 * 1.4;
             checkPage(dLines.length * lhPx);
@@ -428,8 +439,8 @@ export default function ResumePage() {
           doc.setFontSize(10);
           doc.setFont("helvetica", "bold");
           doc.setTextColor(body.r, body.g, body.b);
-          doc.text([edu.degree, edu.field].filter(Boolean).join(" in ") || "Degree", mL, y);
-          const dateStr = [edu.startDate, edu.endDate].filter(Boolean).join(" \u2013 ");
+          doc.text(ascii([edu.degree, edu.field].filter(Boolean).join(" in ")) || "Degree", mL, y);
+          const dateStr = ascii([edu.startDate, edu.endDate].filter(Boolean).join(" - "));
           if (dateStr) {
             doc.setFont("helvetica", "normal");
             doc.setFontSize(8.5);
@@ -440,12 +451,12 @@ export default function ResumePage() {
           doc.setFont("helvetica", "normal");
           doc.setFontSize(9);
           doc.setTextColor(muted.r, muted.g, muted.b);
-          doc.text(edu.school || "", mL, y);
+          doc.text(ascii(edu.school), mL, y);
           y += 4.5;
           if (edu.description) {
             doc.setFontSize(9);
             doc.setTextColor(body.r, body.g, body.b);
-            const dLines = doc.splitTextToSize(edu.description, contentWidth - 2);
+            const dLines = doc.splitTextToSize(ascii(edu.description), contentWidth - 2);
             const lhPx = 9 * 0.352778 * 1.4;
             checkPage(dLines.length * lhPx);
             doc.text(dLines, mL + 2, y, { lineHeightFactor: 1.4 });
@@ -470,16 +481,16 @@ export default function ResumePage() {
       // ── Skills ──
       if (resume.showSkills && resume.skills.length > 0) {
         drawSectionHeading("Skills");
-        inlineList(resume.skills.map((s) => {
+        inlineList(resume.skills.filter((s) => s.name.trim()).map((s) => {
           const p = s.percent || 0;
-          return p > 0 ? `${s.name} \u2014 ${p}%` : s.name;
-        }).join("   \u2022   "));
+          return p > 0 ? `${ascii(s.name)} (${p}%)` : ascii(s.name);
+        }).join("   |   "));
       }
 
       // ── Languages ──
       if (resume.showLanguages && resume.languages.length > 0) {
         drawSectionHeading("Languages");
-        inlineList(resume.languages.map((l) => l.level ? `${l.name} (${l.level})` : l.name).join("   \u2022   "));
+        inlineList(resume.languages.filter((l) => l.name.trim()).map((l) => l.level ? `${ascii(l.name)} (${l.level})` : ascii(l.name)).join("   |   "));
       }
 
       // ── Certifications ──
@@ -490,19 +501,19 @@ export default function ResumePage() {
           doc.setFontSize(10);
           doc.setFont("helvetica", "bold");
           doc.setTextColor(body.r, body.g, body.b);
-          doc.text(c.name || "Certification", mL, y);
+          doc.text(ascii(c.name) || "Certification", mL, y);
           if (c.date) {
             doc.setFont("helvetica", "normal");
             doc.setFontSize(8.5);
             doc.setTextColor(light.r, light.g, light.b);
-            doc.text(c.date, pageWidth - mR, y, { align: "right" });
+            doc.text(ascii(c.date), pageWidth - mR, y, { align: "right" });
           }
           y += 4.5;
           if (c.issuer) {
             doc.setFont("helvetica", "normal");
             doc.setFontSize(9);
             doc.setTextColor(muted.r, muted.g, muted.b);
-            doc.text(c.issuer, mL, y);
+            doc.text(ascii(c.issuer), mL, y);
             y += 4.5;
           }
           y += idx < resume.certifications.length - 1 ? 2 : 1;
@@ -518,25 +529,25 @@ export default function ResumePage() {
           doc.setFontSize(10);
           doc.setFont("helvetica", "bold");
           doc.setTextColor(body.r, body.g, body.b);
-          doc.text(aw.title || "Award", mL, y);
+          doc.text(ascii(aw.title) || "Award", mL, y);
           if (aw.date) {
             doc.setFont("helvetica", "normal");
             doc.setFontSize(8.5);
             doc.setTextColor(light.r, light.g, light.b);
-            doc.text(aw.date, pageWidth - mR, y, { align: "right" });
+            doc.text(ascii(aw.date), pageWidth - mR, y, { align: "right" });
           }
           y += 4.5;
           if (aw.issuer) {
             doc.setFont("helvetica", "normal");
             doc.setFontSize(9);
             doc.setTextColor(muted.r, muted.g, muted.b);
-            doc.text(aw.issuer, mL, y);
+            doc.text(ascii(aw.issuer), mL, y);
             y += 4.5;
           }
           if (aw.description) {
             doc.setFontSize(9);
             doc.setTextColor(body.r, body.g, body.b);
-            const dLines = doc.splitTextToSize(aw.description, contentWidth - 2);
+            const dLines = doc.splitTextToSize(ascii(aw.description), contentWidth - 2);
             const lhPx = 9 * 0.352778 * 1.4;
             checkPage(dLines.length * lhPx);
             doc.text(dLines, mL + 2, y, { lineHeightFactor: 1.4 });
@@ -551,7 +562,7 @@ export default function ResumePage() {
       const pdfInterests = (resume.interests || "").split(",").map((s) => s.trim()).filter(Boolean);
       if (resume.showInterests && pdfInterests.length > 0) {
         drawSectionHeading("Interests");
-        inlineList(pdfInterests.join("   \u2022   "));
+        inlineList(pdfInterests.map(ascii).join("   |   "));
       }
 
       doc.save(`${resume.fullName || "resume"}.pdf`);
